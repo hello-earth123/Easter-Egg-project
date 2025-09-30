@@ -55,6 +55,10 @@ export default class MainScene extends Phaser.Scene {
     this.player.level = 1;
     this.player.facing = new Phaser.Math.Vector2(0, -1); // default up
 
+    this.player.isKnockback = false;
+    this.player.knockbackVel = new Phaser.Math.Vector2(0, 0);
+    this.player.knockbackDecay = 0.9; // 0~1, 1에 가까울수록 느리게 감속
+
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
 
     // monsters
@@ -230,8 +234,25 @@ export default class MainScene extends Phaser.Scene {
   }
 
   handleMovement() {
-    const speed = 200;
     if (!this.player) return;
+
+    // 넉백 처리
+    if (this.player.isKnockback) {
+      this.player.setVelocity(
+        this.player.knockbackVel.x,
+        this.player.knockbackVel.y
+      );
+      // 감속
+      this.player.knockbackVel.scale(this.player.knockbackDecay);
+      // 충분히 느려지면 넉백 종료
+      if (this.player.knockbackVel.length() < 10) {
+        this.player.isKnockback = false;
+        this.player.setVelocity(0);
+      }
+      return; // 넉백 중 이동 입력 무시
+    }
+
+    const speed = 200;
     this.player.setVelocity(0);
     let moving = false;
     if (this.cursors.left.isDown) {
@@ -254,12 +275,8 @@ export default class MainScene extends Phaser.Scene {
       this.player.facing.set(0, 1);
       moving = true;
     }
-    if (!moving) {
-      // no change to facing
-      this.player.setVelocity(0);
-    }
+    if (!moving) this.player.setVelocity(0);
   }
-
   handleSkills(now) {
     if (Phaser.Input.Keyboard.JustDown(this.keys.Q)) this.tryUseSkill(0, now);
     if (Phaser.Input.Keyboard.JustDown(this.keys.W)) this.tryUseSkill(1, now);
@@ -490,12 +507,38 @@ export default class MainScene extends Phaser.Scene {
   // player hit by monster (contact)
   onPlayerHitByMonster(player, monster) {
     if (!player || !monster) return;
+
     if (!player._lastHitAt) player._lastHitAt = 0;
     const now = this.time.now;
-    if (now - player._lastHitAt > 700) {
+
+    const invulDuration = 1000; // 1초 무적
+    if (now - player._lastHitAt > invulDuration) {
       player.hp -= 10;
       player._lastHitAt = now;
+
+      // 넉백 방향: (플레이어 - 몬스터)
+      const dx = player.x - monster.x;
+      const dy = player.y - monster.y;
+      const dir = new Phaser.Math.Vector2(dx, dy).normalize();
+      const knockbackPower = 400;
+
+      player.isKnockback = true;
+      player.knockbackVel.set(dir.x * knockbackPower, dir.y * knockbackPower);
+
+      // 잠시 후 속도 멈춤
+      this.time.delayedCall(300, () => {
+        if (player) player.setVelocity(0);
+        player.isKnockback = false;
+      });
+
+      // 시각 효과
       this.cameras.main.shake(250, 0.02);
+      player.setTint(0xff6666); // 빨갛게 표시
+
+      this.time.delayedCall(invulDuration, () => {
+        if (player) player.clearTint(); // 무적 끝나면 원래대로
+      });
+
       this.textBar = "적에게 피격!";
       if (player.hp <= 0) this.onPlayerDeath();
     }
