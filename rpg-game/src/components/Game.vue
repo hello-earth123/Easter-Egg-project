@@ -1,35 +1,36 @@
 <template>
   <div id="app-wrap">
-    <!-- 좌측 HUD: HP/MP/EXP/레벨/골드 + 단축키 바 + 메시지 -->
+    <!-- 좌측 HUD -->
     <div id="hud">
-      <!-- 상단 정보 -->
       <div class="info-row">
         <div>Lv {{ playerLevel }}</div>
         <div style="margin-left:auto">Gold: {{ inventory.money }}</div>
       </div>
 
-      <!-- HP -->
       <div class="bar label">HP</div>
       <div class="bar-wrap">
         <div class="bar-fill" :style="{ width: Math.max(0, (playerHP / playerMaxHP) * 100) + '%' }"></div>
         <div class="bar-text">{{ playerHP }} / {{ playerMaxHP }}</div>
       </div>
 
-      <!-- MP -->
       <div class="bar label">MP</div>
       <div class="bar-wrap">
         <div class="bar-fill mp" :style="{ width: Math.max(0, (playerMP / playerMaxMP) * 100) + '%' }"></div>
         <div class="bar-text">{{ playerMP }} / {{ playerMaxMP }}</div>
       </div>
 
-      <!-- EXP (정수 경험치 / 다음 레벨 필요치) -->
       <div class="bar label">EXP</div>
       <div class="bar-wrap">
         <div class="bar-fill exp" :style="{ width: Math.max(0, (playerEXP / playerNextEXP) * 100) + '%' }"></div>
         <div class="bar-text">{{ playerEXP }} / {{ playerNextEXP }}</div>
       </div>
 
-      <!-- 스킬 슬롯(Q/W/E/R) : 드래그로 배치, 클릭/키보드로 사용 -->
+      <div class="info-row" style="margin-top:6px">
+        <div>Skill Pts: {{ skillPoints }}</div>
+        <div style="margin-left:auto; font-size:12px; color:#ccc">I:Inventory / P:Stats / K:Skills</div>
+      </div>
+
+      <!-- 스킬 슬롯(QWER) -->
       <div id="shortcut">
         <div
           class="shortcut-slot"
@@ -42,13 +43,14 @@
         >
           <div v-if="s" class="slot-item">
             <img :src="s.icon" :alt="s.name" />
-            <div class="slot-cd" v-if="cdLeftMs(s) > 0">{{ Math.ceil(cdLeftMs(s) / 1000) }}s</div>
+            <div class="slot-cd" v-if="cdLeftMs(s.name) > 0">{{ Math.ceil(cdLeftMs(s.name) / 1000) }}s</div>
+            <div class="slot-lv">Lv {{ skillLevel(s.name) }}</div>
           </div>
           <div class="slot-key">{{ ['Q','W','E','R'][idx] }}</div>
         </div>
       </div>
 
-      <!-- 아이템 슬롯(PgUp/PgDn) : 인벤토리에서 드래그, 클릭/키보드 사용 -->
+      <!-- 아이템 슬롯(PgUp/PgDn) -->
       <div id="shortcut">
         <div
           class="shortcut-slot"
@@ -67,19 +69,14 @@
         </div>
       </div>
 
-      <!-- 텍스트 메시지 바 -->
       <div id="text-bar">{{ textBar }}</div>
-
-      <div style="margin-top:10px;font-size:12px;color:#ddd">
-        Press I (Inventory) | P (Stats) | K (Skills)
-      </div>
     </div>
 
-    <!-- 우측 게임 렌더링 영역 -->
+    <!-- 우측 게임 영역 + 모달들 -->
     <div id="game-container">
-      <!-- 스킬 목록 모달 (드래그 소스) -->
+      <!-- 스킬 목록(레벨업 UI 포함) -->
       <div v-if="showSkills" class="modal" tabindex="0" ref="skillsModal">
-        <div class="modal-header">Skills</div>
+        <div class="modal-header">Skills (스킬 포인트: {{ skillPoints }})</div>
         <div class="skills-grid">
           <div
             v-for="(skill, idx) in allSkills"
@@ -91,14 +88,16 @@
           >
             <img v-if="skill.acquired" :src="skill.icon" />
             <div class="skill-name">{{ skill.name }}</div>
+            <div class="skill-lv">Lv {{ skillLevel(skill.name) }}</div>
+            <button class="up-btn" :disabled="skillPoints<=0" @click="upgradeSkill(skill.name)">+</button>
           </div>
         </div>
-        <div style="margin-top:8px;color:#ccc">스킬을 Q/W/E/R 단축키에 드래그하여 배치 | 닫기: K</div>
+        <div style="margin-top:8px;color:#ccc">스킬을 Q/W/E/R에 드래그하여 배치 | 닫기: K</div>
       </div>
 
-      <!-- 인벤토리 모달 (드래그 타겟: 아이템 슬롯) -->
+      <!-- 인벤토리 -->
       <div v-if="showInventory" id="inventory" tabindex="0">
-        <h3>Inventory (더블클릭으로 사용)</h3>
+        <h3>Inventory (더블클릭 사용)</h3>
         <div class="inventory-grid">
           <div
             class="inv-item"
@@ -119,7 +118,7 @@
         <div style="margin-top:8px;color:#ccc">닫기: I</div>
       </div>
 
-      <!-- 스탯 모달(레벨/HPMPEXP/골드) -->
+      <!-- 스탯 -->
       <div v-if="showStats" id="stats" tabindex="0">
         <h3>Player Stats</h3>
         <div class="stats-grid">
@@ -127,6 +126,7 @@
           <div><b>HP:</b> {{ playerHP }} / {{ playerMaxHP }}</div>
           <div><b>MP:</b> {{ playerMP }} / {{ playerMaxMP }}</div>
           <div><b>EXP:</b> {{ playerEXP }} / {{ playerNextEXP }}</div>
+          <div><b>Skill Pts:</b> {{ skillPoints }}</div>
           <div><b>Gold:</b> {{ inventory.money }}</div>
         </div>
         <div style="margin-top:8px;color:#ccc">닫기: P</div>
@@ -136,29 +136,26 @@
 </template>
 
 <script>
-// Game.vue
-// - Phaser 게임을 마운트하고, 씬(MainScene)과 Vue 데이터를 주기적으로 동기화합니다.
-// - HUD/모달/단축키 슬롯 UI와 드래그앤드롭, 클릭 실행을 제공합니다.
-
 import Phaser from "phaser";
 import MainScene from "../phaser/scenes/MainScene";
 
 export default {
   data() {
     return {
-      // 플레이어/HUD 상태 (Phaser -> Vue 동기화)
+      // 플레이어/HUD
       playerHP: 100, playerMaxHP: 100,
       playerMP: 50,  playerMaxMP: 50,
       playerEXP: 0,  playerNextEXP: 100, playerLevel: 1,
+      skillPoints: 0,
 
-      // 인벤토리(로컬 미러)
+      // 인벤토리
       inventory: { money: 0, items: [] },
 
-      // 단축키 슬롯 (스킬/아이템)
-      skillSlots: [null, null, null, null], // Q, W, E, R
+      // 슬롯
+      skillSlots: [null, null, null, null], // Q/W/E/R
       itemSlots: [null, null],              // PgUp, PgDn
 
-      // 스킬 목록 (드래그 소스) — 아이콘/이름만 정의, 비용/쿨다운/타입은 씬에서 주입
+      // 스킬 목록(드래그 소스 & 레벨업 타겟)
       allSkills: [
         { name: "Skill 1", icon: "/assets/skill1.png", acquired: true },
         { name: "Skill 2", icon: "/assets/skill2.png", acquired: true },
@@ -170,167 +167,155 @@ export default {
         { name: "Skill 8", icon: "/assets/skill8.png", acquired: true },
       ],
 
-      // 기타 UI 상태
+      // 기타
       textBar: "로딩 중...",
-      scene: null,
-      pollTimer: null,
-      showInventory: false,
-      showStats: false,
-      showSkills: false,
+      scene: null, pollTimer: null,
+      showInventory: false, showStats: false, showSkills: false,
     };
   },
 
   mounted() {
-    // 1) Phaser 게임 인스턴스 생성
+    // Phaser 게임 구동
     const config = {
       type: Phaser.AUTO,
-      width: 900,
-      height: 700,
+      width: 900, height: 700,
       parent: "game-container",
       physics: { default: "arcade", arcade: { gravity: { y: 0 }, debug: false } },
       scene: [MainScene],
     };
     const game = new Phaser.Game(config);
 
-    // 2) 전역 키 (I/P/K)로 모달 토글
     window.addEventListener("keydown", this.onGlobalKeyDown);
 
-    // 3) 씬(MainScene) → Vue 데이터 폴링 동기화
+    // 씬 → Vue 상태 동기화 (100ms)
     this.pollTimer = setInterval(() => {
       const main = game.scene.keys["MainScene"];
-      if (!main || !main.player) return;
-
-      // 레퍼런스 보관
+      if (!main || !main.playerStats) return;
       this.scene = main;
 
-      // 플레이어/HUD 데이터 동기화
-      this.playerHP = Math.round(main.player.hp);
-      this.playerMaxHP = Math.round(main.player.maxHp);
-      this.playerMP = Math.round(main.player.mp);
-      this.playerMaxMP = Math.round(main.player.maxMp);
-      this.playerEXP = Math.round(main.player.exp);
-      this.playerNextEXP = Math.round(main.player.nextExp);
-      this.playerLevel = main.player.level || 1;
+      // 스탯
+      this.playerHP = Math.round(main.playerStats.hp);
+      this.playerMaxHP = Math.round(main.playerStats.maxHp);
+      this.playerMP = Math.round(main.playerStats.mp);
+      this.playerMaxMP = Math.round(main.playerStats.maxMp);
+      this.playerEXP = Math.round(main.playerStats.exp);
+      this.playerNextEXP = Math.round(main.playerStats.nextExp);
+      this.playerLevel = main.playerStats.level || 1;
+      this.skillPoints = main.playerStats.skillPoints || 0;
+
+      // 텍스트바
       this.textBar = main.textBar || "";
 
       // 인벤토리 미러
-      if (main.inventory) {
-        this.inventory.money = main.inventory.money;
-        this.inventory.items = (main.inventory.items || []).map((i) => ({ ...i }));
-      }
+      this.inventory.money = main.inventory.money;
+      this.inventory.items = (main.inventory.items || []).map(i => ({ ...i }));
 
-      // 씬이 가진 실제 슬롯 상태 반영(쿨타임 표시는 씬 시간 기준)
+      // 슬롯 미러 (씬에서 보관 중인 문자열 name 배열)
       if (main.skillSlots) {
-        this.skillSlots = main.skillSlots.map((s) => (s ? { ...s } : null));
+        // Vue 슬롯에는 아이콘/이름 필요 → name으로 allSkills 검색
+        this.skillSlots = main.skillSlots.map(name => {
+          if (!name) return null;
+          const base = this.allSkills.find(s => s.name === name);
+          return base ? { ...base } : { name, icon: "/assets/skill1.png" };
+        });
       }
       if (main.itemShortcutSlots) {
-        this.itemSlots = main.itemShortcutSlots.map((i) => (i ? { ...i } : null));
+        this.itemSlots = main.itemShortcutSlots.map(i => (i ? { ...i } : null));
       }
     }, 100);
   },
 
   beforeUnmount() {
-    if (this.pollTimer) clearInterval(this.pollTimer);
     window.removeEventListener("keydown", this.onGlobalKeyDown);
+    if (this.pollTimer) clearInterval(this.pollTimer);
   },
 
   methods: {
-    // ─────────────────────────────────────────────────────────
-    // 키보드: 모달 토글 (I/P/K)
-    // ─────────────────────────────────────────────────────────
     onGlobalKeyDown(e) {
-      if (e.key === "i" || e.key === "I") {
-        this.showInventory = !this.showInventory;
-        if (this.showInventory) this.$nextTick(() => this.$el.querySelector("#inventory")?.focus());
-      }
-      if (e.key === "p" || e.key === "P") {
-        this.showStats = !this.showStats;
-        if (this.showStats) this.$nextTick(() => this.$el.querySelector("#stats")?.focus());
-      }
-      if (e.key === "k" || e.key === "K") {
-        this.showSkills = !this.showSkills;
-        if (this.showSkills) this.$nextTick(() => this.$refs.skillsModal?.focus());
-      }
+      if (e.key === "i" || e.key === "I") this.toggleInventory();
+      if (e.key === "p" || e.key === "P") this.toggleStats();
+      if (e.key === "k" || e.key === "K") this.toggleSkills();
+    },
+    toggleInventory() {
+      this.showInventory = !this.showInventory;
+      if (this.showInventory) this.$nextTick(() => this.$el.querySelector("#inventory")?.focus());
+    },
+    toggleStats() {
+      this.showStats = !this.showStats;
+      if (this.showStats) this.$nextTick(() => this.$el.querySelector("#stats")?.focus());
+    },
+    toggleSkills() {
+      this.showSkills = !this.showSkills;
+      if (this.showSkills) this.$nextTick(() => this.$refs.skillsModal?.focus());
     },
 
-    // ─────────────────────────────────────────────────────────
-    // 쿨타임 남은 시간 (ms) : 씬의 now와 slot.nextAvailable 비교
-    // ─────────────────────────────────────────────────────────
-    cdLeftMs(slot) {
-      if (!slot || !this.scene || !this.scene.time) return 0;
-      return Math.max(0, (slot.nextAvailable || 0) - this.scene.time.now);
-    },
-
-    // ─────────────────────────────────────────────────────────
-    // 드래그 시작 (인벤토리 → 아이템 슬롯)
-    // ─────────────────────────────────────────────────────────
-    onDragStart(ev, idx) {
-      ev.dataTransfer.setData("text/plain", String(idx));
-    },
-
-    // 드래그 시작 (스킬 목록 → 스킬 슬롯)
+    // 슬롯에 드롭(스킬)
     onSkillDragStart(ev, idx) {
       const skill = this.allSkills[idx];
       if (!skill?.acquired) return ev.preventDefault();
       ev.dataTransfer.setData("skill-idx", String(idx));
     },
-
-    // ─────────────────────────────────────────────────────────
-    // 드롭 (스킬 슬롯)
-    //  - Vue 로컬 갱신 후, 씬.setSkillSlots(...) 호출하여 authoritative 동기화
-    // ─────────────────────────────────────────────────────────
     onDropSkillShortcut(ev, slotIdx) {
       const skillIdx = parseInt(ev.dataTransfer.getData("skill-idx"), 10);
       if (isNaN(skillIdx)) return;
       const skill = this.allSkills[skillIdx];
       if (!skill?.acquired) return;
 
-      // Vue 로컬 업데이트 (이름/아이콘만 보유)
+      // Vue 로컬 갱신
       this.skillSlots.splice(slotIdx, 1, { ...skill });
 
-      // 씬에 전달 → type/cost/cd/nextAvailable 주입
-      if (this.scene?.setSkillSlots) this.scene.setSkillSlots(this.skillSlots);
+      // 씬에 전달(슬롯 배열은 name만 유지)
+      if (this.scene?.setSkillSlots) {
+        const names = this.skillSlots.map(s => (s ? { name: s.name } : null));
+        this.scene.setSkillSlots(names);
+      }
     },
 
-    // ─────────────────────────────────────────────────────────
-    // 드롭 (아이템 슬롯)
-    // ─────────────────────────────────────────────────────────
+    // 슬롯에 드롭(아이템)
+    onDragStart(ev, idx) { ev.dataTransfer.setData("text/plain", String(idx)); },
     onDropItemShortcut(ev, slotIdx) {
       const invIdx = parseInt(ev.dataTransfer.getData("text/plain"), 10);
       const item = this.inventory.items[invIdx];
       if (!item) return;
-
       this.itemSlots.splice(slotIdx, 1, { ...item });
       if (this.scene?.setItemSlots) this.scene.setItemSlots(this.itemSlots);
     },
 
-    // ─────────────────────────────────────────────────────────
-    // 슬롯 클릭 실행
-    // ─────────────────────────────────────────────────────────
-    useSkillFromVue(idx) {
-      if (this.scene?.useSkill) this.scene.useSkill(idx);
+    // 실행
+    useSkillFromVue(idx) { if (this.scene?.useSkill) this.scene.useSkill(idx); },
+    useItemShortcutFromVue(idx) { if (this.scene?.useItemShortcut) this.scene.useItemShortcut(idx); },
+    useItem(idx) { if (this.scene?.useItemFromInventory) this.scene.useItemFromInventory(idx); },
+
+    // 쿨타임 표기 (씬의 스킬 인스턴스 onCooldownUntil 기반)
+    cdLeftMs(skillName) {
+      if (!this.scene || !this.scene.time || !this.scene.skills) return 0;
+      const s = this.scene.skills[skillName];
+      if (!s) return 0;
+      return Math.max(0, s.onCooldownUntil - this.scene.time.now);
     },
-    useItemShortcutFromVue(idx) {
-      if (this.scene?.useItemShortcut) this.scene.useItemShortcut(idx);
+    skillLevel(skillName) {
+      if (!this.scene || !this.scene.skills) return 1;
+      const s = this.scene.skills[skillName];
+      return s?.level || 1;
     },
 
-    // ─────────────────────────────────────────────────────────
-    // 인벤토리 더블클릭 사용(직접 사용)
-    // ─────────────────────────────────────────────────────────
-    useItem(idx) {
-      if (this.scene?.useItemFromInventory) this.scene.useItemFromInventory(idx);
+    // 스킬 레벨업 버튼
+    upgradeSkill(skillName) {
+      if (!this.scene?.upgradeSkillByName) return;
+      const ok = this.scene.upgradeSkillByName(skillName);
+      if (!ok) {
+        // 실패 사유(포인트 없음 등)는 씬에서 textBar로 알려줌
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-/* 레이아웃 */
 #app-wrap { display: flex; gap: 8px; font-family: Arial, sans-serif; }
+#hud { width: 300px; padding: 10px; color: #fff; background: rgba(10,10,10,0.85); }
 #game-container { width: 900px; height: 700px; background: #000; position: relative; }
 
-/* HUD */
-#hud { width: 280px; padding: 10px; color: #fff; background: rgba(10,10,10,0.85); }
 .info-row { display: flex; align-items: center; margin-bottom: 6px; }
 .bar { margin-top: 4px; margin-bottom: 2px; font-weight: bold; }
 .bar-wrap { position: relative; width: 100%; height: 22px; background: #222; border-radius: 4px; overflow: hidden; }
@@ -339,25 +324,27 @@ export default {
 .bar-fill.exp { background: #3c9; }
 .bar-text { position: absolute; width: 100%; text-align: center; line-height: 22px; font-size: 12px; top: 0; left: 0; }
 
-/* 단축키 바 */
-#shortcut { display: flex; flex-direction: column; gap: 8px; background: rgba(136,189,231,0.18); padding: 6px; border-radius: 6px; margin-top: 10px; }
+#shortcut { display: flex; flex-direction: column; gap: 8px; background: rgba(136,189,231,0.12); padding: 6px; border-radius: 6px; margin-top: 8px; }
 .shortcut-slot { width: 100%; height: 56px; background: #111; border-radius: 6px; display: flex; align-items: center; justify-content: center; position: relative; border: 1px dashed rgba(255,255,255,0.08); }
 .shortcut-slot.empty { opacity: 0.6; }
 .slot-item img { width: 36px; height: 36px; }
 .slot-key { position: absolute; right: 6px; bottom: 4px; font-size: 11px; color: #aaa; }
 .slot-count { position: absolute; right: 6px; top: 4px; font-size: 11px; background: rgba(0,0,0,0.6); padding: 2px 4px; border-radius: 4px; color: #fff; }
+.slot-lv { position: absolute; left: 6px; bottom: 4px; font-size: 11px; color: #fff; }
 
-/* 메시지 바 */
 #text-bar { margin-top: 12px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; font-size: 13px; min-height: 36px; }
 
-/* 모달 */
-.modal { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 480px; background: #222; border: 1px solid #444; padding: 12px; color: #fff; z-index: 9999; border-radius: 8px; }
+/* 모달 공통 */
+.modal { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 520px; background: #222; border: 1px solid #444; padding: 12px; color: #fff; z-index: 9999; border-radius: 8px; }
 .modal-header { font-weight: bold; margin-bottom: 6px; }
 .skills-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-.skill-slot { width: 80px; height: 80px; background: #111; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.skill-slot { width: 120px; height: 120px; background: #111; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
 .skill-slot.locked { opacity: 0.3; pointer-events: none; }
 .skill-slot img { width: 48px; height: 48px; }
 .skill-name { font-size: 12px; margin-top: 4px; }
+.skill-lv { font-size: 12px; color: #ddd; margin-top: 2px; }
+.up-btn { position: absolute; right: 6px; top: 6px; width: 22px; height: 22px; background:#2e7; border: none; border-radius: 4px; cursor: pointer; }
+.up-btn:disabled { background: #555; cursor: not-allowed; }
 
 /* 인벤토리/스탯 모달 */
 #inventory, #stats {
