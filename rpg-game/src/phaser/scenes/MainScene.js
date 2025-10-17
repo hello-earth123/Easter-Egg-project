@@ -3,16 +3,26 @@ import { CFG } from "../config/Config.js";
 import { clamp01 } from "../utils/MathUtils.js";
 import { PlayerStats } from "../player/PlayerStats.js";
 import { createDefaultSkills } from "../skills/index.js";
-import { spawnShockwave, spawnLightning, spawnHitFlash } from "../effects/Effects.js";
+import {
+  spawnShockwave,
+  spawnLightning,
+  spawnHitFlash,
+} from "../effects/Effects.js";
 import { resolveDropItem, useItemFromInventory } from "../items/Inventory.js";
 import { spawnMonsters } from "../entities/MonsterFactory.js";
+import { FloatingText } from "../effects/FloatingText.js";
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super({ key: "MainScene" });
 
     this.textBar = "";
-    this.lastArrowTap = { ArrowLeft: 0, ArrowRight: 0, ArrowUp: 0, ArrowDown: 0 };
+    this.lastArrowTap = {
+      ArrowLeft: 0,
+      ArrowRight: 0,
+      ArrowUp: 0,
+      ArrowDown: 0,
+    };
     this.lastDashAt = 0;
   }
 
@@ -40,7 +50,13 @@ export default class MainScene extends Phaser.Scene {
     this.player.facing = new Phaser.Math.Vector2(0, -1);
     this.player.isKnockback = false;
     this.player.knockbackVel = new Phaser.Math.Vector2(0, 0);
-    this.player.dash = { active: false, dir: new Phaser.Math.Vector2(0, 0), start: 0, duration: CFG.dash.durationMs, v0: 0 };
+    this.player.dash = {
+      active: false,
+      dir: new Phaser.Math.Vector2(0, 0),
+      start: 0,
+      duration: CFG.dash.durationMs,
+      v0: 0,
+    };
 
     this.playerStats = new PlayerStats();
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
@@ -52,31 +68,71 @@ export default class MainScene extends Phaser.Scene {
     spawnMonsters(this);
 
     this.physics.add.collider(this.monsters, this.monsters);
-    this.physics.add.overlap(this.bullets, this.monsters, this.onBulletHit, null, this);
-    this.physics.add.overlap(this.player, this.items, this.onPickupItem, null, this);
-    this.physics.add.collider(this.player, this.monsters, this.onPlayerHitByMonster, null, this);
+    this.physics.add.overlap(
+      this.bullets,
+      this.monsters,
+      this.onBulletHit,
+      null,
+      this
+    );
+    this.physics.add.overlap(
+      this.player,
+      this.items,
+      this.onPickupItem,
+      null,
+      this
+    );
+    this.physics.add.collider(
+      this.player,
+      this.monsters,
+      this.onPlayerHitByMonster,
+      null,
+      this
+    );
 
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys("Q,W,E,R");
-    const pageUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PAGE_UP);
-    const pageDown = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN);
+    const pageUp = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.PAGE_UP
+    );
+    const pageDown = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN
+    );
     pageUp.on("down", () => this.useItemShortcut(0));
     pageDown.on("down", () => this.useItemShortcut(1));
     this.input.keyboard.on("keydown", (e) => this.handleArrowDoubleTap(e));
 
     this.time.addEvent({
-      delay: 1000, loop: true,
+      delay: 1000,
+      loop: true,
       callback: () => {
         if (this.playerStats.mp < this.playerStats.maxMp) {
-          this.playerStats.mp = Math.min(this.playerStats.maxMp, this.playerStats.mp + 2);
+          this.playerStats.mp = Math.min(
+            this.playerStats.maxMp,
+            this.playerStats.mp + 2
+          );
         }
       },
     });
 
     this.inventory = { money: 0, items: [] };
     this.inventory.items.push(
-      { id: "potion_hp", name: "HP Potion", icon: "assets/item.png", count: 2, type: "consume", effect: { hp: 50 } },
-      { id: "mana_pot",  name: "MP Potion", icon: "assets/item.png", count: 1, type: "consume", effect: { mp: 30 } }
+      {
+        id: "potion_hp",
+        name: "HP Potion",
+        icon: "assets/item.png",
+        count: 2,
+        type: "consume",
+        effect: { hp: 50 },
+      },
+      {
+        id: "mana_pot",
+        name: "MP Potion",
+        icon: "assets/item.png",
+        count: 1,
+        type: "consume",
+        effect: { mp: 30 },
+      }
     );
 
     this.skills = createDefaultSkills();
@@ -86,17 +142,21 @@ export default class MainScene extends Phaser.Scene {
 
     this.textBar = "게임 시작!";
 
-    this.spawnShockwave = (x, y, radius, dmg) => spawnShockwave(this, x, y, radius, dmg);
-    this.spawnLightning = (x, y, radius, dmg) => spawnLightning(this, x, y, radius, dmg);
+    this.spawnShockwave = (x, y, radius, dmg) =>
+      spawnShockwave(this, x, y, radius, dmg);
+    this.spawnLightning = (x, y, radius, dmg) =>
+      spawnLightning(this, x, y, radius, dmg);
     this.spawnHitFlash = (x, y) => spawnHitFlash(this, x, y);
   }
 
   setSkillSlots(slots) {
-    this.skillSlots = (slots || []).slice(0, 4).map(s => s ? s.name : null);
+    this.skillSlots = (slots || []).slice(0, 4).map((s) => (s ? s.name : null));
   }
 
   setItemSlots(itemSlots) {
-    this.itemShortcutSlots = (itemSlots || []).slice(0, 2).map(i => (i ? { id: i.id, name: i.name, icon: i.icon } : null));
+    this.itemShortcutSlots = (itemSlots || [])
+      .slice(0, 2)
+      .map((i) => (i ? { id: i.id, name: i.name, icon: i.icon } : null));
   }
 
   upgradeSkillByName(skillName) {
@@ -120,7 +180,7 @@ export default class MainScene extends Phaser.Scene {
   useItemShortcut(idx) {
     const slot = this.itemShortcutSlots[idx];
     if (!slot) return (this.textBar = "단축키에 아이템 없음");
-    const invIdx = this.inventory.items.findIndex(i => i.id === slot.id);
+    const invIdx = this.inventory.items.findIndex((i) => i.id === slot.id);
     if (invIdx === -1) return (this.textBar = "인벤토리에 아이템이 없습니다");
     useItemFromInventory(this, invIdx);
   }
@@ -143,10 +203,22 @@ export default class MainScene extends Phaser.Scene {
   handleMovement() {
     if (this.player.isKnockback || this.player.dash.active) return;
     this.player.setVelocity(0);
-    if (this.cursors.left.isDown)  { this.player.setVelocityX(-CFG.moveSpeed); this.player.facing.set(-1, 0); }
-    if (this.cursors.right.isDown) { this.player.setVelocityX( CFG.moveSpeed); this.player.facing.set( 1, 0); }
-    if (this.cursors.up.isDown)    { this.player.setVelocityY(-CFG.moveSpeed); this.player.facing.set( 0,-1); }
-    if (this.cursors.down.isDown)  { this.player.setVelocityY( CFG.moveSpeed); this.player.facing.set( 0, 1); }
+    if (this.cursors.left.isDown) {
+      this.player.setVelocityX(-CFG.moveSpeed);
+      this.player.facing.set(-1, 0);
+    }
+    if (this.cursors.right.isDown) {
+      this.player.setVelocityX(CFG.moveSpeed);
+      this.player.facing.set(1, 0);
+    }
+    if (this.cursors.up.isDown) {
+      this.player.setVelocityY(-CFG.moveSpeed);
+      this.player.facing.set(0, -1);
+    }
+    if (this.cursors.down.isDown) {
+      this.player.setVelocityY(CFG.moveSpeed);
+      this.player.facing.set(0, 1);
+    }
   }
 
   handleArrowDoubleTap(e) {
@@ -160,11 +232,16 @@ export default class MainScene extends Phaser.Scene {
     this.lastArrowTap[code] = now;
 
     if (now - last <= CFG.dash.doubleTapWindowMs) {
-      const dir = (code === "ArrowLeft") ? new Phaser.Math.Vector2(-1, 0)
-                : (code === "ArrowRight")? new Phaser.Math.Vector2( 1, 0)
-                : (code === "ArrowUp")   ? new Phaser.Math.Vector2( 0,-1)
-                : (code === "ArrowDown") ? new Phaser.Math.Vector2( 0, 1)
-                : null;
+      const dir =
+        code === "ArrowLeft"
+          ? new Phaser.Math.Vector2(-1, 0)
+          : code === "ArrowRight"
+          ? new Phaser.Math.Vector2(1, 0)
+          : code === "ArrowUp"
+          ? new Phaser.Math.Vector2(0, -1)
+          : code === "ArrowDown"
+          ? new Phaser.Math.Vector2(0, 1)
+          : null;
       if (!dir) return;
       this.doDash(dir);
       this.lastDashAt = now;
@@ -201,9 +278,24 @@ export default class MainScene extends Phaser.Scene {
     this.player.setVelocity(d.dir.x * speed, d.dir.y * speed);
   }
 
+  showDamageText(target, damage, color = "#fff") {
+    if (!target || !target.x || !target.y) return;
+
+    const txt = new FloatingText(
+      this,
+      target.x,
+      target.y - 20,
+      `-${damage}`,
+      color
+    );
+  }
+
   handlePlayerKnockback() {
     if (!this.player.isKnockback) return;
-    this.player.setVelocity(this.player.knockbackVel.x, this.player.knockbackVel.y);
+    this.player.setVelocity(
+      this.player.knockbackVel.x,
+      this.player.knockbackVel.y
+    );
     this.player.knockbackVel.scale(CFG.playerKB.decay);
     if (this.player.knockbackVel.length() < CFG.playerKB.stopSpeed) {
       this.player.isKnockback = false;
@@ -211,7 +303,7 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  /* 🔧 수정됨: 안전한 총알-몬스터 히트 처리 */
+  // 몬스터 피격시에 호출
   onBulletHit = (bullet, monster) => {
     if (!bullet || !bullet.active || !monster || !monster.active) return;
 
@@ -221,6 +313,15 @@ export default class MainScene extends Phaser.Scene {
     const dmg = bullet.damage || 10;
     monster.hp -= dmg;
     this.spawnHitFlash(monster.x, monster.y);
+
+    // 데미지 텍스트 (크리티컬 판정 로직이 있는 경우에)
+    // if (isCritical) {
+    //   this.showDamageText(monster, damage, "#ffff66"); // 노란색
+    // } else {
+    //   this.showDamageText(monster, damage, "#ffffff");
+    // }
+    this.showDamageText(monster, dmg, "#ffffff");
+    // 몬스터 어그로
     this.onMonsterAggro(monster);
 
     // 스킬 전용 onHit는 예외 방지용 try/catch
@@ -239,7 +340,7 @@ export default class MainScene extends Phaser.Scene {
     if (!itemSprite.pickDef) return;
     const def = itemSprite.pickDef;
 
-    const exist = this.inventory.items.find(i => i.id === def.id);
+    const exist = this.inventory.items.find((i) => i.id === def.id);
     if (exist) exist.count += def.count || 1;
     else this.inventory.items.push({ ...def });
 
@@ -247,22 +348,38 @@ export default class MainScene extends Phaser.Scene {
     this.textBar = `${def.name} 획득`;
   };
 
+  // 유저가 몬스터에게 피격 시 호출
   onPlayerHitByMonster = (player, monster) => {
     if (!player || !monster) return;
+
     if (!player._lastHitAt) player._lastHitAt = 0;
     const now = this.time.now;
     if (now - player._lastHitAt < CFG.playerKB.invulMs) return;
 
     this.playerStats.hp -= monster.atk;
+
+    // 피격 데미지 텍스트 (빨간색)
+    this.showDamageText(player, monster.atk, "#ff3333");
     player._lastHitAt = now;
-
-    const dir = new Phaser.Math.Vector2(player.x - monster.x, player.y - monster.y).normalize();
+    this.textBar = "Tlqkf";
+    const dir = new Phaser.Math.Vector2(
+      player.x - monster.x,
+      player.y - monster.y
+    ).normalize();
     player.isKnockback = true;
-    player.knockbackVel.set(dir.x * CFG.playerKB.power, dir.y * CFG.playerKB.power);
+    player.knockbackVel.set(
+      dir.x * CFG.playerKB.power,
+      dir.y * CFG.playerKB.power
+    );
 
-    this.cameras.main.shake(CFG.playerKB.shake.duration, CFG.playerKB.shake.intensity);
+    this.cameras.main.shake(
+      CFG.playerKB.shake.duration,
+      CFG.playerKB.shake.intensity
+    );
     player.setTint(0xff6666);
-    this.time.delayedCall(CFG.playerKB.invulMs, () => { if (player) player.clearTint(); });
+    this.time.delayedCall(CFG.playerKB.invulMs, () => {
+      if (player) player.clearTint();
+    });
 
     this.textBar = "적에게 피격!";
     if (this.playerStats.hp <= 0) this.onPlayerDeath();
@@ -272,7 +389,8 @@ export default class MainScene extends Phaser.Scene {
     this.textBar = "사망했습니다.";
     this.time.delayedCall(800, () => {
       this.playerStats.hp = this.playerStats.maxHp;
-      this.player.x = 400; this.player.y = 300;
+      this.player.x = 400;
+      this.player.y = 300;
       this.cameras.main.flash(200);
     });
   }
@@ -289,7 +407,9 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  onMonsterAggro(monster) { monster.isAggro = true; }
+  onMonsterAggro(monster) {
+    monster.isAggro = true;
+  }
 
   updateMonsters() {
     this.monsters.children.iterate((m) => {
@@ -299,12 +419,16 @@ export default class MainScene extends Phaser.Scene {
         m.setVelocity(m.knockbackVel.x, m.knockbackVel.y);
         m.knockbackVel.scale(CFG.monsterKB.decay);
         if (m.knockbackVel.length() < CFG.monsterKB.stopSpeed) {
-          m.isKnockback = false; m.setVelocity(0);
+          m.isKnockback = false;
+          m.setVelocity(0);
         }
         return;
       }
 
-      if (m.isFrozen) { m.setVelocity(0); return; }
+      if (m.isFrozen) {
+        m.setVelocity(0);
+        return;
+      }
 
       if (m.isAggro) this.physics.moveToObject(m, this.player, 95);
       else m.setVelocity(0);
@@ -314,12 +438,15 @@ export default class MainScene extends Phaser.Scene {
   updateMonsterHud() {
     this.monsters.children.iterate((m) => {
       if (!m) return;
-      const g = m.hpBar; if (!g) return;
+      const g = m.hpBar;
+      if (!g) return;
       g.clear();
       if (!m.active) return;
 
-      const w = 56, h = 6;
-      const x = m.x - w / 2, y = m.y - 34;
+      const w = 56,
+        h = 6;
+      const x = m.x - w / 2,
+        y = m.y - 34;
       g.fillStyle(0x000000, 0.6).fillRect(x, y, w, h);
       const pct = clamp01(m.hp / m.maxHp);
       g.fillStyle(0xff3333, 1).fillRect(x + 1, y + 1, (w - 2) * pct, h - 2);
@@ -349,7 +476,9 @@ export default class MainScene extends Phaser.Scene {
       m.setTint(0x333333);
       if (m.hpBar) m.hpBar.clear();
       if (m.label) m.label.destroy();
-      this.time.delayedCall(400, () => { if (m && m.destroy) m.destroy(); });
+      this.time.delayedCall(400, () => {
+        if (m && m.destroy) m.destroy();
+      });
     });
   }
 }
