@@ -12,6 +12,8 @@ import { resolveDropItem, useItemFromInventory } from "../items/Inventory.js";
 import { spawnMonsters } from "../entities/MonsterFactory.js";
 import { FloatingText } from "../effects/FloatingText.js";
 
+// export default : 모듈로써 외부 접근을 허용하는 코드
+// Scene : 화면 구성 및 논리 처리 요소
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super({ key: "MainScene" });
@@ -26,6 +28,7 @@ export default class MainScene extends Phaser.Scene {
     this.lastDashAt = 0;
   }
 
+  // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
   preload() {
     this.load.image("map", "assets/map.png");
     this.load.image("player", "assets/player.png");
@@ -37,6 +40,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("lightning", "assets/effect_lightning.png");
   }
 
+  // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
   create() {
     this.physics.world.setBounds(0, 0, CFG.world.width, CFG.world.height);
     this.cameras.main.setBounds(0, 0, CFG.world.width, CFG.world.height);
@@ -185,6 +189,7 @@ export default class MainScene extends Phaser.Scene {
     useItemFromInventory(this, invIdx);
   }
 
+  // update() : 유니티의 update()와 동일 (프레임 단위 호출)
   update() {
     const now = this.time.now;
     this.handlePlayerKnockback();
