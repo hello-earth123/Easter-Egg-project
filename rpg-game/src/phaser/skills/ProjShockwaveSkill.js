@@ -2,12 +2,19 @@ import Phaser from "phaser";
 import { Skill } from "./SkillBase.js";
 
 export class ProjShockwaveSkill extends Skill {
-  getDamage() { return this.scaledDamage(this.base.baseDmg); } // shockwave dmg
-  getManaCost() { return this.scaledCost(this.base.baseCost); }
-  getProjDamage() { return this.scaledDamage(this.base.projDmg || 10); }
+  getDamage() {
+    return this.scaledDamage(this.base.baseDmg);
+  } // shockwave dmg
+  getManaCost() {
+    return this.scaledCost(this.base.baseCost);
+  }
+  getProjDamage() {
+    return this.scaledDamage(this.base.projDmg || 10);
+  }
 
   cast(scene, caster) {
     const dir = caster.facing.clone().normalize();
+
     const b = scene.bullets.create(
       caster.x + dir.x * 20,
       caster.y + dir.y * 20,

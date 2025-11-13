@@ -1,8 +1,10 @@
-import Phaser from "phaser";
+// TODO: Effect 코드와 피격 부분 분할 or 일반 공격(Bullet)에 대한 이펙트 및 피격을 이관 (일관성 유지)
+import Phaser from "phaser"; // 피격을 위한 import
 
 // 이펙트: shockwave / lightning / hit flash
 // 텍스처가 없으면 안전한 대체 그래픽으로 표시
 
+/** Shockwave */
 export function spawnShockwave(scene, x, y, radius, dmg) {
   if (scene.textures.exists("shockwave")) {
     const img = scene.add.image(x, y, "shockwave").setScale(1).setAlpha(0.9);
@@ -14,6 +16,7 @@ export function spawnShockwave(scene, x, y, radius, dmg) {
       onComplete: () => img.destroy(),
     });
   } else {
+    // 대체 그래픽
     const g = scene.add.circle(x, y, 6, 0x88e0ff, 0.9);
     scene.tweens.add({
       targets: g,
@@ -35,9 +38,12 @@ export function spawnShockwave(scene, x, y, radius, dmg) {
       scene.onMonsterAggro(m);
     }
   }
+
+  // 카메라 효과
   scene.cameras.main.shake(120, 0.01);
 }
 
+/** Lightning */
 export function spawnLightning(scene, x, y, radius, dmg) {
   if (scene.textures.exists("lightning")) {
     const img = scene.add.image(x, y, "lightning").setScale(1.1).setAlpha(0.95);
@@ -48,10 +54,22 @@ export function spawnLightning(scene, x, y, radius, dmg) {
       onComplete: () => img.destroy(),
     });
   } else {
+    // 대체 그래픽
     const line = scene.add.rectangle(x, y - 160, 4, 160, 0xeeeeff, 0.9);
     const boom = scene.add.circle(x, y, 8, 0xffffaa, 0.9);
-    scene.tweens.add({ targets: line, y: y, duration: 120, onComplete: () => line.destroy() });
-    scene.tweens.add({ targets: boom, radius: radius, alpha: 0.0, duration: 240, onComplete: () => boom.destroy() });
+    scene.tweens.add({
+      targets: line,
+      y: y,
+      duration: 120,
+      onComplete: () => line.destroy(),
+    });
+    scene.tweens.add({
+      targets: boom,
+      radius: radius,
+      alpha: 0.0,
+      duration: 240,
+      onComplete: () => boom.destroy(),
+    });
   }
 
   // 🔒 안전 판정: Phaser.Math.Distance.Between 사용
@@ -68,6 +86,7 @@ export function spawnLightning(scene, x, y, radius, dmg) {
   scene.cameras.main.shake(140, 0.012);
 }
 
+/** 피격 이펙트 */
 export function spawnHitFlash(scene, x, y) {
   const c = scene.add.circle(x, y, 6, 0xffdd88, 0.9);
   scene.time.delayedCall(130, () => c.destroy());
