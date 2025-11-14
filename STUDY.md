@@ -31,7 +31,8 @@ Vue Component에서 Phaser를 Canvas로 mount해서 동작
 
 Config.js
 
-1. 동일한 몬스터 스폰량 수정 (맵 별 변동 방법 구상)
+1. ~~동일한 몬스터 스폰량 수정 (맵 별 변동 방법 구상)~~
+   > 각 Scene에 등장 몬스터, 개체 수 바인딩
 2. 몬스터 추가
 
 ### /effects/...
@@ -54,6 +55,11 @@ Inventory.js
 
 1. 아이템 ID 일관성 확보
 2. DB와 어떻게 연결할 것인지 고민
+
+- models.py에 item DB 생성
+- models.py에 inventory DB 생성
+- 게임 시작 시, inventory_model을 singleton 객체로 생성
+- 게임 종료 시, 해당 singleton 객체의 정보를 기반으로 DB 저장
 
 ### /player/...
 
@@ -78,7 +84,8 @@ HTML5로 제작된 웹 브라우저용 2D 게임 엔진
 
 ### Phaser.Game
 
-[ 전체 설정 관리 ]
+[ 전체 설정 관리 ]  
+※ Vue를 프론트엔드로 사용하기 때문에 main.js 대신 **src/components/Game.vue**에서 통합 설정을 담당
 
 ```
 - main.js -
