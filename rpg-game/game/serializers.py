@@ -6,17 +6,24 @@ from .models import Item, Monster, Droptable
 #         model = Character
 #         fields = '__all__'
 
+
 class ItemSerializer(serializers.Serializer):
     class Meta:
         model = Item
-        fields = '__all__'
+        fields = "__all__"
 
-class MonsterSerializer(serializers.Serializer):
+
+class MonsterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Monster
-        fields = '__all__'
+        fields = "__all__"
+
+
+class MonsterCallSerializer(serializers.Serializer):
+    names = serializers.ListField(child=serializers.CharField(), allow_empty=True)
+
 
 class DroptableSerializer(serializers.Serializer):
     class Meta:
         model = Droptable
-        fields = '__all__'
+        fields = "__all__"

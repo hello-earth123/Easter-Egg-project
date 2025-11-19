@@ -221,13 +221,14 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      scene: [MainScene, TestScene],
+      scene: [TestScene, MainScene],
     };
     const game = new Phaser.Game(config);
 
     window.addEventListener("keydown", this.onGlobalKeyDown);
 
     // 씬 → Vue 상태 동기화 (100ms)
+    // TODO: 확인 필요
     this.pollTimer = setInterval(() => {
       const main = game.scene.keys["MainScene"];
       if (!main || !main.playerStats) return;

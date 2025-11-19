@@ -28,10 +28,13 @@ export default class MainScene extends Phaser.Scene {
     };
     this.lastDashAt = 0;
 
-    this.monsterData = [
-      ["slime", 1],
-      ["orc", 5],
-    ];
+    this.monsterData = {
+      slime: 1,
+      orc: 10
+    };
+
+    this.minLevel = 1;
+    this.maxLevel = 5;
   }
 
   // TODO: preload, create의 중첩되는 요소에 대한 singleton 처리
@@ -39,9 +42,9 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     this.load.image("map", "assets/map.png");
     this.load.image("player", "assets/player.png");
-    this.load.image("monster", "assets/monster.png");
+    this.load.image("monster", "/static/assets/monster.png");
     this.load.image("bullet", "assets/bullet.png");
-    this.load.image("item", "assets/item.png");
+    this.load.image("item", "/static/assets/item.png");
 
     this.load.image("shockwave", "assets/effect_shockwave.png");
     this.load.image("lightning", "assets/effect_lightning.png");
@@ -308,12 +311,12 @@ export default class MainScene extends Phaser.Scene {
         code === "ArrowLeft"
           ? new Phaser.Math.Vector2(-1, 0)
           : code === "ArrowRight"
-          ? new Phaser.Math.Vector2(1, 0)
-          : code === "ArrowUp"
-          ? new Phaser.Math.Vector2(0, -1)
-          : code === "ArrowDown"
-          ? new Phaser.Math.Vector2(0, 1)
-          : null;
+            ? new Phaser.Math.Vector2(1, 0)
+            : code === "ArrowUp"
+              ? new Phaser.Math.Vector2(0, -1)
+              : code === "ArrowDown"
+                ? new Phaser.Math.Vector2(0, 1)
+                : null;
       if (!dir) return;
       this.doDash(dir);
       this.lastDashAt = now;
