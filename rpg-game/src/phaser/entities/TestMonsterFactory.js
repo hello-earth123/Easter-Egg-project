@@ -4,7 +4,7 @@ import { CFG } from "../config/Config.js";
 /** 몬스터 레벨 별 수치 변동 */
 export function makeMonsterStats(def, scene) {
   const level = Phaser.Math.Between(scene.minLevel, scene.maxLevel);
-  const maxHp = Math.floor(def.baseHp * Math.pow(level, def.growthHP));
+  const maxHp = Math.floor(def.baseHP * Math.pow(level, def.growthHP));
   const atk = Math.floor(def.baseAtk * Math.pow(level, def.growthAtk));
   const expRw = Math.floor(def.baseExp * Math.pow(level, def.growthExp));
   return { level, maxHp, atk, expReward: expRw };
@@ -23,17 +23,16 @@ export function spawnMonsters(scene) {
     .then(res => res.json())
     .then(data => {
       data.forEach((def) => {
-        console.log('tlqkf');
-
+        console.log(def)
         for (let i = 0; i < scene.monsterData[def.name]; i++) {
           // scene에 몬스터 추가
           const m = scene.monsters.create(
             Phaser.Math.Between(200, CFG.world.width - 200),
             Phaser.Math.Between(200, CFG.world.height - 200),
-            "monster"
+            def.name
           );
+          m.setDisplaySize(64, 64);
 
-          // TODO: sprite 연결
           const stats = makeMonsterStats(def, scene);
           Object.assign(m, {
             name: def.name,
@@ -58,6 +57,8 @@ export function spawnMonsters(scene) {
           m.setCollideWorldBounds(true);
           // collider box type > circle
           m.body.setCircle(Math.max(m.width, m.height) / 2);
+
+          console.log(m)
         }
       });
     })

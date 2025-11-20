@@ -14,7 +14,7 @@ import { FloatingText } from "../effects/FloatingText.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
-export default class MainScene extends Phaser.Scene {
+export default class TestScene extends Phaser.Scene {
   // constructor() : 클래스 생성자 함수로 Scene 객체 생성
   constructor() {
     super({ key: "TestScene" });
@@ -42,7 +42,10 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     this.load.image("map", "assets/map.png");
     this.load.image("player", "assets/player.png");
-    this.load.image("monster", "/static/assets/monster.png");
+    for (const key of Object.keys(this.monsterData)) {
+      // assets 경로는 key에 맞게 문자열 생성
+      this.load.image(key, `/static/assets/${key}.png`);
+    }
     this.load.image("bullet", "assets/bullet.png");
     this.load.image("item", "/static/assets/item.png");
 
@@ -95,6 +98,8 @@ export default class MainScene extends Phaser.Scene {
 
     spawnMonsters(this);
 
+    console.log(1)
+
     // 충돌 이벤트 정의
     this.physics.add.collider(this.monsters, this.monsters);
     this.physics.add.collider(
@@ -120,6 +125,8 @@ export default class MainScene extends Phaser.Scene {
       this
     );
 
+    console.log(2)
+
     // 방향키에 대한 객체 생성
     this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -131,6 +138,8 @@ export default class MainScene extends Phaser.Scene {
     const pageDown = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN
     );
+
+    console.log(3)
 
     // 각 키에 함수 연결
     pageUp.on("down", () => this.useItemShortcut(0));
@@ -151,6 +160,8 @@ export default class MainScene extends Phaser.Scene {
         }
       },
     });
+
+    console.log(4)
 
     // 인벤토리 구현
     this.inventory = { money: 0, items: [] };
@@ -178,6 +189,8 @@ export default class MainScene extends Phaser.Scene {
     this.skillSlots = [null, null, null, null];
     this.itemShortcutSlots = [null, null];
 
+    console.log(5)
+
     // 시스템 메세지 창
     this.textBar = "게임 시작!";
 
@@ -187,6 +200,8 @@ export default class MainScene extends Phaser.Scene {
     this.spawnLightning = (x, y, radius, dmg) =>
       spawnLightning(this, x, y, radius, dmg);
     this.spawnHitFlash = (x, y) => spawnHitFlash(this, x, y);
+
+    console.log(6)
   }
 
   /** skillSlots에 최대 4개의 스킬 이름을 추가 */
