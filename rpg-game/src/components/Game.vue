@@ -162,6 +162,7 @@
 import Phaser from "phaser";
 import MainScene from "../phaser/scenes/MainScene";
 import TestScene from "../phaser/scenes/TestScene";
+import TestScene2 from "../phaser/scenes/TestScene2";
 
 export default {
   data() {
@@ -221,7 +222,7 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      scene: [TestScene, MainScene],
+      scene: [TestScene2, TestScene, MainScene,],
     };
     const game = new Phaser.Game(config);
 

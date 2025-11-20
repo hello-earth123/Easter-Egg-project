@@ -56,6 +56,13 @@ export default class TestScene extends Phaser.Scene {
   // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
   // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
   create() {
+    this.anims.create({
+      key: "lightning-burst",
+      frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
+      frameRate: 18,
+      repeat: 0
+    });
+
     // 맵 크기 설정 (물리적 공간 범위 설정)
     this.physics.world.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
@@ -606,10 +613,13 @@ export default class TestScene extends Phaser.Scene {
 
       this.playerStats.addExp(m.expReward);
 
+      console.log(m, m.dropTable);
+
       // 드랍 테이블 확인
       (m.dropTable || []).forEach((drop) => {
+        console.log('1')
         // 드랍 확률에 의거하여 아이템 드랍
-        if (Phaser.Math.Between(0, 100) < drop.chance) {
+        if (Phaser.Math.Between(0, 100) < drop.chance * 100) {
           if (drop.id === "gold_coin") {
             this.inventory.money += Phaser.Math.Between(5, 20);
           } else {
@@ -623,6 +633,8 @@ export default class TestScene extends Phaser.Scene {
       m.setTint(0x333333);
       if (m.hpBar) m.hpBar.clear();
       if (m.label) m.label.destroy();
+      // 죽는 애니메이션 추가 및 해당 애니메이션 종료 시점에 drop 함수 호출이 가능한지 확인
+      // m.destroy();
       this.time.delayedCall(400, () => {
         if (m && m.destroy) m.destroy();
       });
