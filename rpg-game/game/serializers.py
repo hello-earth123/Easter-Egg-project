@@ -7,13 +7,21 @@ from .models import Item, Monster, Droptable
 #         fields = '__all__'
 
 
-class ItemSerializer(serializers.Serializer):
+class DroptableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Droptable
+        fields = "__all__"
+
+
+class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = "__all__"
 
 
 class MonsterSerializer(serializers.ModelSerializer):
+    drop = DroptableSerializer(many=True, read_only=True)
+
     class Meta:
         model = Monster
         fields = "__all__"
@@ -21,9 +29,3 @@ class MonsterSerializer(serializers.ModelSerializer):
 
 class MonsterCallSerializer(serializers.Serializer):
     names = serializers.ListField(child=serializers.CharField(), allow_empty=True)
-
-
-class DroptableSerializer(serializers.Serializer):
-    class Meta:
-        model = Droptable
-        fields = "__all__"

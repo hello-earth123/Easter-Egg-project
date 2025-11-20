@@ -230,9 +230,9 @@ export default {
     // 씬 → Vue 상태 동기화 (100ms)
     // TODO: 확인 필요
     this.pollTimer = setInterval(() => {
-      const activeScene = Object.values(game.scene.keys).find(scene => scene.scene.isActive());
-      this.scene = activeScene;
-      // const main = game.scene.keys["MainScene"];
+      const main = Object.values(game.scene.keys).find(scene => scene.scene.isActive());
+      this.scene = main;
+      // const main = game.scene.keys["TestScene"];
       // if (!main || !main.playerStats) return;
       // this.scene = main;
 

@@ -41,7 +41,7 @@ export function spawnMonsters(scene) {
             hp: stats.maxHp,
             atk: stats.atk,
             expReward: stats.expReward,
-            dropTable: CFG.monsters[0].dropTable,
+            dropTable: def.drop,
             isAggro: false,
             isFrozen: false,
             isKnockback: false,
