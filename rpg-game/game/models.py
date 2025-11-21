@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 # from django.db.models import JSONField
 
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -20,16 +21,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 #     def __str__(self):
 #         return self.nickname
 
-class Item(models.Model):
-    ITEM_TYPES = [
-        ('consume', 'Consume'),
-        ('misc', 'Misc'),
-    ]
 
+class Item(models.Model):
     name = models.CharField(primary_key=True)
-    itemType = models.CharField(max_length=20, choices=ITEM_TYPES, default='misc')
-    hpEffect = models.IntegerField(default=0)
-    mpEffect = models.IntegerField(default=0)
+    effect = models.FloatField(default=0)
 
 
 class Monster(models.Model):
@@ -45,7 +40,9 @@ class Monster(models.Model):
 
 class Droptable(models.Model):
     itemName = models.ForeignKey(Item, on_delete=models.CASCADE)
-    monsterName = models.ForeignKey(Monster, on_delete=models.CASCADE, related_name='drop')
+    monsterName = models.ForeignKey(
+        Monster, on_delete=models.CASCADE, related_name="drop"
+    )
     # 드랍 확률 : 0 ~ 1
     chance = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]

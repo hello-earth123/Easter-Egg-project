@@ -22,7 +22,6 @@ export default class TestScene2 extends Phaser.Scene {
         this.textBar = "";
         this.lastArrowTap = {
             ArrowLeft: 0,
-            ArrowRight: 0,
             ArrowUp: 0,
             ArrowDown: 0,
         };
@@ -30,11 +29,11 @@ export default class TestScene2 extends Phaser.Scene {
 
         this.monsterData = {
             dragonling: 1,
-            orc: 1
+            orc: 10
         };
 
         this.minLevel = 1;
-        this.maxLevel = 2;
+        this.maxLevel = 1;
 
         this.count = 0;
     }
@@ -43,16 +42,41 @@ export default class TestScene2 extends Phaser.Scene {
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
         this.load.image("map", "assets/map.png");
-        this.load.image("player", "assets/player.png");
+        this.load.image("player", "/static/assets/player.png");
+        this.load.image("bullet", "assets/bullet.png");
+        this.load.image("item", "/static/assets/item.png");
+        this.load.image("shockwave", "assets/effect_shockwave.png");
+
+
         for (const key of Object.keys(this.monsterData)) {
             // assets 경로는 key에 맞게 문자열 생성
             this.load.image(key, `/static/assets/${key}.png`);
         }
-        this.load.image("bullet", "assets/bullet.png");
-        this.load.image("item", "/static/assets/item.png");
-
-        this.load.image("shockwave", "assets/effect_shockwave.png");
         this.load.spritesheet("lightning", "/static/assets/electronic.png", {
+            frameWidth: 64,
+            frameHeight: 64,
+        });
+        this.load.spritesheet("waterwave", "/static/assets/waterwave.png", {
+            frameWidth: 64,
+            frameHeight: 64,
+        });
+        this.load.spritesheet("explosion", "/static/assets/explosion.png", {
+            frameWidth: 64,
+            frameHeight: 64,
+        });
+        this.load.spritesheet("fireflame", "/static/assets/fireflame.png", {
+            frameWidth: 64,
+            frameHeight: 64,
+        });
+        this.load.spritesheet("holycross", "/static/assets/holycross.png", {
+            frameWidth: 64,
+            frameHeight: 64,
+        });
+        this.load.spritesheet("voidsheid", "/static/assets/voidsheild.png", {
+            frameWidth: 64,
+            frameHeight: 64,
+        });
+        this.load.spritesheet("wind", "/static/assets/wind.png", {
             frameWidth: 64,
             frameHeight: 64,
         });
@@ -67,6 +91,43 @@ export default class TestScene2 extends Phaser.Scene {
             frameRate: 18,
             repeat: 0
         });
+        this.anims.create({
+            key: "water-wave",
+            frames: this.anims.generateFrameNumbers("waterwave", { start: 0, end: 5 }),
+            frameRate: 18,
+            repeat: 1
+        });
+        this.anims.create({
+            key: "explosion-bomb",
+            frames: this.anims.generateFrameNumbers("explosion", { start: 0, end: 5 }),
+            frameRate: 18,
+            repeat: 1
+        });
+        this.anims.create({
+            key: "fire-shot",
+            frames: this.anims.generateFrameNumbers("fireflame", { start: 0, end: 5 }),
+            frameRate: 18,
+            repeat: 1
+        });
+        this.anims.create({
+            key: "holy-cross",
+            frames: this.anims.generateFrameNumbers("holycross", { start: 0, end: 5 }),
+            frameRate: 18,
+            repeat: 1
+        });
+        this.anims.create({
+            key: "void-sheild",
+            frames: this.anims.generateFrameNumbers("voidsheild", { start: 0, end: 5 }),
+            frameRate: 18,
+            repeat: 1
+        });
+        this.anims.create({
+            key: "wind-blow",
+            frames: this.anims.generateFrameNumbers("wind", { start: 0, end: 5 }),
+            frameRate: 18,
+            repeat: 1
+        });
+
 
         // 맵 크기 설정 (물리적 공간 범위 설정)
         this.physics.world.setBounds(0, 0, CFG.world.width, CFG.world.height);
@@ -241,6 +302,7 @@ export default class TestScene2 extends Phaser.Scene {
 
         // 시스템 메세지 출력
         this.textBar = `${skillName} 스킬 레벨업! (Lv${skill.level})`;
+        console.log(skill.level)
 
         return true;
     }
@@ -291,7 +353,7 @@ export default class TestScene2 extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(this.keys.E)) this.useSkill(2);
         if (Phaser.Input.Keyboard.JustDown(this.keys.R)) this.useSkill(3);
 
-        if (this.count >= 2) {
+        if (this.count >= 12) {
             this.scene.start('TestScene');
         }
     }
