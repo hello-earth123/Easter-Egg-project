@@ -24,12 +24,12 @@ export default class TestScene2 extends Phaser.Scene {
             ArrowLeft: 0,
             ArrowUp: 0,
             ArrowDown: 0,
-        };
+        }; 
         this.lastDashAt = 0;
 
         this.monsterData = {
-            slime: 1,
-            lich: 10
+            rabbit: 20,
+            squirrel: 20
         };
 
         this.minLevel = 1;
