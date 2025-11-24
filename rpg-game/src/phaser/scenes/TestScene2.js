@@ -28,8 +28,8 @@ export default class TestScene2 extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            dragonling: 1,
-            orc: 10
+            slime: 1,
+            lich: 10
         };
 
         this.minLevel = 1;
