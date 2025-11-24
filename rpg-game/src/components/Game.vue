@@ -161,6 +161,8 @@
 <script>
 import Phaser from "phaser";
 import MainScene from "../phaser/scenes/MainScene";
+import TestScene from "../phaser/scenes/TestScene";
+import TestScene2 from "../phaser/scenes/TestScene2";
 
 export default {
   data() {
@@ -220,17 +222,20 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      scene: [MainScene],
+      scene: [TestScene2, TestScene, MainScene,],
     };
     const game = new Phaser.Game(config);
 
     window.addEventListener("keydown", this.onGlobalKeyDown);
 
     // 씬 → Vue 상태 동기화 (100ms)
+    // TODO: 확인 필요
     this.pollTimer = setInterval(() => {
-      const main = game.scene.keys["MainScene"];
-      if (!main || !main.playerStats) return;
+      const main = Object.values(game.scene.keys).find(scene => scene.scene.isActive());
       this.scene = main;
+      // const main = game.scene.keys["TestScene"];
+      // if (!main || !main.playerStats) return;
+      // this.scene = main;
 
       // 스탯
       this.playerHP = Math.round(main.playerStats.hp);
