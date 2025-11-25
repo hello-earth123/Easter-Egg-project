@@ -21,6 +21,7 @@ export default class TestScene2 extends Phaser.Scene {
 
         this.textBar = "";
         this.lastArrowTap = {
+            ArrowRight: 0,
             ArrowLeft: 0,
             ArrowUp: 0,
             ArrowDown: 0,
@@ -28,8 +29,8 @@ export default class TestScene2 extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            slime: 1,
-            lich: 10
+            hidden: 10,
+            rabbit: 1
         };
 
         this.minLevel = 1;
