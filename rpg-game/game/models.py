@@ -68,6 +68,7 @@ class player(models.Model):
     staffManaReduce = models.FloatField(default=0)
     staffDefense = models.FloatField(default=0)
     staffLuk = models.FloatField(default=0)
+    point = models.IntegerField(default=0)
 
     lowGemCount = models.IntegerField(default=0)
     midGemCount = models.IntegerField(default=0)
