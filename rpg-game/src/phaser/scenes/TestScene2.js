@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { CFG } from "../config/Config.js";
 import { clamp01 } from "../utils/MathUtils.js";
-import { PlayerStats } from "../player/PlayerStats.js";
+import { initPlayer } from "../player/PlayerStats.js";
 import { createDefaultSkills } from "../skills/index.js";
 import {
     spawnShockwave,
@@ -164,7 +164,9 @@ export default class TestScene2 extends Phaser.Scene {
             v0: 0,
         };
 
-        this.playerStats = new PlayerStats();
+        initPlayer(2).then(player => {
+            this.playerStats = player;
+        })
 
         // 카메라가 Player(gameObject)를 추적하도록 설정
         this.cameras.main.startFollow(this.player, true, 0.12, 0.12);

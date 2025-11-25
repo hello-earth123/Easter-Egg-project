@@ -4,8 +4,9 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 
-from .models import Monster, Droptable
-from .serializers import MonsterSerializer, MonsterCallSerializer, DroptableSerializer
+from django.contrib.auth import get_user_model
+from .models import Monster, player
+from .serializers import MonsterSerializer, MonsterCallSerializer, PlayerSerializer
 
 # class CharacterViewSet(viewsets.ModelViewSet):
 #     queryset = Character.objects.all()
@@ -25,5 +26,19 @@ def emptyMonster(request):
 
     # 몬스터 검색 및 전송을 위한 직렬화
     serializer = MonsterSerializer(monsters, many=True)
+
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+def playerConnect(request, userId):
+    # 이후 정상적인 로그인 작성 시 사용
+    # user = request.user
+
+    User = get_user_model()
+    user = User.objects.get(pk=userId)
+    account = player.objects.get(user=user)
+
+    serializer = PlayerSerializer(account)
 
     return Response(serializer.data)
