@@ -1,7 +1,13 @@
 import { calcNextExp } from "../config/Config.js";
 
+let playerInstance = null;
+
 export class PlayerStats {
   constructor(data) {
+    if (playerInstance) {
+      return playerInstance;
+    }
+
     this.level = data.level || 1;
     this.exp = data.exp || 0;
     this.nextExp = calcNextExp(this.level);
@@ -23,6 +29,8 @@ export class PlayerStats {
 
     // tmp
     this.skillPoints = 0;
+
+    playerInstance = this;
   }
 
   addExp(amount) {
@@ -53,10 +61,13 @@ async function fetchPlayerData(userId) {
 }
 
 export async function initPlayer(userId) {
+  if (playerInstance) {
+    return playerInstance;
+  }
+
   try {
     const data = await fetchPlayerData(userId);
-    const player = new PlayerStats(data);
-    return player;
+    return new PlayerStats(data);
   } catch (err) {
     console.error(err);
     return null;

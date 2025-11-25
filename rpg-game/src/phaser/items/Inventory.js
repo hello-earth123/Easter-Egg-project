@@ -1,7 +1,9 @@
+// 전체 item DB 가져온 뒤, 싱글톤으로 따로 가지고 다니다가 습득 시 해당 아이템에 맞춰 가져옴
+
 /** Item ID에 맞춰 Item 정보 반환 - TODO */
 export function resolveDropItem(drop) {
   // TODO: 포션 id 일관성 수정
-  if (drop.id === "potion_hp")
+  if (drop.itemName === "hpPotion")
     return {
       id: "potion_hp",
       name: "HP Potion",
@@ -10,7 +12,7 @@ export function resolveDropItem(drop) {
       type: "consume",
       effect: { hp: 30 },
     };
-  if (drop.id === "mana_pot")
+  if (drop.itemName === "mpPotion")
     return {
       id: "mana_pot",
       name: "MP Potion",
@@ -19,7 +21,7 @@ export function resolveDropItem(drop) {
       type: "consume",
       effect: { mp: 20 },
     };
-  if (drop.id === "elixir")
+  if (drop.itemName === "lowGem")
     return {
       id: "elixir",
       name: "Elixir",
@@ -28,7 +30,15 @@ export function resolveDropItem(drop) {
       type: "consume",
       effect: { hp: 50, mp: 30 },
     };
-  if (drop.id === "rare_gem")
+  if (drop.itemName === "midGem")
+    return {
+      id: "rare_gem",
+      name: "Rare Gem",
+      icon: "assets/item.png",
+      count: 1,
+      type: "misc",
+    };
+  if (drop.itemName === "highGem")
     return {
       id: "rare_gem",
       name: "Rare Gem",

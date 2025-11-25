@@ -40,6 +40,10 @@ export default class TestScene2 extends Phaser.Scene {
 
         // 캐릭터 방향 true: right
         this.current = false;
+
+        // load scene 없이 동작시키기 위함
+        this.isPlayerLoad;
+        this.playerStats;
     }
 
     // TODO: preload, create의 중첩되는 요소에 대한 singleton 처리
@@ -164,9 +168,13 @@ export default class TestScene2 extends Phaser.Scene {
             v0: 0,
         };
 
-        initPlayer(2).then(player => {
+        this.isPlayerLoad = false;
+        initPlayer(1).then(player => {
             this.playerStats = player;
+            this.isPlayerLoad = true;
+            console.log(this.playerStats)
         })
+        console.log(this.playerStats, this.isPlayerLoad)
 
         // 카메라가 Player(gameObject)를 추적하도록 설정
         this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
@@ -176,8 +184,6 @@ export default class TestScene2 extends Phaser.Scene {
         this.items = this.physics.add.group();
 
         spawnMonsters(this);
-
-        console.log(1)
 
         // 충돌 이벤트 정의
         this.physics.add.collider(this.monsters, this.monsters);
@@ -204,8 +210,6 @@ export default class TestScene2 extends Phaser.Scene {
             this
         );
 
-        console.log(2)
-
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -217,8 +221,6 @@ export default class TestScene2 extends Phaser.Scene {
         const pageDown = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN
         );
-
-        console.log(3)
 
         // 각 키에 함수 연결
         pageUp.on("down", () => this.useItemShortcut(0));
@@ -239,8 +241,6 @@ export default class TestScene2 extends Phaser.Scene {
                 }
             },
         });
-
-        console.log(4)
 
         // 인벤토리 구현
         this.inventory = { money: 0, items: [] };
@@ -268,8 +268,6 @@ export default class TestScene2 extends Phaser.Scene {
         this.skillSlots = [null, null, null, null];
         this.itemShortcutSlots = [null, null];
 
-        console.log(5)
-
         // 시스템 메세지 창
         this.textBar = "게임 시작!";
 
@@ -279,8 +277,6 @@ export default class TestScene2 extends Phaser.Scene {
         this.spawnLightning = (x, y, radius, dmg) =>
             spawnLightning(this, x, y, radius, dmg);
         this.spawnHitFlash = (x, y) => spawnHitFlash(this, x, y);
-
-        console.log(6)
     }
 
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
@@ -341,6 +337,8 @@ export default class TestScene2 extends Phaser.Scene {
 
     // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
     update() {
+        if (!this.isPlayerLoad) return;
+
         const now = this.time.now;
 
         // TODO: 넉백 확인 >> 피격 함수로 이전
@@ -698,19 +696,12 @@ export default class TestScene2 extends Phaser.Scene {
 
             this.playerStats.addExp(m.expReward);
 
-            console.log(m, m.dropTable);
-
             // 드랍 테이블 확인
             (m.dropTable || []).forEach((drop) => {
-                console.log('1')
                 // 드랍 확률에 의거하여 아이템 드랍
                 if (Phaser.Math.Between(0, 100) < drop.chance * 100) {
-                    if (drop.id === "gold_coin") {
-                        this.inventory.money += Phaser.Math.Between(5, 20);
-                    } else {
-                        const it = this.items.create(m.x, m.y, "item");
-                        it.pickDef = resolveDropItem(drop);
-                    }
+                    const it = this.items.create(m.x, m.y, "item");
+                    it.pickDef = resolveDropItem(drop);
                 }
             });
 
