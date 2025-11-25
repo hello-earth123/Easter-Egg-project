@@ -2,7 +2,7 @@ import { calcNextExp } from "../config/Config.js";
 
 export class PlayerStats {
   constructor() {
-    this.level = 1;
+    this.level = 50;
     this.exp = 0;
     this.nextExp = calcNextExp(this.level);
     this.maxHp = 120; this.hp = 120;

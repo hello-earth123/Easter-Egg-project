@@ -2,6 +2,7 @@
   "name": "rpg-game",
   "version": "0.0.1",
   "dependencies": {
+    "chart.js": "^4.5.1",
     "phaser": "^3.90.0",
     "vue": "^3.5.22"
   },

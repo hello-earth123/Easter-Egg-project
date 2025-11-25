@@ -16,3 +16,7 @@
 extra
 1. 상점
 2. 아이템 착용
+
+npm install
+npm install chart.js
+npm run dev
