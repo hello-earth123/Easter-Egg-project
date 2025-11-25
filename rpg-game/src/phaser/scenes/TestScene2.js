@@ -21,15 +21,16 @@ export default class TestScene2 extends Phaser.Scene {
 
         this.textBar = "";
         this.lastArrowTap = {
+            ArrowRight: 0,
             ArrowLeft: 0,
             ArrowUp: 0,
             ArrowDown: 0,
-        }; 
+        };
         this.lastDashAt = 0;
 
         this.monsterData = {
-            rabbit: 20,
-            squirrel: 20
+            hidden: 10,
+            rabbit: 1
         };
 
         this.minLevel = 1;

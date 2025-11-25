@@ -8,9 +8,9 @@ export const CFG = {
 
   // 대쉬 설정
   dash: {
-    doubleTapWindowMs: 250, // 0.25초 내 추가 입력
+    doubleTapWindowMs: 200, // 0.2초 내 추가 입력
     cooldownMs: 1500, // 쿨타임 1.5초
-    distance: 280,
+    distance: 250,
     durationMs: 220,
     cameraFlash: { duration: 80, r: 120, g: 120, b: 255 },
   },
