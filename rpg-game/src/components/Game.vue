@@ -35,7 +35,7 @@
 
       <div class="info-row" style="margin-top: 6px">
         <!-- HUD에서도 계산된 스킬 포인트 사용 -->
-        <div>Skill Pts: {{ availableSkillPoints }}</div>
+        <div>Skill Pts: {{ animSkillPoints }}</div>
         <div style="margin-left: auto; font-size: 12px; color: #ccc">
           I:Inventory / P:Stats / K:Skills
         </div>
@@ -92,7 +92,7 @@
         <div class="modal-header">
           Skill Tree
           <span style="margin-left: 8px; font-size: 12px; color: #ddd;">
-            (사용 가능 포인트: {{ availableSkillPoints }} / 총 {{ totalSkillPoints }})
+            (사용 가능 포인트: {{ animSkillPoints }} / 총 {{ totalSkillPoints }})
           </span>
         </div>
 
@@ -125,6 +125,12 @@
                 • 스킬 포인트는 2레벨마다 1개씩 획득됩니다.<br />
                 • 분기 스킬은 한쪽을 레벨업하면 다른 한쪽은 영구 잠금됩니다.
               </div>
+              <div class="detail-sp-info">
+                사용 가능 스킬 포인트: <b>{{ animSkillPoints }}</b>
+              </div>
+              <button class="detail-reset-btn" @click="resetAllSkills">
+                스킬 초기화
+              </button>
             </div>
             <div class="detail-empty" v-else>
               스킬을 선택하면<br />여기에 정보가 표시됩니다.
@@ -309,6 +315,8 @@ export default {
       // 슬롯들
       skillSlots: [null, null, null, null],
       itemSlots: [null, null],
+      animSkillPoints: 0,
+
 
       // (기존) 스킬 목록 - QWER용 (fallback)
       allSkills: [
@@ -591,6 +599,13 @@ export default {
         });
       }
     },
+    availableSkillPoints(newVal, oldVal) {
+      // 스킬 초기화 애니메이션이 아닌,
+      // 일반적인 증가라면 즉시 따라가도록 설정
+      if (newVal > oldVal) {
+        this.animSkillPoints = newVal;
+      }
+    },
     // 무기 스탯이 바뀔 때마다 차트 자동 업데이트
     weaponStats: {
       deep: true,
@@ -761,6 +776,9 @@ export default {
         [node.id]: this.skillLevelOf(node.id) + 1,
       };
 
+      // 🔥 UI에 즉시 반영 (사용 가능한 스킬 포인트 감소)
+      this.animSkillPoints = this.availableSkillPoints;
+
       // 레벨업 후에도 라인 강조 등 반영 위해 다시 그림
       this.$nextTick(() => {
         this.drawSkillLines();
@@ -780,6 +798,60 @@ export default {
         "is-maxed": lv >= node.maxLevel,
         "is-selected": this.selectedSkillId === node.id,
       };
+    },
+
+    resetAllSkills() {
+      // 모든 스킬 레벨 0으로
+      const resetState = {};
+      for (let key in this.skillState) resetState[key] = 0;
+      this.skillState = resetState;
+
+      // 모든 분기 선택 초기화
+      this.branchChosen = {
+        branch15: null,
+        branch20: null,
+        branch35: null,
+      };
+
+      // 선택된 스킬 해제
+      this.selectedSkillId = null;
+
+      // QWER 슬롯도 스킬 없도록 초기화 (선택 사항)
+      this.skillSlots = [null, null, null, null];
+
+      if (this.scene?.setSkillSlots) {
+        this.scene.setSkillSlots([null, null, null, null]);
+      }
+
+      this.$nextTick(() => {
+        this.drawSkillLines();
+      });
+      /* ===========================
+      🔥 스킬 포인트 환산 애니메이션
+      =========================== */
+
+      const start = 0;
+      const end = this.availableSkillPoints; // 계산된 실제 값
+      const duration = 600; // 0.6초
+      const startTime = performance.now();
+
+      const animate = (now) => {
+        const progress = Math.min((now - startTime) / duration, 1);
+        // easeOutCubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        this.animSkillPoints = Math.floor(start + (end - start) * eased);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          this.animSkillPoints = end; // 정확히 맞춰줌
+        }
+      };
+
+      // 애니메이션 시작
+      this.animSkillPoints = 0;
+      requestAnimationFrame(animate);
     },
 
     nodePositionStyle(node) {
@@ -805,12 +877,13 @@ export default {
       if (!tree || !svg) return;
 
       const treeRect = tree.getBoundingClientRect();
-      const width = treeRect.width;
-      const height = treeRect.height;
+      const inner = this.$refs.skillTree;
+      const scrollWidth = inner.scrollWidth;
+      const scrollHeight = inner.scrollHeight;
 
-      svg.setAttribute("width", width);
-      svg.setAttribute("height", height);
-      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.setAttribute("width", scrollWidth);
+      svg.setAttribute("height", scrollHeight);
+      svg.setAttribute("viewBox", `0 0 ${scrollWidth} ${scrollHeight}`);
 
       while (svg.firstChild) svg.removeChild(svg.firstChild);
 
@@ -821,7 +894,7 @@ export default {
           `.skill-node[data-skill-id="${node.id}"] .skill-slot`
         );
         if (!childSlot) return;
-
+        
         const childRect = childSlot.getBoundingClientRect();
         const childX = childRect.left - treeRect.left + childRect.width / 2;
         const childY = childRect.top - treeRect.top + childRect.height / 2;
@@ -844,21 +917,38 @@ export default {
           line.setAttribute("y1", py);
           line.setAttribute("x2", childX);
           line.setAttribute("y2", childY);
-
+          
+          
           // 상태에 따라 색상/굵기 조금 달리 줄 수도 있음
           const parentLearned = this.skillLevelOf(pid) > 0;
           const childLearned = this.skillLevelOf(node.id) > 0;
 
-          if (parentLearned || childLearned) {
-            line.setAttribute("stroke", "#4caf50");
-            line.setAttribute("stroke-width", "2");
-          } else {
-            line.setAttribute("stroke", "#777");
-            line.setAttribute("stroke-width", node.branchGroup ? "1.8" : "1.4");
-          }
+          // 잠김 여부 계산
+          const childLocked = this.isLockedByBranch(node);
+          const parentLocked = this.isLockedByBranch(
+          this.skillNodes.find(n => n.id === pid)
+          );
 
-          line.setAttribute("stroke-linecap", "round");
-          svg.appendChild(line);
+          // 1) 기본 회색
+          let color = "#777";
+          let width = 1.4;
+
+          // 2) 잠긴 경우(분기 미선택 노드)
+          if (parentLocked || childLocked) {
+            color = "#333";
+            width = 1.2;
+          }
+          // 3) 그 외: 부모/자식 중 하나라도 배웠다면 초록
+          else if (parentLearned || childLearned) {
+            color = "#4caf50";
+            width = 2;
+          }
+        line.setAttribute("stroke", color);
+        line.setAttribute("stroke-width", width);
+        line.setAttribute("stroke-linecap", "round");
+
+        // ★ 반드시 필요
+        svg.appendChild(line);
         });
       });
     },
@@ -1293,6 +1383,13 @@ export default {
   line-height: 1.4;
 }
 
+.detail-sp-info {
+  margin-bottom: 8px;
+  margin-top: -4px;
+  font-size: 13px;
+  color: #ffd86b;
+}
+
 /* 우측 트리 영역 */
 .skill-tree-wrapper {
   flex: 1;
@@ -1365,6 +1462,27 @@ export default {
   margin-top: 4px;
   font-size: 11px;
   color: #ccc;
+}
+
+.detail-reset-btn {
+  margin-top: 10px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #c33;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+
+.detail-reset-btn:hover {
+  background: #e44;
+}
+
+.detail-reset-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
 }
 
 /* 상태에 따른 스타일 */
