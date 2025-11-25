@@ -3,4 +3,5 @@ from . import views
 
 urlpatterns = [
     path("monsters/", views.emptyMonster),
+    path("player/<int:userId>/", views.playerConnect),
 ]

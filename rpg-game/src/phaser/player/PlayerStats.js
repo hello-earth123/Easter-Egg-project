@@ -1,12 +1,27 @@
 import { calcNextExp } from "../config/Config.js";
 
 export class PlayerStats {
-  constructor() {
-    this.level = 50;
-    this.exp = 0;
+  constructor(data) {
+    this.level = data.level || 1;
+    this.exp = data.exp || 0;
     this.nextExp = calcNextExp(this.level);
-    this.maxHp = 120; this.hp = 120;
-    this.maxMp = 60;  this.mp = 60;
+
+    this.maxHp = data.maxHP || 120; this.hp = data.currentHP || 120;
+    this.maxMp = data.maxMP || 60; this.mp = data.currentMP || 60;
+
+    this.staffDamage = data.staffDamage || 0;
+    this.staffCoolReduce = data.staffCoolReduce || 0;
+    this.staffManaReduce = data.staffManaReduce || 0;
+    this.staffDefense = data.staffDefense || 0;
+    this.staffLuk = data.staffLuk || 0;
+    this.point = data.point || 0;
+
+    this.lowGemCount = data.lowGemCount || 0;
+    this.midGemCount = data.midGemCount || 0;
+    this.highGemCount = data.highGemCount || 0;
+    this.superGemCount = data.superGemCount || 0;
+
+    // tmp
     this.skillPoints = 0;
   }
 
@@ -27,5 +42,23 @@ export class PlayerStats {
     this.hp = this.maxHp;
     this.mp = this.maxMp;
     this.skillPoints += 1;
+    this.point += 1;
+  }
+}
+
+async function fetchPlayerData(userId) {
+  const res = await fetch(`http://127.0.0.1:8000/api/player/${userId}/`);
+  if (!res.ok) throw new Error("Failed to fetch player data");
+  return await res.json();
+}
+
+export async function initPlayer(userId) {
+  try {
+    const data = await fetchPlayerData(userId);
+    const player = new PlayerStats(data);
+    return player;
+  } catch (err) {
+    console.error(err);
+    return null;
   }
 }

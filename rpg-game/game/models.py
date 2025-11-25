@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 
 # from django.db.models import JSONField
 
@@ -47,3 +47,30 @@ class Droptable(models.Model):
     chance = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
     )
+
+
+class player(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="player"
+    )
+    name = models.CharField(max_length=15)
+
+    level = models.IntegerField(default=1)
+    exp = models.FloatField(default=0)
+
+    maxHP = models.IntegerField(default=10)
+    currentHP = models.IntegerField(default=10)
+    maxMP = models.IntegerField(default=10)
+    currentMP = models.IntegerField(default=10)
+
+    staffDamage = models.FloatField(default=0)
+    staffCoolReduce = models.FloatField(default=0)
+    staffManaReduce = models.FloatField(default=0)
+    staffDefense = models.FloatField(default=0)
+    staffLuk = models.FloatField(default=0)
+    point = models.IntegerField(default=0)
+
+    lowGemCount = models.IntegerField(default=0)
+    midGemCount = models.IntegerField(default=0)
+    highGemCount = models.IntegerField(default=0)
+    superGemCount = models.IntegerField(default=0)

@@ -23,7 +23,6 @@ export function spawnMonsters(scene) {
     .then(res => res.json())
     .then(data => {
       data.forEach((def) => {
-        console.log(def)
         for (let i = 0; i < scene.monsterData[def.name]; i++) {
           // scene에 몬스터 추가
           const m = scene.monsters.create(

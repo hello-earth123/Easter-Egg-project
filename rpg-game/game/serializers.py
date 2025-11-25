@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item, Monster, Droptable
+from .models import Item, Monster, Droptable, player
 
 # class CharacterSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -29,3 +29,9 @@ class MonsterSerializer(serializers.ModelSerializer):
 
 class MonsterCallSerializer(serializers.Serializer):
     names = serializers.ListField(child=serializers.CharField(), allow_empty=True)
+
+
+class PlayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = player
+        fields = "__all__"
