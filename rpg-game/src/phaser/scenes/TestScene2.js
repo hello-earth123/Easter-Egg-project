@@ -36,6 +36,9 @@ export default class TestScene2 extends Phaser.Scene {
         this.maxLevel = 1;
 
         this.count = 0;
+
+        // 캐릭터 방향 true: right
+        this.current = false;
     }
 
     // TODO: preload, create의 중첩되는 요소에 대한 singleton 처리
@@ -368,10 +371,18 @@ export default class TestScene2 extends Phaser.Scene {
 
         // 방향키에 맞춰 속도 및 바라보는 방향 설정
         if (this.cursors.left.isDown) {
+            if (this.current) {
+                this.current = false;
+                this.player.flipX = false;
+            }
             this.player.setVelocityX(-CFG.moveSpeed);
             this.player.facing.set(-1, 0);
         }
         if (this.cursors.right.isDown) {
+            if (!this.current) {
+                this.current = true;
+                this.player.flipX = true;
+            }
             this.player.setVelocityX(CFG.moveSpeed);
             this.player.facing.set(1, 0);
         }
