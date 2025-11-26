@@ -273,6 +273,7 @@ import Phaser from "phaser";
 import MainScene from "../phaser/scenes/MainScene";
 import TestScene from "../phaser/scenes/TestScene";
 import TestScene2 from "../phaser/scenes/TestScene2";
+import TestScene3 from "../phaser/scenes/TestScene3";
 
 /* Chart.js Radar import */
 import {
@@ -535,7 +536,7 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      scene: [TestScene2, TestScene, MainScene],
+      scene: [TestScene2, TestScene3, MainScene],
     };
     const game = new Phaser.Game(config);
 

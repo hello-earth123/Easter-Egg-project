@@ -16,10 +16,10 @@ import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
-export default class TestScene2 extends Phaser.Scene {
+export default class TestScene3 extends Phaser.Scene {
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
-        super({ key: "TestScene2" });
+        super({ key: "TestScene3" });
 
         this.textBar = "";
         this.lastArrowTap = {
@@ -31,7 +31,7 @@ export default class TestScene2 extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
+            hidden: 10,
             rabbit: 1
         };
 
@@ -366,8 +366,8 @@ export default class TestScene2 extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(this.keys.E)) this.useSkill(2);
         if (Phaser.Input.Keyboard.JustDown(this.keys.R)) this.useSkill(3);
 
-        if (this.count >= 3) {
-            this.scene.start('TestScene3');
+        if (this.count >= 12) {
+            this.scene.start('TestScene');
         }
     }
 
