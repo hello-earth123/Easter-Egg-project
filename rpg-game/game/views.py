@@ -54,4 +54,6 @@ def eachItem(request, name):
     item = Item.objects.get(name=name)
     serializer = ItemSerializer(item)
 
+    print(serializer.data)
+
     return Response(serializer.data)

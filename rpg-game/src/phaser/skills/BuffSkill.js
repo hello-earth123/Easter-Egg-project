@@ -9,7 +9,7 @@ export class BuffSkill extends FireSkillBase {
     console.log(scene.playerStats, this.base.hpUp, this.base.mpUp)
 
     scene.playerStats.maxHp = Math.min(scene.playerStats.maxHp, scene.playerStats.hp + this.base.hpUp);
-    scene.playerStats.mp = Math.min(scene.playerStats.maxMp, scene.playerStats.mp + this.base.mpUp);
+    scene.playerStats.maxMp = Math.min(scene.playerStats.maxMp, scene.playerStats.mp + this.base.mpUp);
 
     scene.textBar = `Buff (Lv${this.level})`;
   }
