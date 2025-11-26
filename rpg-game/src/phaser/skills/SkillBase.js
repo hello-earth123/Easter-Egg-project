@@ -4,7 +4,7 @@ export class SkillBase {
         this.name = name;            // fireball, flameA 등
         this.base = baseConfig;      // CFG.fireball 같은 설정
         this.level = 1;
-
+        this.isHoldSkill = false;
         this.onCooldownUntil = 0;
     }
 

@@ -32,7 +32,8 @@ export default class TestScene2 extends Phaser.Scene {
 
         this.monsterData = {
             bat: 10,
-            rabbit: 1
+            rabbit: 1,
+            hidden: 10,
         };
 
         this.minLevel = 1;
@@ -325,6 +326,11 @@ export default class TestScene2 extends Phaser.Scene {
         if (!name) return;
         const skill = this.skills[name];
         if (!skill) return;
+        
+        // 🔥 키다운 스킬 시전 시 즉시 정지
+        if (skill.isHoldSkill) {
+            this.player.setVelocity(0,0);
+        }
 
         skill.tryCast(this, this.player);
     }
@@ -366,6 +372,37 @@ export default class TestScene2 extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(this.keys.W)) this.useSkill(1);
         if (Phaser.Input.Keyboard.JustDown(this.keys.E)) this.useSkill(2);
         if (Phaser.Input.Keyboard.JustDown(this.keys.R)) this.useSkill(3);
+        
+        //---------------------------------------------------------------
+        // 🔥 Hold(키다운) 스킬 처리 — incendiary 전용
+        //---------------------------------------------------------------
+        const slotKeys = ["Q","W","E","R"];
+
+        for (let i = 0; i < 4; i++) {
+        const key = slotKeys[i];
+        const phaserKey = this.keys[key];
+        const skillName = this.skillSlots[i];
+        if (!skillName) continue;
+
+        const skill = this.skills[skillName];
+        if (!skill) continue;
+
+        // 이 스킬이 키다운 스킬인지 확인
+        if (!skill.isHoldSkill) continue;
+
+        // 🔥 키를 누르고 있는 동안 지속 발사
+        if (phaserKey.isDown) {
+            if (!skill.active) {
+            skill.tryCast(this, this.player);
+            }
+        }
+
+        // 🔥 키에서 손 떼면 종료
+        if (Phaser.Input.Keyboard.JustUp(phaserKey)) {
+            if (skill.stop) skill.stop();
+        }
+        }
+
 
         if (this.count >= 3) {
             this.scene.start('TestScene3');
@@ -374,6 +411,13 @@ export default class TestScene2 extends Phaser.Scene {
 
     /** 플레이어 이동 처리 */
     handleMovement() {
+
+        if (this.activeHoldSkill) {
+            // 🔥 키다운 스킬 사용하는 동안 완전 이동 정지
+            this.player.setVelocity(0, 0);
+            return;
+        }
+
         // 넉백, 대쉬 중에 입력 무시
         if (this.player.isKnockback || this.player.dash.active) return;
 
@@ -565,6 +609,13 @@ export default class TestScene2 extends Phaser.Scene {
     /** 플레이어 피격 - TODO */
     onPlayerHitByMonster = (player, monster) => {
         if (!player || !monster) return;
+
+        // 🔥 키다운 스킬(incendiary) 사용 중이면 즉시 끊기
+        if (this.activeHoldSkill) {
+        const s = this.skills[this.activeHoldSkill];
+        if (s && s.stop) s.stop();
+        this.activeHoldSkill = null;
+        }
 
         // TODO: 존재 이유 확인
         if (!player._lastHitAt) player._lastHitAt = 0; // ?? 0일 때 0으로 초기화를 진행
@@ -833,44 +884,89 @@ export default class TestScene2 extends Phaser.Scene {
     }
   }
 
-  /**
-   * 원뿔(콘) 형태 광역 데미지 – Incendiary 전용
-   * originX, originY 기준으로 dir 방향, radius, angleRad 각도 안에 있는 몬스터에게 피해
-   */
-  damageCone({ originX, originY, dir, radius, angleRad, dmg }) {
+    /**
+     * 🔥 방향 직사각형 데미지 (Incendiary 전용)
+     * originX, originY = 시작점
+     * dir = 방향벡터
+     * width = 스프라이트 폭(px)
+     * height = 스프라이트 높이(px)
+     * length = 전방 거리(px)
+     */
+    damageRectangle({ originX, originY, dir, width, height, length, dmg }) {
     if (!this.monsters) return;
 
     const nx = dir.x;
     const ny = dir.y;
-    const halfA = angleRad * 0.5;
 
     this.monsters.children.iterate((monster) => {
-      if (!monster || !monster.active) return;
+        if (!monster || !monster.active) return;
 
-      const vx = monster.x - originX;
-      const vy = monster.y - originY;
-      const dist2 = vx * vx + vy * vy;
-      if (dist2 > radius * radius) return;
+        const vx = monster.x - originX;
+        const vy = monster.y - originY;
 
-      const len = Math.sqrt(dist2);
-      if (len === 0) return;
+        // ① 전방 투영 길이
+        const t = vx * nx + vy * ny;
+        if (t < 0 || t > length) return;
 
-      // 몬스터 방향 벡터와 dir 벡터 사이의 각
-      const dot = (vx * nx + vy * ny) / len; // = cos(theta)
-      if (dot <= 0) return; // 뒤쪽은 무시
+        // ② 중심선에서의 좌우 거리
+        const px = nx * t;
+        const py = ny * t;
+        const lx = vx - px;
+        const ly = vy - py;
 
-      const theta = Math.acos(Math.max(-1, Math.min(1, dot)));
-      if (theta > halfA) return;
+        // 폭(width)의 절반을 기준으로 hitbox 체크
+        const halfW = width * 1;
+        if ((lx * lx + ly * ly) > (halfW * halfW)) return;
 
-      monster.hp -= dmg;
-      if (this.spawnHitFlash) {
+        // 데미지 적용
+        monster.hp -= dmg;
+        if (this.spawnHitFlash) {
         this.spawnHitFlash(monster.x, monster.y);
-      }
-      if (typeof this.onMonsterAggro === "function") {
+        }
         this.onMonsterAggro(monster);
-      }
     });
-  }
+    }
+
+//   /**
+//    * 원뿔(콘) 형태 광역 데미지 – Incendiary 전용
+//    * originX, originY 기준으로 dir 방향, radius, angleRad 각도 안에 있는 몬스터에게 피해
+//    */
+//   damageCone({ originX, originY, dir, radius, angleRad, dmg }) {
+//     if (!this.monsters) return;
+
+//     const nx = dir.x;
+//     const ny = dir.y;
+//     const halfA = angleRad * 0.5;
+
+//     this.monsters.children.iterate((monster) => {
+//       if (!monster || !monster.active) return;
+
+//       const vx = monster.x - originX;
+//       const vy = monster.y - originY;
+//       const dist2 = vx * vx + vy * vy;
+//       if (dist2 > radius * radius) return;
+
+//       const len = Math.sqrt(dist2);
+//       if (len === 0) return;
+
+//       // 몬스터 방향 벡터와 dir 벡터 사이의 각
+//       const dot = (vx * nx + vy * ny) / len; // = cos(theta)
+//       if (dot <= 0) return; // 뒤쪽은 무시
+
+//       const theta = Math.acos(Math.max(-1, Math.min(1, dot)));
+//       if (theta > halfA) return;
+
+//       monster.hp -= dmg;
+//       if (this.spawnHitFlash) {
+//         this.spawnHitFlash(monster.x, monster.y);
+//       }
+//       if (typeof this.onMonsterAggro === "function") {
+//         this.onMonsterAggro(monster);
+//       }
+//     });
+//   }
+    
+
 
 }
 
