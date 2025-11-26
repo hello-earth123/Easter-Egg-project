@@ -44,43 +44,127 @@ export const CFG = {
   },
 
   // 스킬 별 설정
-  skillBase: {
-    projectile: { speed: 550, baseDmg: 30, baseCost: 10, cd: 800 },
-    cone: {
-      count: 5,
-      spreadDeg: 50,
-      speed: 420,
-      baseDmg: 18,
-      baseCost: 12,
-      cd: 1800,
-    },
-    weak: { speed: 380, baseDmg: 12, baseCost: 6, cd: 700 },
-    shockwave: { radius: 140, baseDmg: 35, baseCost: 16, cd: 3000 },
-    projWave: { radius: 140, baseDmg: 28, baseCost: 10, cd: 1200, projDmg: 15 },
-    lightning: { radius: 120, baseDmg: 60, baseCost: 20, cd: 4000, range: 220 },
-    dot: {
-      projSpeed: 400,
-      hitDmg: 10,
-      tickDmg: 5,
-      duration: 3000,
-      interval: 1000,
-      baseCost: 14,
-      cd: 2500,
-    },
-    freeze: {
-      projSpeed: 400,
-      hitDmg: 8,
-      freezeMs: 2000,
-      baseCost: 14,
-      cd: 2500,
-    },
-    knockback: {
-      projSpeed: 450,
-      hitDmg: 15,
-      kbPower: 420,
-      baseCost: 12,
-      cd: 1400,
-    },
+  // ============================
+  // 🔥 Fire 스킬 전용 설정들
+  // ============================
+  fireball: {
+    baseDmg: 40,
+    dmgScale: 0.15,
+    baseCost: 12,
+    costScale: 0.1,
+    speed: 500,
+    cd: 1200,
+    frameRate: 14,
+  },
+  
+  buff: {
+    baseDmg: 0,
+    dmgScale: 0,
+    baseCost: 20,
+    costScale: 0,
+    cd: 5000,
+    duration: 8000,
+    frameRate: 12,
+  },
+
+  flameA: {
+    baseDmg: 18,
+    dmgScale: 0.15,
+    baseCost: 10,
+    costScale: 0.1,
+    cd: 900,
+    frameRate: 10,
+  },
+
+  flameB: {
+    baseDmg: 22,
+    dmgScale: 0.15,
+    baseCost: 12,
+    costScale: 0.1,
+    cd: 1200,
+    frameRate: 12,
+  },
+
+  flameC: {
+    baseDmg: 30,
+    dmgScale: 0.2,
+    baseCost: 16,
+    costScale: 0.12,
+    cd: 1600,
+    frameRate: 12,
+  },
+
+  firebomb: {
+    baseDmg: 45,
+    dmgScale: 0.20,
+    baseCost: 20,
+    costScale: 0.12,
+    cd: 2000,
+    radius: 80,
+    frameRate: 12,
+  },
+
+  incendiary: {
+    baseDmg: 25,
+    dmgScale: 0.15,
+    baseCost: 14,
+    costScale: 0.1,
+    tickDmg: 6,
+    duration: 2400,
+    cd: 2200,
+    frameRate: 10,
+  },
+
+  meteor_S: {
+    baseDmg: 70,
+    dmgScale: 0.20,
+    baseCost: 22,
+    costScale: 0.1,
+    cd: 3000,
+    fallSpeed: 700,
+    frameRate: 10,
+  },
+
+  meteor_M: {
+    baseDmg: 120,
+    dmgScale: 0.22,
+    baseCost: 28,
+    costScale: 0.12,
+    cd: 4200,
+    fallSpeed: 600,
+    frameRate: 10,
+  },
+
+  meteor_L: {
+    baseDmg: 200,
+    dmgScale: 0.25,
+    baseCost: 35,
+    costScale: 0.15,
+    cd: 6000,
+    fallSpeed: 520,
+    frameRate: 12,
+  },
+
+  napalm: {
+    baseDmg: 65,
+    dmgScale: 0.18,
+    baseCost: 30,
+    costScale: 0.12,
+    duration: 3000,
+    tickDmg: 12,
+    interval: 600,
+    cd: 4200,
+    frameRate: 10,
+  },
+
+  deathhand: {
+    baseDmg: 300,
+    dmgScale: 0.30,
+    baseCost: 50,
+    costScale: 0.2,
+    radius: 120,
+    cd: 8000,
+    frameRate: 14,
   },
 
   // 몬스터 별 설정 - TODO: 동일한 몬스터 스폰량 수정

@@ -11,6 +11,8 @@ import {
 import { resolveDropItem, useItemFromInventory } from "../items/Inventory.js";
 import { spawnMonsters } from "../entities/TestMonsterFactory.js";
 import { FloatingText } from "../effects/FloatingText.js";
+import { preloadFireSkillAssets } from "../preload/preloadFireSkills.js";
+import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
@@ -40,97 +42,100 @@ export default class TestScene2 extends Phaser.Scene {
 
         // 캐릭터 방향 true: right
         this.current = false;
+
+        this.playerStats;
     }
 
     // TODO: preload, create의 중첩되는 요소에 대한 singleton 처리
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
-        this.load.image("map", "assets/map.png");
+        this.load.image("map", "/static/assets/map.png");
         this.load.image("player", "/static/assets/player.png");
-        this.load.image("bullet", "assets/bullet.png");
+        this.load.image("bullet", "/static/assets/bullet.png");
         this.load.image("item", "/static/assets/item.png");
-        this.load.image("shockwave", "assets/effect_shockwave.png");
+        this.load.image("shockwave", "/static/assets/effect_shockwave.png");
 
 
         for (const key of Object.keys(this.monsterData)) {
             // assets 경로는 key에 맞게 문자열 생성
             this.load.image(key, `/static/assets/${key}.png`);
         }
-        this.load.spritesheet("lightning", "/static/assets/electronic.png", {
-            frameWidth: 64,
-            frameHeight: 64,
-        });
-        this.load.spritesheet("waterwave", "/static/assets/waterwave.png", {
-            frameWidth: 64,
-            frameHeight: 64,
-        });
-        this.load.spritesheet("explosion", "/static/assets/explosion.png", {
-            frameWidth: 64,
-            frameHeight: 64,
-        });
-        this.load.spritesheet("fireflame", "/static/assets/fireflame.png", {
-            frameWidth: 64,
-            frameHeight: 64,
-        });
-        this.load.spritesheet("holycross", "/static/assets/holycross.png", {
-            frameWidth: 64,
-            frameHeight: 64,
-        });
-        this.load.spritesheet("voidsheid", "/static/assets/voidsheild.png", {
-            frameWidth: 64,
-            frameHeight: 64,
-        });
-        this.load.spritesheet("wind", "/static/assets/wind.png", {
-            frameWidth: 64,
-            frameHeight: 64,
-        });
+        // this.load.spritesheet("lightning", "/static/assets/electronic.png", {
+        //     frameWidth: 64,
+        //     frameHeight: 64,
+        // });
+        // this.load.spritesheet("waterwave", "/static/assets/waterwave.png", {
+        //     frameWidth: 64,
+        //     frameHeight: 64,
+        // });
+        // this.load.spritesheet("explosion", "/static/assets/explosion.png", {
+        //     frameWidth: 64,
+        //     frameHeight: 64,
+        // });
+        // this.load.spritesheet("fireflame", "/static/assets/fireflame.png", {
+        //     frameWidth: 64,
+        //     frameHeight: 64,
+        // });
+        // this.load.spritesheet("holycross", "/static/assets/holycross.png", {
+        //     frameWidth: 64,
+        //     frameHeight: 64,
+        // });
+        // this.load.spritesheet("voidsheild", "/static/assets/voidsheild.png", {
+        //     frameWidth: 64,
+        //     frameHeight: 64,
+        // });
+        // this.load.spritesheet("wind", "/static/assets/wind.png", {
+        //     frameWidth: 64,
+        //     frameHeight: 64,
+        // });
+        preloadFireSkillAssets(this);
     }
 
     // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
-        this.anims.create({
-            key: "lightning-burst",
-            frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
-            frameRate: 18,
-            repeat: 0
-        });
-        this.anims.create({
-            key: "water-wave",
-            frames: this.anims.generateFrameNumbers("waterwave", { start: 0, end: 5 }),
-            frameRate: 18,
-            repeat: 1
-        });
-        this.anims.create({
-            key: "explosion-bomb",
-            frames: this.anims.generateFrameNumbers("explosion", { start: 0, end: 5 }),
-            frameRate: 18,
-            repeat: 1
-        });
-        this.anims.create({
-            key: "fire-shot",
-            frames: this.anims.generateFrameNumbers("fireflame", { start: 0, end: 5 }),
-            frameRate: 18,
-            repeat: 1
-        });
-        this.anims.create({
-            key: "holy-cross",
-            frames: this.anims.generateFrameNumbers("holycross", { start: 0, end: 5 }),
-            frameRate: 18,
-            repeat: 1
-        });
-        this.anims.create({
-            key: "void-sheild",
-            frames: this.anims.generateFrameNumbers("voidsheild", { start: 0, end: 5 }),
-            frameRate: 18,
-            repeat: 1
-        });
-        this.anims.create({
-            key: "wind-blow",
-            frames: this.anims.generateFrameNumbers("wind", { start: 0, end: 5 }),
-            frameRate: 18,
-            repeat: 1
-        });
+        // this.anims.create({
+        //     key: "lightning-burst",
+        //     frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
+        //     frameRate: 18,
+        //     repeat: 0
+        // });
+        // this.anims.create({
+        //     key: "water-wave",
+        //     frames: this.anims.generateFrameNumbers("waterwave", { start: 0, end: 5 }),
+        //     frameRate: 18,
+        //     repeat: 1
+        // });
+        // this.anims.create({
+        //     key: "explosion-bomb",
+        //     frames: this.anims.generateFrameNumbers("explosion", { start: 0, end: 5 }),
+        //     frameRate: 18,
+        //     repeat: 1
+        // });
+        // this.anims.create({
+        //     key: "fire-shot",
+        //     frames: this.anims.generateFrameNumbers("fireflame", { start: 0, end: 5 }),
+        //     frameRate: 18,
+        //     repeat: 1
+        // });
+        // this.anims.create({
+        //     key: "holy-cross",
+        //     frames: this.anims.generateFrameNumbers("holycross", { start: 0, end: 5 }),
+        //     frameRate: 18,
+        //     repeat: 1
+        // });
+        // this.anims.create({
+        //     key: "void-sheild",
+        //     frames: this.anims.generateFrameNumbers("voidsheild", { start: 0, end: 5 }),
+        //     frameRate: 18,
+        //     repeat: 1
+        // });
+        // this.anims.create({
+        //     key: "wind-blow",
+        //     frames: this.anims.generateFrameNumbers("wind", { start: 0, end: 5 }),
+        //     frameRate: 18,
+        //     repeat: 1
+        // });
 
 
         // 맵 크기 설정 (물리적 공간 범위 설정)
@@ -166,7 +171,9 @@ export default class TestScene2 extends Phaser.Scene {
 
         initPlayer(2).then(player => {
             this.playerStats = player;
+            console.log(this.playerStats)
         })
+        console.log(this.playerStats, '1')
 
         // 카메라가 Player(gameObject)를 추적하도록 설정
         this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
@@ -281,6 +288,7 @@ export default class TestScene2 extends Phaser.Scene {
         this.spawnHitFlash = (x, y) => spawnHitFlash(this, x, y);
 
         console.log(6)
+        createFireSkillAnims(this);
     }
 
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
@@ -338,9 +346,11 @@ export default class TestScene2 extends Phaser.Scene {
 
         useItemFromInventory(this, invIdx);
     }
-
+    
     // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
     update() {
+        if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
+
         const now = this.time.now;
 
         // TODO: 넉백 확인 >> 피격 함수로 이전
@@ -726,4 +736,40 @@ export default class TestScene2 extends Phaser.Scene {
             // });
         });
     }
+        applyDotArea({ x, y, radius, dmg, duration, tick, sourceSkill }) {
+        if (!this.time || !this.monsters) return;
+
+        const ticks = Math.floor(duration / tick);
+
+        for (let i = 0; i < ticks; i++) {
+            this.time.addEvent({
+                delay: tick * i,
+                callback: () => {
+                    this.monsters.children.each((m) => {
+                        if (!m.active) return;
+
+                        const dist = Phaser.Math.Distance.Between(x, y, m.x, m.y);
+                        if (dist <= radius) {
+                            m.applyDamage(dmg, sourceSkill);
+                        }
+                    });
+                }
+            });
+        }
+    }
+    
+    damageArea({ x, y, radius, dmg, sourceSkill }) {
+        if (!this.monsters) return;
+
+        this.monsters.children.each((m) => {
+            if (!m.active) return;
+
+            const dist = Phaser.Math.Distance.Between(x, y, m.x, m.y);
+            if (dist <= radius) {
+                m.applyDamage(dmg, sourceSkill);
+            }
+        });
+    }
 }
+
+

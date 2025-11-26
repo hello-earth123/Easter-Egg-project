@@ -52,13 +52,13 @@
           @click="useSkillFromVue(idx)"
           :class="{ empty: !s }"
         >
-          <div v-if="s" class="slot-item">
-            <img :src="s.icon" :alt="s.name" />
-            <div class="slot-cd" v-if="cdLeftMs(s.name) > 0">
-              {{ Math.ceil(cdLeftMs(s.name) / 1000) }}s
+            <div v-if="s" class="slot-item">
+              <img :src="s.icon" :alt="s.name" />
+              <div class="slot-cd" v-if="cdLeftMs(s.phaserKey) > 0">
+                {{ Math.ceil(cdLeftMs(s.phaserKey) / 1000) }}s
+              </div>
+              <div class="slot-lv">Lv {{ skillLevel(s.phaserKey) }}</div>
             </div>
-            <div class="slot-lv">Lv {{ skillLevel(s.name) }}</div>
-          </div>
           <div class="slot-key">{{ ["Q", "W", "E", "R"][idx] }}</div>
         </div>
       </div>
@@ -358,7 +358,7 @@ export default {
       skillNodes: [
         {
           id: "skill1",
-          name: "Skill 1",
+          name: "fireball",
           levelReq: 1,
           maxLevel: 10,
           branchGroup: null,
@@ -368,7 +368,7 @@ export default {
         },
         {
           id: "skill2",
-          name: "Skill 2",
+          name: "buff",
           levelReq: 5,
           maxLevel: 5,
           branchGroup: null,
@@ -378,7 +378,7 @@ export default {
         },
         {
           id: "skill3",
-          name: "Skill 3",
+          name: "flameA",
           levelReq: 10,
           maxLevel: 5,
           branchGroup: null,
@@ -388,7 +388,7 @@ export default {
         },
         {
           id: "skill4a",
-          name: "Skill 4A",
+          name: "flameB",
           levelReq: 15,
           maxLevel: 5,
           branchGroup: "branch15",
@@ -398,7 +398,7 @@ export default {
         },
         {
           id: "skill4b",
-          name: "Skill 4B",
+          name: "firebomb",
           levelReq: 15,
           maxLevel: 5,
           branchGroup: "branch15",
@@ -408,7 +408,7 @@ export default {
         },
         {
           id: "skill5a",
-          name: "Skill 5A",
+          name: "flameC",
           levelReq: 20,
           maxLevel: 5,
           branchGroup: "branch20",
@@ -418,7 +418,7 @@ export default {
         },
         {
           id: "skill5b",
-          name: "Skill 5B",
+          name: "incendiary",
           levelReq: 20,
           maxLevel: 5,
           branchGroup: "branch20",
@@ -428,17 +428,17 @@ export default {
         },
         {
           id: "skill6",
-          name: "Skill 6",
+          name: "meteor_S",
           levelReq: 25,
           maxLevel: 5,
           branchGroup: null,
-          parents: ["skill5a", "skill5b"], // 어느 분기든 5라인을 타면 허용
+          parents: ["skill5a", "skill5b"],
           col: 5,
           row: 1,
         },
         {
           id: "skill7",
-          name: "Skill 7",
+          name: "meteor_M",
           levelReq: 30,
           maxLevel: 5,
           branchGroup: null,
@@ -448,7 +448,7 @@ export default {
         },
         {
           id: "skill8a",
-          name: "Skill 8A",
+          name: "meteor_L",
           levelReq: 35,
           maxLevel: 5,
           branchGroup: "branch35",
@@ -458,7 +458,7 @@ export default {
         },
         {
           id: "skill8b",
-          name: "Skill 8B",
+          name: "napalm",
           levelReq: 35,
           maxLevel: 5,
           branchGroup: "branch35",
@@ -468,7 +468,7 @@ export default {
         },
         {
           id: "skill9",
-          name: "Skill 9",
+          name: "deathhand",
           levelReq: 40,
           maxLevel: 5,
           branchGroup: null,
@@ -477,6 +477,7 @@ export default {
           row: 1,
         },
       ],
+
 
       // 각 스킬의 현재 레벨
       skillState: {
@@ -561,14 +562,14 @@ export default {
       // 인벤토리
       this.inventory.items = (main.inventory.items || []).map((i) => ({ ...i }));
 
-      // 스킬 슬롯 (씬 → Vue 미러링)
-      if (main.skillSlots) {
-        this.skillSlots = main.skillSlots.map((name) => {
-          if (!name) return null;
-          const base = this.allSkills.find((s) => s.name === name);
-          return base ? { ...base } : { name, icon: "/assets/skill1.png" };
-        });
-      }
+      // // 스킬 슬롯 (씬 → Vue 미러링)
+      // if (main.skillSlots) {
+      //   this.skillSlots = main.skillSlots.map((name) => {
+      //     if (!name) return null;
+      //     const base = this.allSkills.find((s) => s.name === name);
+      //     return base ? { ...base } : { name, icon: "/assets/skill1.png" };
+      //   });
+      // }
 
       // 아이템 슬롯
       if (main.itemShortcutSlots) {
@@ -723,6 +724,23 @@ export default {
     /* ===================
        스킬 트리 로직
     ====================== */
+    skillTreeToPhaserMap(id) {
+      return {
+        skill1: "fireball",
+        skill2: "buff",
+        skill3: "flameA",
+        skill4a: "flameB",
+        skill5a: "flameC",
+        skill4b: "firebomb",
+        skill5b: "incendiary",
+        skill6: "meteor_S",
+        skill7: "meteor_M",
+        skill8a: "meteor_L",
+        skill8b: "napalm",
+        skill9: "deathhand",
+      }[id] || null;
+    },
+
 
     skillLevelOf(id) {
       return this.skillState[id] || 0;
@@ -1056,45 +1074,59 @@ export default {
       let newSkill = null;
 
       if (skillId) {
-        // 스킬 트리에서 온 드래그
         const node = this.skillNodes.find((n) => n.id === skillId);
         if (!node) return;
         if (!this.isUnlocked(node) || this.isLockedByBranch(node)) return;
 
+        const phaserKey = this.skillTreeToPhaserMap(skillId);
+        if (!phaserKey) return;
+
+        // ⭐ id = phaserKey 로 완전 통일
         newSkill = {
-          name: node.name,
-          icon: "/assets/skill_placeholder.png",
-          id: node.id,
+          id: phaserKey,
+          phaserKey,
+          name: phaserKey,
+          icon: `/static/assets/${phaserKey}.png`,
         };
+
       } else {
-        // 기존 allSkills 기반 드래그 (호환)
+        // fallback (기존 skill1~8)
         const idxStr = ev.dataTransfer.getData("skill-idx");
         if (idxStr === "") return;
         const idx = parseInt(idxStr, 10);
         const skill = this.allSkills[idx];
         if (!skill) return;
 
-        newSkill = { ...skill };
+        newSkill = {
+          id: skill.name,
+          phaserKey: skill.name,
+          name: skill.name,
+          icon: skill.icon,
+        };
       }
 
-      // 동일 스킬이 다른 슬롯에 이미 있으면 제거 (중복 방지)
-      const existingIndex = this.skillSlots.findIndex((s, i) => {
-        if (!s) return false;
-        if (skillId && s.id) return s.id === skillId && i !== slotIdx;
-        return s.name === newSkill.name && i !== slotIdx;
+      // ⭐ 중복 제거 (phaserKey 기준)
+      const existingIdx = this.skillSlots.findIndex((s, i) => {
+        return s && s.phaserKey === newSkill.phaserKey && i !== slotIdx;
       });
 
-      if (existingIndex !== -1) {
-        this.skillSlots.splice(existingIndex, 1, null);
+      if (existingIdx !== -1) {
+        this.skillSlots.splice(existingIdx, 1, null);
       }
 
+      // 슬롯에 저장
       this.skillSlots.splice(slotIdx, 1, newSkill);
 
+      // Phaser 전달
       if (this.scene?.setSkillSlots) {
-        const names = this.skillSlots.map((s) => (s ? { name: s.name } : null));
+        const names = this.skillSlots.map((s) =>
+          s ? { name: s.phaserKey } : null
+        );
         this.scene.setSkillSlots(names);
       }
     },
+
+
 
     onDragStart(ev, idx) {
       ev.dataTransfer.setData("item-idx", idx);

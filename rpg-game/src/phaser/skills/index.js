@@ -1,23 +1,36 @@
 import { CFG } from "../config/Config.js";
-import { ProjectileSkill } from "./ProjectileSkill.js";
-import { ShockwaveSkill } from "./ShockwaveSkill.js";
-import { ConeSkill } from "./ConeSkill.js";
-import { ProjShockwaveSkill } from "./ProjShockwaveSkill.js";
-import { LightningSkill } from "./LightningSkill.js";
-import { DotSkill } from "./DotSkill.js";
-import { FreezeSkill } from "./FreezeSkill.js";
-import { KnockbackSkill } from "./KnockbackSkill.js";
+
+import { Fireball } from "./Fireball.js";
+import { FlameA } from "./FlameA.js";
+import { FlameB } from "./FlameB.js";
+import { FlameC } from "./FlameC.js";
+import { FireBomb } from "./FireBomb.js";
+import { Incendiary } from "./Incendiary.js";
+import { MeteorS } from "./MeteorS.js";
+import { MeteorM } from "./MeteorM.js";
+import { MeteorL } from "./MeteorL.js";
+import { Napalm } from "./Napalm.js";
+import { DeathHand } from "./DeathHand.js";
+import { BuffSkill } from "./BuffSkill.js";
 
 export function createDefaultSkills() {
   return {
-    // 각 스킬 인스턴스 생성 - ('스킬 타입명', 스킬의 기본 스펙)은 각 스킬 클래스가 상속 중인 SkillBase의 Constructor로 전달
-    "Skill 1": new ProjectileSkill("projectile", CFG.skillBase.projectile),
-    "Skill 2": new ShockwaveSkill("shockwave", CFG.skillBase.shockwave),
-    "Skill 3": new ConeSkill("cone", CFG.skillBase.cone),
-    "Skill 4": new ProjShockwaveSkill("projWave", CFG.skillBase.projWave),
-    "Skill 5": new LightningSkill("lightning", CFG.skillBase.lightning),
-    "Skill 6": new DotSkill("dot", CFG.skillBase.dot),
-    "Skill 7": new FreezeSkill("freeze", CFG.skillBase.freeze),
-    "Skill 8": new KnockbackSkill("knockback", CFG.skillBase.knockback),
+    fireball: new Fireball("fireball", CFG.fireball),
+    flameA: new FlameA("flameA", CFG.flameA),
+    flameB: new FlameB("flameB", CFG.flameB),
+    flameC: new FlameC("flameC", CFG.flameC),
+    firebomb: new FireBomb("firebomb", CFG.firebomb),
+    incendiary: new Incendiary("incendiary", CFG.incendiary),
+
+    // 🔥 FIX: 대소문자 정확히 일치
+    meteor_S: new MeteorS("meteor_S", CFG.meteor_S),
+    meteor_M: new MeteorM("meteor_M", CFG.meteor_M),
+    meteor_L: new MeteorL("meteor_L", CFG.meteor_L),
+
+    napalm: new Napalm("napalm", CFG.napalm),
+    deathhand: new DeathHand("deathhand", CFG.deathhand),
+
+    // 🔥 FIX: 반드시 존재해야 함
+    buff: new BuffSkill("buff", CFG.buff),
   };
 }
