@@ -340,7 +340,7 @@ export default class TestScene2 extends Phaser.Scene {
 
         useItemFromInventory(this, invIdx);
     }
-    
+
     // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
     update() {
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
@@ -723,7 +723,7 @@ export default class TestScene2 extends Phaser.Scene {
             // });
         });
     }
-        applyDotArea({ x, y, radius, dmg, duration, tick, sourceSkill }) {
+    applyDotArea({ x, y, radius, dmg, duration, tick, sourceSkill }) {
         if (!this.time || !this.monsters) return;
 
         const ticks = Math.floor(duration / tick);
@@ -744,7 +744,7 @@ export default class TestScene2 extends Phaser.Scene {
             });
         }
     }
-    
+
     damageArea({ x, y, radius, dmg, sourceSkill }) {
         if (!this.monsters) return;
 

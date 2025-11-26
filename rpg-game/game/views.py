@@ -5,8 +5,13 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 
 from django.contrib.auth import get_user_model
-from .models import Monster, player
-from .serializers import MonsterSerializer, MonsterCallSerializer, PlayerSerializer
+from .models import Monster, player, Item
+from .serializers import (
+    MonsterSerializer,
+    MonsterCallSerializer,
+    PlayerSerializer,
+    ItemSerializer,
+)
 
 # class CharacterViewSet(viewsets.ModelViewSet):
 #     queryset = Character.objects.all()
@@ -40,5 +45,13 @@ def playerConnect(request, userId):
     account = player.objects.get(user=user)
 
     serializer = PlayerSerializer(account)
+
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+def eachItem(request, name):
+    item = Item.objects.get(name=name)
+    serializer = ItemSerializer(item)
 
     return Response(serializer.data)
