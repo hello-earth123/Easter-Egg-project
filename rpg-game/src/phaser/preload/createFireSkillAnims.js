@@ -2,8 +2,8 @@
 export function createFireSkillAnims(scene) {
   const frames = {
     fireball: 7, buff: 15,
-    flameA: 5, flameB: 5, flameC: 5,
-    firebomb: 12, incendiary: 15,
+    flameA: 6, flameB: 6, flameC: 6,
+    firebomb: 7, incendiary: 15,
     meteor_S: 10, meteor_M: 10, meteor_L: 10,
     napalm: 9, deathhand: 20,
   };

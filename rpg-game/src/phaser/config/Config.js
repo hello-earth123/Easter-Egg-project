@@ -43,131 +43,193 @@ export const CFG = {
     costPerLevel: 0.1,
   },
 
-  // 스킬 별 설정
   // ============================
-  // 🔥 Fire 스킬 전용 설정들
+  // 🔥 Fire 스킬 설정
   // ============================
+
+  // Fireball
   fireball: {
     baseDmg: 40,
     dmgScale: 0.15,
     baseCost: 12,
     costScale: 0.1,
-    speed: 500,
     cd: 1200,
+    speed: 500,
     frameRate: 14,
   },
-  
+
+  // Buff
   buff: {
-    baseDmg: 0,
-    dmgScale: 0,
     baseCost: 20,
     costScale: 0,
     cd: 5000,
+
     duration: 8000,
-    frameRate: 12,
+    hpUp: 300,
+    mpUp: 500,
+    frameRate: 15,
   },
 
+  // Flame A (1타)
   flameA: {
-    baseDmg: 18,
+    baseDmg: 22,
     dmgScale: 0.15,
     baseCost: 10,
     costScale: 0.1,
     cd: 900,
+
+    distance: 120,
+    radius: 60,
+    tickDmg: 8,
+    duration: 1200,
+
     frameRate: 10,
   },
 
+  // Flame B (1타 + 전방 한 칸 추가)
   flameB: {
-    baseDmg: 22,
+    baseDmg: 25,
     dmgScale: 0.15,
     baseCost: 12,
     costScale: 0.1,
     cd: 1200,
+
+    distance: 80,
+    radius: 60,
+    tickDmg: 10,
+    duration: 1200,
+
     frameRate: 12,
   },
 
+  // Flame C (십자 5방)
   flameC: {
     baseDmg: 30,
     dmgScale: 0.2,
     baseCost: 16,
     costScale: 0.12,
     cd: 1600,
+
+    // 중심으로부터 거리/반경/지속은 FlameA/B와 공유
+    distance: 80,
+    radius: 70,
+    tickDmg: 12,
+    duration: 1200,
+
+    // 십자 방향으로 퍼지는 거리(전/후/좌/우)
+    spread: 60,
+
     frameRate: 12,
   },
 
+  // Firebomb
   firebomb: {
     baseDmg: 45,
     dmgScale: 0.20,
     baseCost: 20,
     costScale: 0.12,
     cd: 2000,
-    radius: 80,
+
+    radius: 90,
+
     frameRate: 12,
   },
 
+  // Incendiary (화염 방사기)
   incendiary: {
     baseDmg: 25,
     dmgScale: 0.15,
     baseCost: 14,
     costScale: 0.1,
-    tickDmg: 6,
-    duration: 2400,
     cd: 2200,
+
+    tickDmg: 6,
+    duration: 2000,
+    interval: 150,
+
+    distance: 130,
+    radius: 60,
+    angle: 26, // degree 단위, 좌우 각도
+
     frameRate: 10,
   },
 
+  // Meteor S
   meteor_S: {
     baseDmg: 70,
     dmgScale: 0.20,
     baseCost: 22,
     costScale: 0.1,
     cd: 3000,
+
     fallSpeed: 700,
+    count: 2,
+    radius: 60,
+
     frameRate: 10,
   },
 
+  // Meteor M
   meteor_M: {
     baseDmg: 120,
     dmgScale: 0.22,
     baseCost: 28,
     costScale: 0.12,
     cd: 4200,
+
     fallSpeed: 600,
+    count: 4,
+    radius: 75,
+
     frameRate: 10,
   },
 
+  // Meteor L
   meteor_L: {
     baseDmg: 200,
     dmgScale: 0.25,
     baseCost: 35,
     costScale: 0.15,
     cd: 6000,
+
     fallSpeed: 520,
+    count: 6,
+    radius: 90,
+
     frameRate: 12,
   },
 
+  // Napalm (장판)
   napalm: {
     baseDmg: 65,
     dmgScale: 0.18,
     baseCost: 30,
     costScale: 0.12,
-    duration: 3000,
-    tickDmg: 12,
-    interval: 600,
     cd: 4200,
+
+    duration: 3000,
+    tickDmg: 15,
+    interval: 450,
+    radius: 80,
+    length: 140, // napalm 장판 폭
+
     frameRate: 10,
   },
 
+  // Death Hand
   deathhand: {
     baseDmg: 300,
     dmgScale: 0.30,
     baseCost: 50,
     costScale: 0.2,
-    radius: 120,
     cd: 8000,
+
+    radius: 120,
+
     frameRate: 14,
   },
 
-  // 몬스터 별 설정 - TODO: 동일한 몬스터 스폰량 수정
+  // 몬스터 설정
   monsters: [
     {
       key: "slime",
@@ -180,7 +242,7 @@ export const CFG = {
       expExp: 1.0,
       minLevel: 1,
       maxLevel: 2,
-      count: 5, // 최대 몬스터 스폰 수
+      count: 5,
       dropTable: [
         { id: "potion_hp", name: "HP Potion", chance: 45 },
         { id: "gold_coin", name: "Gold Coin", chance: 80 },

@@ -12,6 +12,17 @@ export class FlameA extends FireSkillBase {
     const fx = scene.add.sprite(tx, ty, "flameA").play("flameA");
     fx.on("animationcomplete", () => fx.destroy());
 
+    // 🔥 카메라 흔들림
+    this.shakeCameraOnHit(scene);
+    
+    scene.damageArea({
+      x: tx,
+      y: ty,
+      radius: this.base.radius,
+      dmg: this.getDamage(),
+    });
+
+
     scene.applyDotArea({
       x: tx, y: ty,
       radius: this.base.radius,

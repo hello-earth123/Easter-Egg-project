@@ -1,61 +1,53 @@
-import { CFG } from "../config/Config.js";
+// SkillBase.js
+export class SkillBase {
+    constructor(name, baseConfig) {
+        this.name = name;            // fireball, flameA 등
+        this.base = baseConfig;      // CFG.fireball 같은 설정
+        this.level = 1;
 
-export class Skill {
-  constructor(key, base) {
-    this.key = key;
-    this.level = 1;
-    this.base = base;
-    this.onCooldownUntil = 0;
-  }
-
-  levelUp() {
-    this.level += 1;
-  }
-
-  scaledDamage(baseDmg) {
-    const mul = 1 + CFG.skillScaling.dmgPerLevel * (this.level - 1);
-    return Math.floor(baseDmg * mul);
-  }
-
-  scaledCost(baseCost) {
-    const mul = 1 + CFG.skillScaling.costPerLevel * (this.level - 1);
-    return Math.floor(baseCost * mul);
-  }
-
-  canCast(scene) {
-    const now = scene.time.now;
-    const cost = this.getManaCost();
-    if (now < this.onCooldownUntil) {
-      scene.textBar = "쿨다운 중";
-      return false;
+        this.onCooldownUntil = 0;
     }
-    if (scene.playerStats.mp < cost) {
-      scene.textBar = "MP 부족";
-      return false;
+
+    // ---- 스케일 계산 ----
+    scaledDamage(base) {
+        return Math.floor(base * (1 + 0.15 * (this.level - 1)));
     }
-    return true;
-  }
 
-  getCooldown() {
-    return this.base.cd || 1000;
-  }
+    scaledCost(base) {
+        return Math.floor(base * (1 + 0.10 * (this.level - 1)));
+    }
 
-  /* For Override */
-  getDamage() {
-    return 0;
-  }
-  getManaCost() {
-    return 0;
-  }
+    // ---- MP 체크 ----
+    getManaCost() { return this.base.baseCost || 0; }
 
-  tryCast(scene, caster) {
-    if (!this.canCast(scene)) return;
+    canCast(scene) {
+        if (!scene?.playerStats) return false;
+        if (scene.playerStats.mp < this.getManaCost()) return false;
+        return true;
+    }
 
-    const cost = this.getManaCost();
-    scene.playerStats.mp = Math.max(0, scene.playerStats.mp - cost);
+    // ---- 쿨다운 ----
+    hasCooldown(scene) {
+        return scene.time.now < this.onCooldownUntil;
+    }
 
-    this.onCooldownUntil = scene.time.now + this.getCooldown();
-    // override in subclasses: cast(scene, caster) {}
-    this.cast(scene, caster);
-  }
+    startCooldown(scene) {
+        this.onCooldownUntil = scene.time.now + (this.base.cd || 0);
+    }
+
+    // ---- 캐스팅 호출 ----
+    tryCast(scene, caster) {
+        if (!this.canCast(scene)) return;
+
+        // 마나 소비
+        scene.playerStats.mp -= this.getManaCost();
+        scene.textBar = `${this.name} 사용!`;
+
+        this.startCooldown(scene);
+
+        this.cast(scene, caster);
+    }
+
+    // 개별 스킬이 override 해야함
+    cast(scene, caster) { }
 }
