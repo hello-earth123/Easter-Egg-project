@@ -271,6 +271,9 @@ export default class TestScene2 extends Phaser.Scene {
 
         this.skills = createDefaultSkills(this);
 
+        this.skillSlots = [null, null, null, null];
+        this.itemShortcutSlots = [null, null];
+
         // 시스템 메세지 창
         this.textBar = "게임 시작!";
 
