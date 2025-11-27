@@ -19,19 +19,35 @@ export class FireBomb extends FireSkillBase {
     const radius = this.base.radius ?? 100;
     const dmg = this.getDamage();
 
-    let damageApplied = false;
+    let damageApplied = false;       // 데미지를 한 번만 적용
+    let didHitMonster = false;       // 실제로 몬스터가 맞았는지 여부
 
     fx.on("animationupdate", (_, frame) => {
-      // 정확히 9프레임에서만 딱 한 번 터짐
+      // 정확히 9프레임에서만 데미지 계산
       if (!damageApplied && frame.index === 9) {
-        scene.damageArea({
-          x,
-          y,
-          radius,
-          dmg,
-          onHit: () => this.shakeCameraOnHit(scene),
-        });
         damageApplied = true;
+
+        // 🔥 데미지 적용 + 몬스터 맞았는지 체크
+        scene.monsters.children.iterate(mon => {
+          if (!mon || !mon.active) return;
+
+          const dx = mon.x - x;
+          const dy = mon.y - y;
+          if (dx * dx + dy * dy > radius * radius) return;
+
+          // 몬스터가 실제로 맞았음
+          didHitMonster = true;
+
+          // 데미지 적용
+          mon.hp -= dmg;
+          scene.spawnHitFlash(mon.x, mon.y);
+          scene.onMonsterAggro(mon);
+        });
+
+        // 🔥 명중한 경우에만 카메라 흔들기
+        if (didHitMonster) {
+          this.shakeCameraOnHit(scene);
+        }
       }
     });
 

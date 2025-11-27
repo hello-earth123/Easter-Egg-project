@@ -1,30 +1,52 @@
-// skills/MeteorS.js
+// skills/MeteorL.js
 import { FireSkillBase } from "./FireSkillBase.js";
 
 export class MeteorL extends FireSkillBase {
   cast(scene, caster) {
     const dir = this.getDir(caster);
-    const bx = caster.x + dir.x * this.base.distance;
-    const by = caster.y + dir.y * this.base.distance;
+    const facingX = dir.x >= 0 ? 1 : -1;
 
-    for (let i = 0; i < 2; i++) {
-      scene.time.delayedCall(i * 120, () => {
-        const m = scene.add.sprite(bx, by - 200, "meteor_L").play("meteor_L");
+    const baseDist = this.base.distance ?? 220;
+    const centerX = caster.x + facingX * baseDist;
+    const centerY = caster.y;
+
+    const count = this.base.count ?? 6;
+    const radius = this.base.radius ?? 90;
+    const spread = this.base.spread ?? 65;
+    const fallDuration = this.base.fallDuration ?? 400;
+    const interval = this.base.interval ?? 120;
+
+    for (let i = 0; i < count; i++) {
+      const idx = i - (count - 1) / 2;
+      const offsetY = idx * spread;
+
+      const landX = centerX;
+      const landY = centerY + offsetY;
+
+      const spawnX = landX - facingX * 240;
+      const spawnY = landY - 240;
+
+      scene.time.delayedCall(i * interval, () => {
+        const meteor = scene.add.sprite(spawnX, spawnY, "meteor_L");
+        if (facingX === -1) meteor.flipX = true;   // ← 추가
+        meteor.play("meteor_L");
 
         scene.tweens.add({
-          targets: m,
-          y: by,
-          duration: 300,
+          targets: meteor,
+          x: landX,
+          y: landY,
+          duration: fallDuration,
           onComplete: () => {
-            m.destroy();
+            meteor.destroy();
+
             scene.damageArea({
-              x: bx,
-              y: by,
-              radius: this.base.radius,
+              x: landX,
+              y: landY,
+              radius,
               dmg: this.getDamage(),
-              onHit: () => this.shakeCameraOnHit(scene)
+              onHit: () => this.shakeCameraOnHit(scene),
             });
-          }
+          },
         });
       });
     }

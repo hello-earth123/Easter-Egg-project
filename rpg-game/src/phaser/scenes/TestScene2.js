@@ -33,7 +33,7 @@ export default class TestScene2 extends Phaser.Scene {
         this.monsterData = {
             bat: 10,
             rabbit: 1,
-            hidden: 10,
+            hidden: 15,
         };
 
         this.minLevel = 1;
@@ -179,7 +179,7 @@ export default class TestScene2 extends Phaser.Scene {
         };
 
         this.isPlayerLoad = false;
-        initPlayer(2).then(player => {
+        initPlayer(1).then(player => {
             this.playerStats = player;
             this.isPlayerLoad = true;
             console.log(this.playerStats)
@@ -406,7 +406,7 @@ export default class TestScene2 extends Phaser.Scene {
         }
 
 
-        if (this.count >= 3) {
+        if (this.count >= 300) {
             this.scene.start('TestScene3');
         }
     }
@@ -791,26 +791,31 @@ export default class TestScene2 extends Phaser.Scene {
      * 즉발 원형 광역 데미지
      * FireBomb, Meteor, Deathhand 등이 사용
      */
-    damageArea({ x, y, radius, dmg }) {
-        if (!this.monsters) return;
+    damageArea({ x, y, radius, dmg, onHit }) {
+    if (!this.monsters) return;
 
-        this.monsters.children.iterate((monster) => {
-            if (!monster || !monster.active) return;
+    let hitSomething = false;
 
-            const dx = monster.x - x;
-            const dy = monster.y - y;
-            if (dx * dx + dy * dy > radius * radius) return;
+    this.monsters.children.iterate((monster) => {
+        if (!monster || !monster.active) return;
 
-            // 몬스터 체력 감소
-            monster.hp -= dmg;
-            this.showDamageText(monster, dmg, "#ffffff");
-            if (this.spawnHitFlash) {
-                this.spawnHitFlash(monster.x, monster.y);
-            }
-            if (typeof this.onMonsterAggro === "function") {
-                this.onMonsterAggro(monster);
-            }
-        });
+        const dx = monster.x - x;
+        const dy = monster.y - y;
+        if (dx * dx + dy * dy > radius * radius) return;
+
+        monster.hp -= dmg;
+        this.showDamageText(monster, dmg, "#ffffff");
+        if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
+        if (typeof this.onMonsterAggro === "function") {
+        this.onMonsterAggro(monster);
+        }
+
+        hitSomething = true;
+    });
+
+    if (hitSomething && typeof onHit === "function") {
+        onHit();
+    }
     }
 
     /**
