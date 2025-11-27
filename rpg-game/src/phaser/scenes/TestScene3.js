@@ -47,7 +47,7 @@ export default class TestScene3 extends Phaser.Scene {
         this.isPlayerLoad;
         this.playerStats;
 
-        this.items = ['hpPotion', 'mpPotion', 'lowGem', 'midGem', 'highGem', 'superGem'];
+        this.itemList = ['hpPotion', 'mpPotion', 'lowGem', 'midGem', 'highGem', 'superGem'];
         this.skills;
     }
 
@@ -60,7 +60,7 @@ export default class TestScene3 extends Phaser.Scene {
         this.load.image("item", "/static/assets/item.png");
         this.load.image("shockwave", "/static/assets/effect_shockwave.png");
 
-        for (const key of this.items) {
+        for (const key of this.itemList) {
             this.load.image(key, `static/assets/${key}.png`)
         }
 
@@ -252,21 +252,21 @@ export default class TestScene3 extends Phaser.Scene {
         });
 
         // 인벤토리 구현
-        this.inventory = { items: [] };
-        this.inventory.items.push(
-            {
-                name: "hpPotion",
-                icon: "static/assets/hpPotion.png",
-                count: 2,
-                effect: 0.3,
-            },
-            {
-                name: "mpPotion",
-                icon: "static/assets/mpPotion.png",
-                count: 1,
-                effect: 0.2,
-            }
-        );
+        // this.inventory = { items: [] };
+        // this.inventory.items.push(
+        //     {
+        //         name: "hpPotion",
+        //         icon: "static/assets/hpPotion.png",
+        //         count: 2,
+        //         effect: 0.3,
+        //     },
+        //     {
+        //         name: "mpPotion",
+        //         icon: "static/assets/mpPotion.png",
+        //         count: 1,
+        //         effect: 0.2,
+        //     }
+        // );
 
         this.skills = createDefaultSkills(this);
 
@@ -285,6 +285,8 @@ export default class TestScene3 extends Phaser.Scene {
 
         console.log(6)
         createFireSkillAnims(this);
+
+        this.count = 0;
     }
 
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
@@ -339,10 +341,10 @@ export default class TestScene3 extends Phaser.Scene {
         if (!slot) return (this.textBar = "단축키에 아이템 없음");
 
         // inventory에서 동일한 id를 가진 slot의 인덱스를 반환 (존재하지 않으면 -1 반환)
-        const invIdx = this.inventory.items.findIndex((i) => i.name === slot.name);
+        const invIdx = this.playerStats.inventory.items.findIndex((i) => i.name === slot.name);
         if (invIdx === -1) return (this.textBar = "인벤토리에 아이템이 없습니다");
 
-        useItemFromInventory(this, invIdx);
+        useItemFromInventory(this.playerStats, invIdx);
     }
 
     // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
@@ -552,10 +554,10 @@ export default class TestScene3 extends Phaser.Scene {
         if (!itemSprite.getData('pickDef')) return;
 
         const def = itemSprite.getData('pickDef');
-        const exist = this.inventory.items.find((i) => i.name === def.name);
+        const exist = this.playerStats.inventory.items.find((i) => i.name === def.name);
 
         if (exist) exist.count += def.count || 1;
-        else this.inventory.items.push({ ...def }); // Spread Operator : 객체의 모든 속성을 새로운 객체에 복사
+        else this.playerStats.inventory.items.push({ ...def }); // Spread Operator : 객체의 모든 속성을 새로운 객체에 복사
 
         itemSprite.destroy();
 
@@ -733,144 +735,144 @@ export default class TestScene3 extends Phaser.Scene {
             // });
         });
     }
-  /**
-   * 즉발 원형 광역 데미지
-   * FireBomb, Meteor, Deathhand 등이 사용
-   */
-  damageArea({ x, y, radius, dmg }) {
-    if (!this.monsters) return;
+    /**
+     * 즉발 원형 광역 데미지
+     * FireBomb, Meteor, Deathhand 등이 사용
+     */
+    damageArea({ x, y, radius, dmg }) {
+        if (!this.monsters) return;
 
-    this.monsters.children.iterate((monster) => {
-      if (!monster || !monster.active) return;
-
-      const dx = monster.x - x;
-      const dy = monster.y - y;
-      if (dx * dx + dy * dy > radius * radius) return;
-
-      // 몬스터 체력 감소
-      monster.hp -= dmg;
-      if (this.spawnHitFlash) {
-        this.spawnHitFlash(monster.x, monster.y);
-      }
-      if (typeof this.onMonsterAggro === "function") {
-        this.onMonsterAggro(monster);
-      }
-    });
-  }
-
-  /**
-   * 한 번에 장판 안의 몬스터들에게 DoT(지속 피해) 부여
-   * FlameA / FlameB / FlameC 에서 사용
-   */
-  applyDotArea({ x, y, radius, tickDmg, duration, interval = 400 }) {
-    if (!this.monsters) return;
-
-    const dot = {
-      duration,
-      interval,
-      damage: tickDmg,
-    };
-
-    this.monsters.children.iterate((monster) => {
-      if (!monster || !monster.active) return;
-
-      const dx = monster.x - x;
-      const dy = monster.y - y;
-      if (dx * dx + dy * dy > radius * radius) return;
-
-      this.applyDot(monster, dot);
-    });
-  }
-
-  /**
-   * 라인 형태의 지속 장판 DoT (Napalm 등에 사용)
-   * origin(x, y)에서 dir 방향으로 length 만큼 뻗은 띠 모양 영역
-   */
-  applyPersistentDot({
-    x,
-    y,
-    dir,
-    length,
-    radius,
-    tickDmg,
-    duration,
-    interval,
-  }) {
-    if (!this.monsters) return;
-
-    const nx = dir?.x ?? 1;
-    const ny = dir?.y ?? 0;
-    const totalTicks = Math.max(1, Math.floor(duration / interval));
-
-    for (let i = 0; i < totalTicks; i++) {
-      this.time.delayedCall(interval * i, () => {
         this.monsters.children.iterate((monster) => {
-          if (!monster || !monster.active) return;
+            if (!monster || !monster.active) return;
 
-          const vx = monster.x - x;
-          const vy = monster.y - y;
+            const dx = monster.x - x;
+            const dy = monster.y - y;
+            if (dx * dx + dy * dy > radius * radius) return;
 
-          // 라인상의 투영 길이 t
-          const t = vx * nx + vy * ny;
-          if (t < 0 || t > length) return;
-
-          // 라인으로부터의 수직 거리 체크
-          const px = nx * t;
-          const py = ny * t;
-          const lx = vx - px;
-          const ly = vy - py;
-          if (lx * lx + ly * ly > radius * radius) return;
-
-          monster.hp -= tickDmg;
-          if (this.spawnHitFlash) {
-            this.spawnHitFlash(monster.x, monster.y);
-          }
-          if (typeof this.onMonsterAggro === "function") {
-            this.onMonsterAggro(monster);
-          }
+            // 몬스터 체력 감소
+            monster.hp -= dmg;
+            if (this.spawnHitFlash) {
+                this.spawnHitFlash(monster.x, monster.y);
+            }
+            if (typeof this.onMonsterAggro === "function") {
+                this.onMonsterAggro(monster);
+            }
         });
-      });
     }
-  }
 
-  /**
-   * 원뿔(콘) 형태 광역 데미지 – Incendiary 전용
-   * originX, originY 기준으로 dir 방향, radius, angleRad 각도 안에 있는 몬스터에게 피해
-   */
-  damageCone({ originX, originY, dir, radius, angleRad, dmg }) {
-    if (!this.monsters) return;
+    /**
+     * 한 번에 장판 안의 몬스터들에게 DoT(지속 피해) 부여
+     * FlameA / FlameB / FlameC 에서 사용
+     */
+    applyDotArea({ x, y, radius, tickDmg, duration, interval = 400 }) {
+        if (!this.monsters) return;
 
-    const nx = dir.x;
-    const ny = dir.y;
-    const halfA = angleRad * 0.5;
+        const dot = {
+            duration,
+            interval,
+            damage: tickDmg,
+        };
 
-    this.monsters.children.iterate((monster) => {
-      if (!monster || !monster.active) return;
+        this.monsters.children.iterate((monster) => {
+            if (!monster || !monster.active) return;
 
-      const vx = monster.x - originX;
-      const vy = monster.y - originY;
-      const dist2 = vx * vx + vy * vy;
-      if (dist2 > radius * radius) return;
+            const dx = monster.x - x;
+            const dy = monster.y - y;
+            if (dx * dx + dy * dy > radius * radius) return;
 
-      const len = Math.sqrt(dist2);
-      if (len === 0) return;
+            this.applyDot(monster, dot);
+        });
+    }
 
-      // 몬스터 방향 벡터와 dir 벡터 사이의 각
-      const dot = (vx * nx + vy * ny) / len; // = cos(theta)
-      if (dot <= 0) return; // 뒤쪽은 무시
+    /**
+     * 라인 형태의 지속 장판 DoT (Napalm 등에 사용)
+     * origin(x, y)에서 dir 방향으로 length 만큼 뻗은 띠 모양 영역
+     */
+    applyPersistentDot({
+        x,
+        y,
+        dir,
+        length,
+        radius,
+        tickDmg,
+        duration,
+        interval,
+    }) {
+        if (!this.monsters) return;
 
-      const theta = Math.acos(Math.max(-1, Math.min(1, dot)));
-      if (theta > halfA) return;
+        const nx = dir?.x ?? 1;
+        const ny = dir?.y ?? 0;
+        const totalTicks = Math.max(1, Math.floor(duration / interval));
 
-      monster.hp -= dmg;
-      if (this.spawnHitFlash) {
-        this.spawnHitFlash(monster.x, monster.y);
-      }
-      if (typeof this.onMonsterAggro === "function") {
-        this.onMonsterAggro(monster);
-      }
-    });
-  }
+        for (let i = 0; i < totalTicks; i++) {
+            this.time.delayedCall(interval * i, () => {
+                this.monsters.children.iterate((monster) => {
+                    if (!monster || !monster.active) return;
+
+                    const vx = monster.x - x;
+                    const vy = monster.y - y;
+
+                    // 라인상의 투영 길이 t
+                    const t = vx * nx + vy * ny;
+                    if (t < 0 || t > length) return;
+
+                    // 라인으로부터의 수직 거리 체크
+                    const px = nx * t;
+                    const py = ny * t;
+                    const lx = vx - px;
+                    const ly = vy - py;
+                    if (lx * lx + ly * ly > radius * radius) return;
+
+                    monster.hp -= tickDmg;
+                    if (this.spawnHitFlash) {
+                        this.spawnHitFlash(monster.x, monster.y);
+                    }
+                    if (typeof this.onMonsterAggro === "function") {
+                        this.onMonsterAggro(monster);
+                    }
+                });
+            });
+        }
+    }
+
+    /**
+     * 원뿔(콘) 형태 광역 데미지 – Incendiary 전용
+     * originX, originY 기준으로 dir 방향, radius, angleRad 각도 안에 있는 몬스터에게 피해
+     */
+    damageCone({ originX, originY, dir, radius, angleRad, dmg }) {
+        if (!this.monsters) return;
+
+        const nx = dir.x;
+        const ny = dir.y;
+        const halfA = angleRad * 0.5;
+
+        this.monsters.children.iterate((monster) => {
+            if (!monster || !monster.active) return;
+
+            const vx = monster.x - originX;
+            const vy = monster.y - originY;
+            const dist2 = vx * vx + vy * vy;
+            if (dist2 > radius * radius) return;
+
+            const len = Math.sqrt(dist2);
+            if (len === 0) return;
+
+            // 몬스터 방향 벡터와 dir 벡터 사이의 각
+            const dot = (vx * nx + vy * ny) / len; // = cos(theta)
+            if (dot <= 0) return; // 뒤쪽은 무시
+
+            const theta = Math.acos(Math.max(-1, Math.min(1, dot)));
+            if (theta > halfA) return;
+
+            monster.hp -= dmg;
+            if (this.spawnHitFlash) {
+                this.spawnHitFlash(monster.x, monster.y);
+            }
+            if (typeof this.onMonsterAggro === "function") {
+                this.onMonsterAggro(monster);
+            }
+        });
+    }
 
 }
 
