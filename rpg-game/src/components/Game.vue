@@ -561,7 +561,7 @@ export default {
       this.textBar = main.textBar || "";
 
       // 인벤토리
-      this.inventory.items = (main.inventory.items || []).map((i) => ({ ...i }));
+      this.inventory.items = (main.playerStats.inventory.items || []).map((i) => ({ ...i }));
 
       // // 스킬 슬롯 (씬 → Vue 미러링)
       // if (main.skillSlots) {

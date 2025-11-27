@@ -37,10 +37,10 @@ export function useItemFromInventory(state, invIndex) {
   item.count -= 1;
 
   if (item.name === 'hpPotion') {
-    state.playerStats.hp = Math.min(state.playerStats.maxHp, state.playerStats.hp + (state.playerStats.maxHp * item.effect))
+    state.hp = Math.min(state.maxHp, state.hp + (state.maxHp * item.effect))
   }
   else if (item.name == 'mpPotion') {
-    state.playerStats.mp = Math.min(state.playerStats.maxMp, state.playerStats.mp + (state.playerStats.maxMp * item.effect))
+    state.mp = Math.min(state.maxMp, state.mp + (state.maxMp * item.effect))
   }
 
   // 전부 사용했을 경우, 슬롯에서 제거
