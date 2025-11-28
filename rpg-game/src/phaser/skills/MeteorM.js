@@ -1,5 +1,6 @@
 // skills/MeteorM.js
 import { FireSkillBase } from "./FireSkillBase.js";
+import { applyVFX } from "../utils/SkillVFX.js";
 
 export class MeteorM extends FireSkillBase {
   cast(scene, caster) {
@@ -10,11 +11,12 @@ export class MeteorM extends FireSkillBase {
     const centerX = caster.x + facingX * baseDist;
     const centerY = caster.y;
 
-    const count = this.base.count ?? 4;
-    const radius = this.base.radius ?? 75;
-    const spread = this.base.spread ?? 55;
-    const fallDuration = this.base.fallDuration ?? 360;
-    const interval = this.base.interval ?? 130;
+    const count = this.base.count ?? 3;
+    const radius = this.base.radius ?? 70;
+    const spread = this.base.spread ?? 60;
+
+    const fallDuration = this.base.fallDuration ?? 380;
+    const interval = this.base.interval ?? 170;
 
     for (let i = 0; i < count; i++) {
       const idx = i - (count - 1) / 2;
@@ -24,11 +26,20 @@ export class MeteorM extends FireSkillBase {
       const landY = centerY + offsetY;
 
       const spawnX = landX - facingX * 220;
-      const spawnY = landY - 230;
+      const spawnY = landY - 240;
 
       scene.time.delayedCall(i * interval, () => {
+        // 🔥 전부 meteor_L 통일
         const meteor = scene.add.sprite(spawnX, spawnY, "meteor_L");
-        if (facingX === -1) meteor.flipX = true;   // ← 추가
+        meteor.setOrigin(0.5);
+
+        // 🔥 scale & VFX (Meteor_S 기준 통일)
+        const scale = this.base.scale ?? 1.25;
+        meteor.setScale(scale);
+        applyVFX(scene, meteor, this.base.vfx);
+
+        if (facingX === -1) meteor.flipX = true;
+
         meteor.play("meteor_L");
 
         scene.tweens.add({
@@ -36,13 +47,14 @@ export class MeteorM extends FireSkillBase {
           x: landX,
           y: landY,
           duration: fallDuration,
+          ease: "Quad.easeIn",
           onComplete: () => {
             meteor.destroy();
 
             scene.damageArea({
               x: landX,
               y: landY,
-              radius,
+              radius: this.getScaledRadius(radius),
               dmg: this.getDamage(),
               onHit: () => this.shakeCameraOnHit(scene),
             });

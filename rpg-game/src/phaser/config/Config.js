@@ -53,21 +53,29 @@ export const CFG = {
     dmgScale: 0.15,
     baseCost: 12,
     costScale: 0.1,
-    cd: 1200,
+    cd: 2000,
     speed: 500,
     frameRate: 14,
+
+    // 🔥 연출 관련
+    scale: 3.0,            // 작은 탄
+    vfx: "trail_fast",     // 빠르게 움직이는 발사체
   },
 
   // Buff
   buff: {
     baseCost: 20,
     costScale: 0,
-    cd: 5000,
+    cd: 30000,
 
     duration: 8000,
     hpUp: 300,
     mpUp: 500,
     frameRate: 15,
+
+    // 🔥 연출
+    scale: 1.3,
+    vfx: "buff_aura",
   },
 
   // Flame A (1타)
@@ -78,12 +86,16 @@ export const CFG = {
     costScale: 0.1,
     cd: 900,
 
-    distance: 120,
+    distance: 200,
     radius: 60,
     tickDmg: 8,
-    duration: 1200,
+    duration: 3000,
 
     frameRate: 10,
+
+    // 🔥 연출
+    scale: 1.5,
+    vfx: "flame_pulse",
   },
 
   // Flame B (1타 + 전방 한 칸 추가)
@@ -94,12 +106,16 @@ export const CFG = {
     costScale: 0.1,
     cd: 1200,
 
-    distance: 80,
+    distance: 250,
     radius: 60,
     tickDmg: 10,
-    duration: 1200,
+    duration: 3500,
 
     frameRate: 12,
+
+    // 🔥 연출
+    scale: 1.8,
+    vfx: "flame_pulse",
   },
 
   // Flame C (십자 5방)
@@ -108,18 +124,19 @@ export const CFG = {
     dmgScale: 0.2,
     baseCost: 16,
     costScale: 0.12,
-    cd: 1600,
+    cd: 4000,
 
-    // 중심으로부터 거리/반경/지속은 FlameA/B와 공유
-    distance: 80,
+    distance: 200,
     radius: 70,
     tickDmg: 12,
     duration: 1200,
-
-    // 십자 방향으로 퍼지는 거리(전/후/좌/우)
     spread: 60,
 
     frameRate: 12,
+
+    // 🔥 연출
+    scale: 1.3,
+    vfx: "flame_pulse",
   },
 
   // Firebomb
@@ -128,11 +145,15 @@ export const CFG = {
     dmgScale: 0.20,
     baseCost: 20,
     costScale: 0.12,
-    cd: 2000,
+    cd: 4000,
 
     radius: 90,
 
     frameRate: 12,
+
+    // 🔥 연출
+    scale: 1.8,
+    vfx: "explosion_big",
   },
 
   // Incendiary (화염 방사기)
@@ -141,7 +162,7 @@ export const CFG = {
     dmgScale: 0.15,
     baseCost: 14,
     costScale: 0.1,
-    cd: 2200,
+    cd: 5000,
 
     tickDmg: 6,
     duration: 2000,
@@ -152,6 +173,10 @@ export const CFG = {
     angle: 26, // degree 단위, 좌우 각도
 
     frameRate: 10,
+
+    // 🔥 연출
+    scale: 2.0,
+    vfx: "cone_flame",
   },
 
   // Meteor S
@@ -165,10 +190,14 @@ export const CFG = {
     fallSpeed: 700,
     count: 2,
     radius: 60,
-    distance: 160,
+    distance: 200,
     duration: 330,
 
     frameRate: 10,
+
+    // 🔥 연출
+    scale: 2.0,
+    vfx: "meteor_small",
   },
 
   // Meteor M
@@ -182,9 +211,13 @@ export const CFG = {
     fallSpeed: 700,
     count: 4,
     radius: 75,
-    distance: 160,
+    distance: 200,
 
     frameRate: 10,
+
+    // 🔥 연출
+    scale: 2.0,
+    vfx: "meteor_medium",
   },
 
   // Meteor L
@@ -198,9 +231,13 @@ export const CFG = {
     fallSpeed: 700,
     count: 6,
     radius: 90,
-    distance: 160,
+    distance: 200,
 
     frameRate: 12,
+
+    // 🔥 연출
+    scale: 2.5,
+    vfx: "meteor_large",
   },
 
   // Napalm (장판)
@@ -218,6 +255,10 @@ export const CFG = {
     length: 140, // napalm 장판 폭
 
     frameRate: 10,
+
+    // 🔥 연출
+    scale: 1.8,            // 폭발 + 장판 기본 스케일
+    vfx: "napalm_burst",
   },
 
   // Death Hand
@@ -226,12 +267,16 @@ export const CFG = {
     dmgScale: 0.30,
     baseCost: 50,
     costScale: 0.2,
-    cd: 8000,
+    cd: 6500,
 
     radius: 120,
-    distance: 150,
+    distance: 170,
 
     frameRate: 14,
+
+    // 🔥 연출
+    scale: 2.2,
+    vfx: "deathhand_impact",
   },
 
   // 몬스터 설정

@@ -34,17 +34,27 @@ export class SkillBase {
     startCooldown(scene) {
         this.onCooldownUntil = scene.time.now + (this.base.cd || 0);
     }
-
-    // ---- 캐스팅 호출 ----
+    
     tryCast(scene, caster) {
+
+        // 1) 쿨타임 검사 추가
+        if (this.hasCooldown(scene)) {
+            // 쿨타임 중이면 스킬 발동 불가
+            scene.textBar = `${this.name} 재사용 대기중`;
+            return;
+        }
+
+        // 2) MP 검사
         if (!this.canCast(scene)) return;
 
-        // 마나 소비
+        // 3) 마나 소비
         scene.playerStats.mp -= this.getManaCost();
         scene.textBar = `${this.name} 사용!`;
 
+        // 4) 쿨타임 시작
         this.startCooldown(scene);
 
+        // 5) 스킬 실제 발동
         this.cast(scene, caster);
     }
 

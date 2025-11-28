@@ -5,7 +5,7 @@ export function createFireSkillAnims(scene) {
     flameA: 6, flameB: 6, flameC: 6,
     firebomb: 15, incendiary: 9,
     meteor_S: 10, meteor_M: 10, meteor_L: 10,
-    napalm: 9, napalm_flame: 9,deathhand: 19,
+    napalm: 9, napalm_flame: 9,deathhand:20,
   };
 
   Object.entries(frames).forEach(([key, max]) => {

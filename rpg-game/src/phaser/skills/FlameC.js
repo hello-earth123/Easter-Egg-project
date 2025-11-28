@@ -1,45 +1,95 @@
 // skills/FlameC.js
 import { FireSkillBase } from "./FireSkillBase.js";
+import { applyVFX } from "../utils/SkillVFX.js";
 
 export class FlameC extends FireSkillBase {
+
   cast(scene, caster) {
+
     const dir = this.getDir(caster);
 
-    // 전방 오프셋
-    const cx = caster.x + dir.x * this.base.distance * 2;
-    const cy = caster.y + dir.y * this.base.distance * 2;
+    const dist = this.base.distance ?? 80;
+    const spread = this.base.spread ?? 60;
+    const radius = this.base.radius ?? 70;
+    const duration = this.base.duration ?? 1200;
+    const tickDmg = this.base.tickDmg ?? 12;
+    const scale = this.base.scale ?? 1.3;
 
-    // 🔥 4방향 벡터
-    const dirs = [
-      { x: 1, y: 0 },   // 오른쪽
-      { x: -1, y: 0 },  // 왼쪽
-      { x: 0, y: 1 },   // 아래
-      { x: 0, y: -1 }   // 위
+    // ======================================================
+    // 🔥 1) 중심 폭발 위치 (플레이어 앞 distance)
+    // ======================================================
+    const centerX = caster.x + dir.x * dist;
+    const centerY = caster.y + dir.y * dist;
+
+    // ======================================================
+    // 🔥 2) 중심 폭발 + 십자 주변 지점
+    // ======================================================
+    const positions = [
+      { x: centerX,             y: centerY             }, // 중심 폭발
+      { x: centerX - spread,    y: centerY             }, // 왼쪽
+      { x: centerX + spread,    y: centerY             }, // 오른쪽
+      { x: centerX,             y: centerY - spread    }, // 위
+      { x: centerX,             y: centerY + spread    }, // 아래
     ];
-    this.shakeCameraOnHit(scene);
 
-    dirs.forEach(d => {
-      const tx = cx + d.x * this.base.distance;
-      const ty = cy + d.y * this.base.distance;
+    // ======================================================
+    // 🔥 FX 생성
+    // ======================================================
+    const flames = [];
 
-      const fx = scene.add.sprite(tx, ty, "flameC").play("flameC");
-      fx.on("animationcomplete", () => fx.destroy());
-      
+    for (const pos of positions) {
+      const fx = scene.add.sprite(pos.x, pos.y, "flameC");
+      fx.setOrigin(0.5);
+      fx.setScale(scale);
+      applyVFX(scene, fx, this.base.vfx);
+
+      fx.play("flameC");
+
+      flames.push({ fx, x: pos.x, y: pos.y });
+    }
+
+    // ======================================================
+    // 🔥 즉발 데미지
+    // ======================================================
+    for (const f of flames) {
       scene.damageArea({
-        x: tx,
-        y: ty,
-        radius: this.base.radius,
+        x: f.x,
+        y: f.y,
+        radius: this.getScaledRadius(radius),
         dmg: this.getDamage(),
+        onHit: () => this.shakeCameraOnHit(scene),
       });
+    }
 
-      scene.applyDotArea({
-        x: tx,
-        y: ty,
-        radius: this.base.radius,
-        tickDmg: this.base.tickDmg,
-        duration: this.base.duration,
+    // ======================================================
+    // 🔥 지속 도트 (2틱)
+    // ======================================================
+    const interval = duration / 2;
+
+    for (let i = 1; i <= 2; i++) {
+      scene.time.delayedCall(interval * i, () => {
+        for (const f of flames) {
+          scene.damageArea({
+            x: f.x,
+            y: f.y,
+            radius: this.getScaledRadius(radius),
+            dmg: tickDmg,
+            onHit: () => this.shakeCameraOnHit(scene),
+          });
+        }
       });
-    });
+    }
+
+    // ======================================================
+    // 🔥 안전 destroy
+    // ======================================================
+    for (const f of flames) {
+      f.fx.once("animationcomplete", () => {
+        f.fx.setVisible(false);
+        scene.time.delayedCall(0, () => f.fx.destroy?.());
+      });
+    }
+
+    scene.textBar = `Flame C (Lv${this.level})`;
   }
-
 }
