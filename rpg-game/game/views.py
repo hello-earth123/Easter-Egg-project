@@ -13,6 +13,7 @@ from .serializers import (
     ItemSerializer,
     InventorySerializer,
     SlotSerializer,
+    NowLocationSerializer,
 )
 
 # class CharacterViewSet(viewsets.ModelViewSet):
@@ -69,7 +70,6 @@ def slotConnect(request, userId):
     slot = Slot.objects.get(user=user)
 
     serializer = SlotSerializer(slot)
-    print(serializer.data)
 
     return Response(serializer.data)
 
@@ -79,6 +79,15 @@ def eachItem(request, name):
     item = Item.objects.get(name=name)
     serializer = ItemSerializer(item)
 
-    print(serializer.data)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+def nowLocation(request, userId):
+    User = get_user_model()
+    user = User.objects.get(pk=userId)
+    location = player.objects.get(user=user)
+
+    serializer = NowLocationSerializer(location)
 
     return Response(serializer.data)
