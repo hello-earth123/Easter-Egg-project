@@ -75,6 +75,8 @@ class player(models.Model):
     highGemCount = models.IntegerField(default=0)
     superGemCount = models.IntegerField(default=0)
 
+    nowLocation = models.CharField(default="mainScene")
+
 
 class Inventory(models.Model):
     user = models.ForeignKey(

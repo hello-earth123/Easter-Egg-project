@@ -7,4 +7,5 @@ urlpatterns = [
     path("inventory/<int:userId>/", views.invenConnect),
     path("slot/<int:userId>/", views.slotConnect),
     path("item/<str:name>/", views.eachItem),
+    path("nowLocation/<int:userId>/", views.nowLocation),
 ]

@@ -47,3 +47,9 @@ class SlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Slot
         fields = "__all__"
+
+
+class NowLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = player
+        fields = ("nowLocation",)
