@@ -1,33 +1,70 @@
 // skills/FlameA.js
 import { FireSkillBase } from "./FireSkillBase.js";
+import { applyVFX } from "../utils/SkillVFX.js";
 
 export class FlameA extends FireSkillBase {
-  getDamage() { return this.base.hitDmg; }
 
   cast(scene, caster) {
+
     const dir = this.getDir(caster);
-    const tx = caster.x + dir.x * this.base.distance;
-    const ty = caster.y + dir.y * this.base.distance;
 
-    const fx = scene.add.sprite(tx, ty, "flameA").play("flameA");
-    fx.on("animationcomplete", () => fx.destroy());
+    const dist = this.base.distance ?? 120;
+    const ox = caster.x + dir.x * dist;
+    const oy = caster.y + dir.y * dist;
 
-    // 🔥 카메라 흔들림
-    this.shakeCameraOnHit(scene);
-    
+    const radius = this.base.radius ?? 60;
+    const duration = this.base.duration ?? 1200;
+    const tickDmg = this.base.tickDmg ?? 8;
+
+    // === 🔥 FlameA 스프라이트 생성 ===
+    const fx = scene.add.sprite(ox, oy, "flameA");
+    fx.setOrigin(0.5);
+
+    // === 🔥 scale 적용 (Config.js) ===
+    const scale = this.base.scale ?? 1.2;
+    fx.setScale(scale);
+
+    // === 🔥 VFX 적용 (flame_pulse) ===
+    applyVFX(scene, fx, this.base.vfx);
+
+    // === 🔥 애니메이션 재생 ===
+    fx.play("flameA");
+
+    // =====================================
+    // 🔥 즉발 데미지
+    // =====================================
     scene.damageArea({
-      x: tx,
-      y: ty,
-      radius: this.base.radius,
+      x: ox,
+      y: oy,
+      radius,
       dmg: this.getDamage(),
+      onHit: () => this.shakeCameraOnHit(scene)
     });
 
+    // =====================================
+    // 🔥 지속 도트 데미지
+    // =====================================
+    const interval = duration / 2; // 원본 로직 유지
+    for (let i = 1; i <= 2; i++) {
+      scene.time.delayedCall(i * interval, () => {
+        scene.damageArea({
+          x: ox,
+          y: oy,
+          radius,
+          dmg: tickDmg,
+          onHit: () => this.shakeCameraOnHit(scene)
+        });
+      });
+    }
 
-    scene.applyDotArea({
-      x: tx, y: ty,
-      radius: this.base.radius,
-      tickDmg: this.base.tickDmg,
-      duration: this.base.duration
+    // =====================================
+    // 🔥 애니메이션 종료 후 안전 destroy
+    // =====================================
+    fx.once("animationcomplete", () => {
+      fx.setVisible(false);      // 마지막 0프레임 깜빡임 방지
+      scene.time.delayedCall(0, () => {
+        if (fx && fx.destroy) fx.destroy();
+      });
     });
 
     scene.textBar = `Flame A (Lv${this.level})`;

@@ -34,6 +34,7 @@ export default class TestScene2 extends Phaser.Scene {
             bat: 10,
             rabbit: 1,
             hidden: 15,
+            lich: 5,
         };
 
         this.minLevel = 1;
@@ -660,6 +661,13 @@ export default class TestScene2 extends Phaser.Scene {
         this.textBar = "적에게 피격!";
 
         if (this.playerStats.hp <= 0) this.onPlayerDeath();
+        
+        // === Incendiary(hold 스킬) 강제 중지 이벤트 ===
+        this.events.emit("playerHit", {
+            x: monster.x,
+            y: monster.y,
+            knockback: CFG.playerKB.power
+        });
     };
 
     /** 플레이어 부활 */
@@ -902,11 +910,13 @@ export default class TestScene2 extends Phaser.Scene {
      * height = 스프라이트 높이(px)
      * length = 전방 거리(px)
      */
-    damageRectangle({ originX, originY, dir, width, height, length, dmg }) {
+    damageRectangle({ originX, originY, dir, width, height, length, dmg, onHit }) {
         if (!this.monsters) return;
 
         const nx = dir.x;
         const ny = dir.y;
+
+        let hitSomething = false;
 
         this.monsters.children.iterate((monster) => {
             if (!monster || !monster.active) return;
@@ -914,27 +924,29 @@ export default class TestScene2 extends Phaser.Scene {
             const vx = monster.x - originX;
             const vy = monster.y - originY;
 
-            // ① 전방 투영 길이
             const t = vx * nx + vy * ny;
             if (t < 0 || t > length) return;
 
-            // ② 중심선에서의 좌우 거리
             const px = nx * t;
             const py = ny * t;
             const lx = vx - px;
             const ly = vy - py;
 
-            // 폭(width)의 절반을 기준으로 hitbox 체크
-            const halfW = width * 1;
+            const halfW = width * 0.5;
             if ((lx * lx + ly * ly) > (halfW * halfW)) return;
 
-            // 데미지 적용
+            // 🔥 데미지 적용
             monster.hp -= dmg;
-            if (this.spawnHitFlash) {
-                this.spawnHitFlash(monster.x, monster.y);
-            }
+            if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
             this.onMonsterAggro(monster);
+
+            hitSomething = true;
         });
+
+        // 🔥 명중했으면 onHit() 실행 (카메라 흔들림, 스킬 중단 등)
+        if (hitSomething && typeof onHit === "function") {
+            onHit();
+        }
     }
 
     //   /**

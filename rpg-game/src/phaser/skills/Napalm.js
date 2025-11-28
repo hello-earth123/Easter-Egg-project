@@ -1,5 +1,6 @@
 // skills/Napalm.js
 import { FireSkillBase } from "./FireSkillBase.js";
+import { applyVFX } from "../utils/SkillVFX.js";
 
 export class Napalm extends FireSkillBase {
   cast(scene, caster) {
@@ -9,17 +10,22 @@ export class Napalm extends FireSkillBase {
     const ox = caster.x + dir.x * dist;
     const oy = caster.y + dir.y * dist;
 
-    // 🔥 초기 폭발 애니메이션
-    const boom = scene.add.sprite(ox, oy, "napalm");
-    boom.play("napalm");
-    boom.once("animationcomplete", () => boom.destroy());
-
     const radius = this.base.radius;
     const tickDmg = this.base.tickDmg;
     const duration = this.base.duration;
     const interval = this.base.interval ?? 450;
 
-    // 🔥 즉발 데미지
+    // ================ 🔥 1) 초기 폭발 =====================
+    const boom = scene.add.sprite(ox, oy, "napalm");
+    boom.setOrigin(0.5);
+
+    // scale, VFX 통일 적용
+    boom.setScale(this.base.scale ?? 1.2);
+    applyVFX(scene, boom, this.base.vfx);
+
+    boom.play("napalm");
+
+    // 즉발 데미지
     scene.damageArea({
       x: ox,
       y: oy,
@@ -28,17 +34,36 @@ export class Napalm extends FireSkillBase {
       onHit: () => this.shakeCameraOnHit(scene)
     });
 
-    // 🔥 napalm 불길 반복 sprite
-    const flame = scene.add.sprite(ox, oy, "napalm_flame");
-    flame.play("napalm_flame_loop");   // 반복되는 불길 애니메이션
+    // ================ 🔥 2) 장판 생성 =====================
+    boom.once("animationcomplete", () => {
+      boom.destroy();
 
-    // 지속시간 끝나면 제거
-    scene.time.delayedCall(duration, () => {
-      flame.destroy();
+      const flame = scene.add.sprite(ox, oy, "napalm_flame");
+      flame.setOrigin(0.5);
+
+      flame.setScale(this.base.flameScale ?? 2.0);
+      applyVFX(scene, flame, this.base.flameVfx);
+
+      flame.play({
+        key: "napalm_flame",
+        repeat: -1,
+        frameRate: 18,
+      });
+
+      // duration 후 fade-out
+      scene.time.delayedCall(duration, () => {
+        scene.tweens.add({
+          targets: flame,
+          alpha: 0,
+          duration: 300,
+          onComplete: () => flame.destroy()
+        });
+      });
     });
 
-    // 🔥 지속 데미지 loop
+    // ================ 🔥 3) 지속 데미지 =====================
     const ticks = Math.floor(duration / interval);
+
     for (let i = 1; i <= ticks; i++) {
       scene.time.delayedCall(i * interval, () => {
         scene.damageArea({

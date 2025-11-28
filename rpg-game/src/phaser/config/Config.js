@@ -56,6 +56,10 @@ export const CFG = {
     cd: 1200,
     speed: 500,
     frameRate: 14,
+
+    // 🔥 연출 관련
+    scale: 3.0,            // 작은 탄
+    vfx: "trail_fast",     // 빠르게 움직이는 발사체
   },
 
   // Buff
@@ -68,6 +72,10 @@ export const CFG = {
     hpUp: 300,
     mpUp: 500,
     frameRate: 15,
+
+    // 🔥 연출
+    scale: 1.3,
+    vfx: "buff_aura",
   },
 
   // Flame A (1타)
@@ -84,6 +92,10 @@ export const CFG = {
     duration: 1200,
 
     frameRate: 10,
+
+    // 🔥 연출
+    scale: 1.5,
+    vfx: "flame_pulse",
   },
 
   // Flame B (1타 + 전방 한 칸 추가)
@@ -100,6 +112,10 @@ export const CFG = {
     duration: 1200,
 
     frameRate: 12,
+
+    // 🔥 연출
+    scale: 1.8,
+    vfx: "flame_pulse",
   },
 
   // Flame C (십자 5방)
@@ -110,16 +126,17 @@ export const CFG = {
     costScale: 0.12,
     cd: 1600,
 
-    // 중심으로부터 거리/반경/지속은 FlameA/B와 공유
     distance: 80,
     radius: 70,
     tickDmg: 12,
     duration: 1200,
-
-    // 십자 방향으로 퍼지는 거리(전/후/좌/우)
     spread: 60,
 
     frameRate: 12,
+
+    // 🔥 연출
+    scale: 1.3,
+    vfx: "flame_pulse",
   },
 
   // Firebomb
@@ -133,6 +150,10 @@ export const CFG = {
     radius: 90,
 
     frameRate: 12,
+
+    // 🔥 연출
+    scale: 1.8,
+    vfx: "explosion_big",
   },
 
   // Incendiary (화염 방사기)
@@ -152,6 +173,10 @@ export const CFG = {
     angle: 26, // degree 단위, 좌우 각도
 
     frameRate: 10,
+
+    // 🔥 연출
+    scale: 2.0,
+    vfx: "cone_flame",
   },
 
   // Meteor S
@@ -169,6 +194,10 @@ export const CFG = {
     duration: 330,
 
     frameRate: 10,
+
+    // 🔥 연출
+    scale: 2.5,
+    vfx: "meteor_small",
   },
 
   // Meteor M
@@ -185,6 +214,10 @@ export const CFG = {
     distance: 160,
 
     frameRate: 10,
+
+    // 🔥 연출
+    scale: 3.0,
+    vfx: "meteor_medium",
   },
 
   // Meteor L
@@ -201,6 +234,10 @@ export const CFG = {
     distance: 160,
 
     frameRate: 12,
+
+    // 🔥 연출
+    scale: 3.2,
+    vfx: "meteor_large",
   },
 
   // Napalm (장판)
@@ -218,21 +255,29 @@ export const CFG = {
     length: 140, // napalm 장판 폭
 
     frameRate: 10,
+
+    // 🔥 연출
+    scale: 1.8,            // 폭발 + 장판 기본 스케일
+    vfx: "napalm_burst",
   },
 
-  // Death Hand
-  deathhand: {
-    baseDmg: 300,
-    dmgScale: 0.30,
-    baseCost: 50,
-    costScale: 0.2,
-    cd: 8000,
+// Death Hand
+deathhand: {
+  baseDmg: 300,
+  dmgScale: 0.30,
+  baseCost: 50,
+  costScale: 0.2,
+  cd: 8000,
 
-    radius: 120,
-    distance: 150,
+  radius: 120,
+  distance: 150,
 
-    frameRate: 14,
-  },
+  frameRate: 14,
+
+  // 🔥 연출
+  scale: 2.0,
+  vfx: "deathhand_impact",
+},
 
   // 몬스터 설정
   monsters: [
