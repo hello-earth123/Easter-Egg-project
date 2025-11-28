@@ -12,7 +12,7 @@ export class FireBomb extends FireSkillBase {
 
     const dir = this.getDir(caster);
 
-    const dist = this.base.distance ?? 140;
+    const dist = this.base.distance ?? 200;
     const x = caster.x + dir.x * dist;
     const y = caster.y + dir.y * dist;
 

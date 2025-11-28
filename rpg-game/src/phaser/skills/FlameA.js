@@ -50,7 +50,7 @@ export class FlameA extends FireSkillBase {
         scene.damageArea({
           x: ox,
           y: oy,
-          radius,
+          radius: this.getScaledRadius(radius),
           dmg: tickDmg,
           onHit: () => this.shakeCameraOnHit(scene)
         });

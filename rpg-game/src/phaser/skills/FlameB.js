@@ -78,7 +78,7 @@ export class FlameB extends FireSkillBase {
         scene.damageArea({
           x: ox2,
           y: oy2,
-          radius,
+          radius: this.getScaledRadius(radius),
           dmg: tickDmg,
           onHit: () => this.shakeCameraOnHit(scene)
         });

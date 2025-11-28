@@ -26,7 +26,7 @@ export class Incendiary extends FireSkillBase {
 
     caster.setVelocity(0, 0);
 
-    const interval = this.base.interval ?? 500;
+    const interval = this.base.interval ?? 150;
     this.lastTickAt = 0;
 
     this._tickEvent = scene.time.addEvent({
@@ -56,45 +56,116 @@ export class Incendiary extends FireSkillBase {
     this.doEffect(scene, caster);
   }
 
-  doDamage(scene, caster) {
-    const dir = this.getDir(caster);
+  // =========================================================
+  //  🔥 4방향 정규화 (velocity 우선, 없으면 facing 사용)
+  // =========================================================
+  _getDirectionState(caster) {
+    let vx = 0, vy = 0;
 
-    const dist = this.base.distance ?? 120;
+    if (caster.body && caster.body.velocity) {
+      vx = caster.body.velocity.x;
+      vy = caster.body.velocity.y;
+    }
+
+    // 거의 멈춘 상태면 facing(또는 기본 오른쪽) 사용
+    if (Math.abs(vx) < 1 && Math.abs(vy) < 1) {
+      const f = caster.facing || { x: 1, y: 0 };
+      const fx = f.x || 0;
+      const fy = f.y || 0;
+
+      if (Math.abs(fx) >= Math.abs(fy)) {
+        return fx >= 0 ? "right" : "left";
+      } else {
+        return fy >= 0 ? "down" : "up";
+      }
+    }
+
+    // 움직이는 중이면 velocity로 방향 판단
+    if (Math.abs(vx) >= Math.abs(vy)) {
+      return vx >= 0 ? "right" : "left";
+    } else {
+      return vy >= 0 ? "down" : "up";
+    }
+  }
+
+  _getDirVector(direction) {
+    switch (direction) {
+      case "right": return { x: 1,  y: 0 };
+      case "left":  return { x: -1, y: 0 };
+      case "up":    return { x: 0,  y: -1 };
+      case "down":  return { x: 0,  y: 1 };
+      default:      return { x: 1,  y: 0 };
+    }
+  }
+
+  // =========================================================
+  // 🔥 데미지 판정
+  // =========================================================
+  doDamage(scene, caster) {
+    const direction = this._getDirectionState(caster);
+    const dir = this._getDirVector(direction);
+
+    const dist = this.base.distance ?? 130;
+
+    // 중심점 (캐릭터에서 dir 방향으로 dist만큼)
     const ox = caster.x + dir.x * dist;
     const oy = caster.y + dir.y * dist;
 
-    const radius = this.base.radius ?? 80;
-    const dmg = this.getDamage();
+    const width = this.getScaledSize(96);
+    const height = this.getScaledSize(32);
 
     scene.damageRectangle({
       originX: ox,
       originY: oy,
-      dir,
-      width: 96,
-      height: 32,
+      dir,            // ← 여기서도 같은 dir 사용
+      width,
+      height,
       length: dist,
-      dmg,
+      dmg: this.getDamage(),
     });
   }
 
+  // =========================================================
+  // 🔥 FX 생성 (flip + 회전 모두 적용)
+  // =========================================================
   doEffect(scene, caster) {
-    const dir = this.getDir(caster);
+    const direction = this._getDirectionState(caster);
+    const dir = this._getDirVector(direction);
 
-    const dist = this.base.distance ?? 120;
+    const dist = this.base.distance ?? 130;
+
+    // FX도 동일한 dir 기준으로 앞에 생성
     const ox = caster.x + dir.x * dist;
     const oy = caster.y + dir.y * dist;
 
-    // 🔥 stream sprite 생성
     const fx = scene.add.sprite(ox, oy, "incendiary");
     fx.setOrigin(0.5);
     fx.setScale(this.base.scale ?? 1.1);
 
-    // 방향 회전
-    fx.rotation = Math.atan2(dir.y, dir.x);
+    // 🔥 방향별 sprite 처리
+    switch (direction) {
+      case "right":
+        fx.flipX = false;
+        fx.rotation = 0;
+        break;
 
-    // VFX 적용
+      case "left":
+        fx.flipX = true;
+        fx.rotation = 0;                // flipX로 좌우 뒤집기
+        break;
+
+      case "up":
+        fx.flipX = false;
+        fx.rotation = -Math.PI / 2;     // 반시계 90도
+        break;
+
+      case "down":
+        fx.flipX = false;
+        fx.rotation = Math.PI / 2;      // 시계 90도
+        break;
+    }
+
     applyVFX(scene, fx, this.base.vfx);
-
     fx.play("incendiary");
 
     this.liveEffects.push(fx);

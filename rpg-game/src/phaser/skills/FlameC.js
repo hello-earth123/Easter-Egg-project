@@ -13,52 +13,36 @@ export class FlameC extends FireSkillBase {
     const radius = this.base.radius ?? 70;
     const duration = this.base.duration ?? 1200;
     const tickDmg = this.base.tickDmg ?? 12;
-
-    // === 🔥 scale 적용 ===
-    const scale = this.base.scale ?? 1.4;
-
-    // === 🔥 5개 방향 벡터 (십자 형태) ===
-    const dirs = [
-      dir,                          // 정면
-      { x: -dir.y, y: dir.x },      // 왼쪽 (90° 회전)
-      { x: dir.y, y: -dir.x },      // 오른쪽 (-90° 회전)
-      { x: 0, y: -1 },              // 위쪽
-      { x: 0, y: 1 },               // 아래쪽
-    ];
-
-    // === 🔥 spread 길이 보정 ===  
-    // 정면은 dist 사용, 좌우는 spread를 반영
-    const calcPos = (d) => {
-      if (d === dir) {
-        return {
-          x: caster.x + d.x * dist,
-          y: caster.y + d.y * dist
-        };
-      }
-      return {
-        x: caster.x + d.x * spread,
-        y: caster.y + d.y * spread
-      };
-    };
+    const scale = this.base.scale ?? 1.3;
 
     // ======================================================
-    // 🔥 FlameC 5개 FX 생성
+    // 🔥 1) 중심 폭발 위치 (플레이어 앞 distance)
+    // ======================================================
+    const centerX = caster.x + dir.x * dist;
+    const centerY = caster.y + dir.y * dist;
+
+    // ======================================================
+    // 🔥 2) 중심 폭발 + 십자 주변 지점
+    // ======================================================
+    const positions = [
+      { x: centerX,             y: centerY             }, // 중심 폭발
+      { x: centerX - spread,    y: centerY             }, // 왼쪽
+      { x: centerX + spread,    y: centerY             }, // 오른쪽
+      { x: centerX,             y: centerY - spread    }, // 위
+      { x: centerX,             y: centerY + spread    }, // 아래
+    ];
+
+    // ======================================================
+    // 🔥 FX 생성
     // ======================================================
     const flames = [];
 
-    for (const d of dirs) {
-      const pos = calcPos(d);
-
+    for (const pos of positions) {
       const fx = scene.add.sprite(pos.x, pos.y, "flameC");
       fx.setOrigin(0.5);
-
-      // scale 적용
       fx.setScale(scale);
+      applyVFX(scene, fx, this.base.vfx);
 
-      // VFX 적용
-      applyVFX(scene, fx, this.base.vfx); // flame_pulse
-
-      // 애니메이션
       fx.play("flameC");
 
       flames.push({ fx, x: pos.x, y: pos.y });
@@ -71,23 +55,24 @@ export class FlameC extends FireSkillBase {
       scene.damageArea({
         x: f.x,
         y: f.y,
-        radius,
+        radius: this.getScaledRadius(radius),
         dmg: this.getDamage(),
         onHit: () => this.shakeCameraOnHit(scene),
       });
     }
 
     // ======================================================
-    // 🔥 지속 도트 데미지 (FlameA/B와 동일: 총 2틱)
+    // 🔥 지속 도트 (2틱)
     // ======================================================
     const interval = duration / 2;
+
     for (let i = 1; i <= 2; i++) {
-      scene.time.delayedCall(i * interval, () => {
+      scene.time.delayedCall(interval * i, () => {
         for (const f of flames) {
           scene.damageArea({
             x: f.x,
             y: f.y,
-            radius,
+            radius: this.getScaledRadius(radius),
             dmg: tickDmg,
             onHit: () => this.shakeCameraOnHit(scene),
           });
@@ -96,14 +81,12 @@ export class FlameC extends FireSkillBase {
     }
 
     // ======================================================
-    // 🔥 애니메이션 끝나면 안전 destroy (5개 모두)
+    // 🔥 안전 destroy
     // ======================================================
     for (const f of flames) {
       f.fx.once("animationcomplete", () => {
         f.fx.setVisible(false);
-        scene.time.delayedCall(0, () => {
-          f.fx.destroy?.();
-        });
+        scene.time.delayedCall(0, () => f.fx.destroy?.());
       });
     }
 

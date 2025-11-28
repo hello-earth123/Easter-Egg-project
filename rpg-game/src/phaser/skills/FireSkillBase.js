@@ -26,4 +26,20 @@ export class FireSkillBase extends SkillBase {
         if (!scene || !scene.cameras || !scene.cameras.main) return;
         scene.cameras.main.shake(120, 0.015);
     }
+
+    // ================================================================
+    // 🔥 (추가) hitbox 스케일 자동 적용: 옵션 A
+    // ================================================================
+
+    /** 🔥 radius 기반 스킬 hitbox에 scale 자동 적용 */
+    getScaledRadius(r) {
+        const s = this.base.scale ?? 1;
+        return r * s;
+    }
+
+    /** 🔥 직사각형 hitbox에 scale 자동 적용 */
+    getScaledSize(v) {
+        const s = this.base.scale ?? 1;
+        return v * s;
+    }
 }

@@ -53,7 +53,7 @@ export const CFG = {
     dmgScale: 0.15,
     baseCost: 12,
     costScale: 0.1,
-    cd: 1200,
+    cd: 2000,
     speed: 500,
     frameRate: 14,
 
@@ -66,7 +66,7 @@ export const CFG = {
   buff: {
     baseCost: 20,
     costScale: 0,
-    cd: 5000,
+    cd: 30000,
 
     duration: 8000,
     hpUp: 300,
@@ -86,10 +86,10 @@ export const CFG = {
     costScale: 0.1,
     cd: 900,
 
-    distance: 120,
+    distance: 200,
     radius: 60,
     tickDmg: 8,
-    duration: 1200,
+    duration: 3000,
 
     frameRate: 10,
 
@@ -106,10 +106,10 @@ export const CFG = {
     costScale: 0.1,
     cd: 1200,
 
-    distance: 80,
+    distance: 250,
     radius: 60,
     tickDmg: 10,
-    duration: 1200,
+    duration: 3500,
 
     frameRate: 12,
 
@@ -124,9 +124,9 @@ export const CFG = {
     dmgScale: 0.2,
     baseCost: 16,
     costScale: 0.12,
-    cd: 1600,
+    cd: 4000,
 
-    distance: 80,
+    distance: 200,
     radius: 70,
     tickDmg: 12,
     duration: 1200,
@@ -145,7 +145,7 @@ export const CFG = {
     dmgScale: 0.20,
     baseCost: 20,
     costScale: 0.12,
-    cd: 2000,
+    cd: 4000,
 
     radius: 90,
 
@@ -162,7 +162,7 @@ export const CFG = {
     dmgScale: 0.15,
     baseCost: 14,
     costScale: 0.1,
-    cd: 2200,
+    cd: 5000,
 
     tickDmg: 6,
     duration: 2000,
@@ -190,13 +190,13 @@ export const CFG = {
     fallSpeed: 700,
     count: 2,
     radius: 60,
-    distance: 160,
+    distance: 200,
     duration: 330,
 
     frameRate: 10,
 
     // 🔥 연출
-    scale: 2.5,
+    scale: 2.0,
     vfx: "meteor_small",
   },
 
@@ -211,12 +211,12 @@ export const CFG = {
     fallSpeed: 700,
     count: 4,
     radius: 75,
-    distance: 160,
+    distance: 200,
 
     frameRate: 10,
 
     // 🔥 연출
-    scale: 3.0,
+    scale: 2.0,
     vfx: "meteor_medium",
   },
 
@@ -231,12 +231,12 @@ export const CFG = {
     fallSpeed: 700,
     count: 6,
     radius: 90,
-    distance: 160,
+    distance: 200,
 
     frameRate: 12,
 
     // 🔥 연출
-    scale: 3.2,
+    scale: 2.5,
     vfx: "meteor_large",
   },
 
@@ -261,23 +261,23 @@ export const CFG = {
     vfx: "napalm_burst",
   },
 
-// Death Hand
-deathhand: {
-  baseDmg: 300,
-  dmgScale: 0.30,
-  baseCost: 50,
-  costScale: 0.2,
-  cd: 8000,
+  // Death Hand
+  deathhand: {
+    baseDmg: 300,
+    dmgScale: 0.30,
+    baseCost: 50,
+    costScale: 0.2,
+    cd: 6500,
 
-  radius: 120,
-  distance: 150,
+    radius: 120,
+    distance: 170,
 
-  frameRate: 14,
+    frameRate: 14,
 
-  // 🔥 연출
-  scale: 2.0,
-  vfx: "deathhand_impact",
-},
+    // 🔥 연출
+    scale: 2.2,
+    vfx: "deathhand_impact",
+  },
 
   // 몬스터 설정
   monsters: [
