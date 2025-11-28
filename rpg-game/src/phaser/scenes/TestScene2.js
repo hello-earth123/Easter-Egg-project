@@ -2,13 +2,14 @@ import Phaser from "phaser";
 import { CFG } from "../config/Config.js";
 import { clamp01 } from "../utils/MathUtils.js";
 import { initPlayer } from "../player/PlayerStats.js";
+import { initSlot } from "../manager/slotManager.js";
 import { createDefaultSkills } from "../skills/index.js";
 import {
     spawnShockwave,
     spawnLightning,
     spawnHitFlash,
 } from "../effects/Effects.js";
-import { resolveDropItem, useItemFromInventory } from "../items/Inventory.js";
+import { initInventory, resolveDropItem, useItemFromInventory } from "../items/Inventory.js";
 import { spawnMonsters } from "../entities/TestMonsterFactory.js";
 import { FloatingText } from "../effects/FloatingText.js";
 import { preloadFireSkillAssets } from "../preload/preloadFireSkills.js";
@@ -47,6 +48,9 @@ export default class TestScene2 extends Phaser.Scene {
         // load scene 없이 동작시키기 위함
         this.isPlayerLoad;
         this.playerStats;
+
+        this.inventoryData;
+        this.slotData;
 
         this.itemList = ['hpPotion', 'mpPotion', 'lowGem', 'midGem', 'highGem', 'superGem'];
         this.skills;
@@ -181,10 +185,14 @@ export default class TestScene2 extends Phaser.Scene {
         this.isPlayerLoad = false;
         initPlayer(1).then(player => {
             this.playerStats = player;
-            this.isPlayerLoad = true;
-            console.log(this.playerStats)
         })
-        console.log(this.playerStats, this.isPlayerLoad)
+        initInventory(1).then(inven => {
+            this.inventoryData = inven;
+        })
+        initSlot(1).then(slot => {
+            this.slotData = slot;
+            this.isPlayerLoad = true;
+        })
 
         // 카메라가 Player(gameObject)를 추적하도록 설정
         this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
@@ -271,9 +279,6 @@ export default class TestScene2 extends Phaser.Scene {
 
         this.skills = createDefaultSkills(this);
 
-        this.skillSlots = [null, null, null, null];
-        this.itemShortcutSlots = [null, null];
-
         // 시스템 메세지 창
         this.textBar = "게임 시작!";
 
@@ -292,14 +297,16 @@ export default class TestScene2 extends Phaser.Scene {
 
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
     setSkillSlots(slots) {
-        this.skillSlots = (slots || []).slice(0, 4).map((s) => (s ? s.name : null));
+        this.slotData.skillSlots = (slots || [])
+            .slice(0, 4)
+            .map((s) => (s ? s.name : null));
     }
 
     /** itemSlots에 최대 2개의 아이템을 추가 */
     setItemSlots(itemSlots) {
-        this.itemShortcutSlots = (itemSlots || [])
+        this.slotData.itemSlots = (itemSlots || [])
             .slice(0, 2)
-            .map((i) => (i ? { name: i.name, icon: i.icon } : null));
+            .map((i) => (i ? i : null));
     }
 
     /** skill upgrade */
@@ -322,7 +329,7 @@ export default class TestScene2 extends Phaser.Scene {
 
     /** use skill */
     useSkill(slotIdx) {
-        const name = this.skillSlots[slotIdx];
+        const name = this.slotData.skillSlots[slotIdx];
 
         // skill이 등록되지 않았거나(이름 미추가), 존재하지 않을 경우, 미동작
         if (!name) return;
@@ -339,7 +346,7 @@ export default class TestScene2 extends Phaser.Scene {
 
     /** use item */
     useItemShortcut(idx) {
-        const slot = this.itemShortcutSlots[idx];
+        const slot = this.slotData.itemSlots[idx];
 
         console.log(slot)
 
@@ -347,10 +354,10 @@ export default class TestScene2 extends Phaser.Scene {
         if (!slot) return (this.textBar = "단축키에 아이템 없음");
 
         // inventory에서 동일한 id를 가진 slot의 인덱스를 반환 (존재하지 않으면 -1 반환)
-        const invIdx = this.playerStats.inventory.items.findIndex((i) => i.name === slot.name);
+        const invIdx = this.inventoryData.inventory.items.findIndex((i) => i.name === slot.name);
         if (invIdx === -1) return (this.textBar = "인벤토리에 아이템이 없습니다");
 
-        useItemFromInventory(this.playerStats, invIdx);
+        useItemFromInventory(this, invIdx);
     }
 
     // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
@@ -383,7 +390,7 @@ export default class TestScene2 extends Phaser.Scene {
         for (let i = 0; i < 4; i++) {
             const key = slotKeys[i];
             const phaserKey = this.keys[key];
-            const skillName = this.skillSlots[i];
+            const skillName = this.slotData.skillSlots[i];
             if (!skillName) continue;
 
             const skill = this.skills[skillName];
@@ -598,10 +605,10 @@ export default class TestScene2 extends Phaser.Scene {
         if (!itemSprite.getData('pickDef')) return;
 
         const def = itemSprite.getData('pickDef');
-        const exist = this.playerStats.inventory.items.find((i) => i.name === def.name);
+        const exist = this.inventoryData.inventory.items.find((i) => i.name === def.name);
 
         if (exist) exist.count += def.count || 1;
-        else this.playerStats.inventory.items.push({ ...def }); // Spread Operator : 객체의 모든 속성을 새로운 객체에 복사
+        else this.inventoryData.inventory.items.push({ ...def }); // Spread Operator : 객체의 모든 속성을 새로운 객체에 복사
 
         itemSprite.destroy();
 
@@ -792,30 +799,30 @@ export default class TestScene2 extends Phaser.Scene {
      * FireBomb, Meteor, Deathhand 등이 사용
      */
     damageArea({ x, y, radius, dmg, onHit }) {
-    if (!this.monsters) return;
+        if (!this.monsters) return;
 
-    let hitSomething = false;
+        let hitSomething = false;
 
-    this.monsters.children.iterate((monster) => {
-        if (!monster || !monster.active) return;
+        this.monsters.children.iterate((monster) => {
+            if (!monster || !monster.active) return;
 
-        const dx = monster.x - x;
-        const dy = monster.y - y;
-        if (dx * dx + dy * dy > radius * radius) return;
+            const dx = monster.x - x;
+            const dy = monster.y - y;
+            if (dx * dx + dy * dy > radius * radius) return;
 
-        monster.hp -= dmg;
-        this.showDamageText(monster, dmg, "#ffffff");
-        if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
-        if (typeof this.onMonsterAggro === "function") {
-        this.onMonsterAggro(monster);
+            monster.hp -= dmg;
+            this.showDamageText(monster, dmg, "#ffffff");
+            if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
+            if (typeof this.onMonsterAggro === "function") {
+                this.onMonsterAggro(monster);
+            }
+
+            hitSomething = true;
+        });
+
+        if (hitSomething && typeof onHit === "function") {
+            onHit();
         }
-
-        hitSomething = true;
-    });
-
-    if (hitSomething && typeof onHit === "function") {
-        onHit();
-    }
     }
 
     /**

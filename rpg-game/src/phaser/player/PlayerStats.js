@@ -30,22 +30,6 @@ export class PlayerStats {
     // tmp
     this.skillPoints = 0;
 
-    this.inventory = { items: [] };
-    this.inventory.items.push(
-      {
-        name: "hpPotion",
-        icon: "static/assets/hpPotion.png",
-        count: 2,
-        effect: 0.3,
-      },
-      {
-        name: "mpPotion",
-        icon: "static/assets/mpPotion.png",
-        count: 1,
-        effect: 0.2,
-      }
-    );
-
     playerInstance = this;
   }
 

@@ -274,6 +274,7 @@ import MainScene from "../phaser/scenes/MainScene";
 import TestScene from "../phaser/scenes/TestScene";
 import TestScene2 from "../phaser/scenes/TestScene2";
 import TestScene3 from "../phaser/scenes/TestScene3";
+import { initSlot } from "../phaser/manager/slotManager.js";
 
 /* Chart.js Radar import */
 import {
@@ -320,16 +321,16 @@ export default {
 
 
       // (기존) 스킬 목록 - QWER용 (fallback)
-      allSkills: [
-        { name: "Skill 1", icon: "/assets/skill1.png", acquired: true },
-        { name: "Skill 2", icon: "/assets/skill2.png", acquired: true },
-        { name: "Skill 3", icon: "/assets/skill3.png", acquired: true },
-        { name: "Skill 4", icon: "/assets/skill4.png", acquired: true },
-        { name: "Skill 5", icon: "/assets/skill5.png", acquired: true },
-        { name: "Skill 6", icon: "/assets/skill6.png", acquired: true },
-        { name: "Skill 7", icon: "/assets/skill7.png", acquired: true },
-        { name: "Skill 8", icon: "/assets/skill8.png", acquired: true },
-      ],
+      // allSkills: [
+      //   { name: "Skill 1", icon: "/assets/skill1.png", acquired: true },
+      //   { name: "Skill 2", icon: "/assets/skill2.png", acquired: true },
+      //   { name: "Skill 3", icon: "/assets/skill3.png", acquired: true },
+      //   { name: "Skill 4", icon: "/assets/skill4.png", acquired: true },
+      //   { name: "Skill 5", icon: "/assets/skill5.png", acquired: true },
+      //   { name: "Skill 6", icon: "/assets/skill6.png", acquired: true },
+      //   { name: "Skill 7", icon: "/assets/skill7.png", acquired: true },
+      //   { name: "Skill 8", icon: "/assets/skill8.png", acquired: true },
+      // ],
 
       // Phaser 연동
       textBar: "",
@@ -543,6 +544,37 @@ export default {
     window.addEventListener("keydown", this.onGlobalKeyDown);
     window.addEventListener("resize", this.onWindowResize);
 
+    /* ----------------------------------------------------------------- */
+    initSlot(1).then(slotData =>{
+      const skillSlotData = slotData.skillSlots;
+      const rawSlots = skillSlotData || [null, null, null, null];
+
+      // Vue상의 skillSlots는 먼저 초기화
+      this.skillSlots = [null, null, null, null];
+
+      // DB에서 불러온 스킬을 Vue의 onDropSkillShortcut 방식으로 재적용
+      rawSlots.forEach((skill, idx) => {
+        if (!skill) return;
+
+        // DB는 {name:"fireball"} 형태라고 가정
+        const fakeEv = {
+          dataTransfer: {
+            getData: (key) => (key === "skill-id" ? skill : ""),
+          },
+        };
+
+        // 기존 drop 로직 100% 그대로 활용
+        this.onDropSkillShortcut(fakeEv, idx);
+      });
+
+      if (slotData.itemSlots) {
+        this.itemSlots = slotData.itemSlots.map((i) => (i ? { name: i.name, icon: i.icon } : null));
+        console.log(this.itemSlots);
+      }
+    })
+    
+    /* ----------------------------------------------------------------- */
+
     // Vue ← Phaser 동기화
     this.pollTimer = setInterval(() => {
       const main = Object.values(game.scene.keys).find((s) => s.scene.isActive());
@@ -561,7 +593,7 @@ export default {
       this.textBar = main.textBar || "";
 
       // 인벤토리
-      this.inventory.items = (main.playerStats.inventory.items || []).map((i) => ({ ...i }));
+      this.inventory.items = (main.inventoryData.inventory.items || []).map((i) => ({ ...i }));
 
       // // 스킬 슬롯 (씬 → Vue 미러링)
       // if (main.skillSlots) {
@@ -573,8 +605,9 @@ export default {
       // }
 
       // 아이템 슬롯
-      if (main.itemShortcutSlots) {
-        this.itemSlots = main.itemShortcutSlots.map((i) => (i ? { ...i } : null));
+      if (main.inventoryData.itemSlots) {
+        this.itemSlots = main.inventoryData.itemSlots.map((i) => (i ? { name: i.name, icon: i.icon } : null));
+        console.log(this.itemSlots);
       }
     }, 100);
   },
@@ -1072,14 +1105,16 @@ export default {
     // QWER 슬롯 드롭: 스킬트리 스킬(A) + 기존 allSkills 겸용
     onDropSkillShortcut(ev, slotIdx) {
       const skillId = ev.dataTransfer.getData("skill-id");
+
       let newSkill = null;
 
       if (skillId) {
-        const node = this.skillNodes.find((n) => n.id === skillId);
+        const node = this.skillNodes.find((n) => (n.id === skillId) || (n.name === skillId));
         if (!node) return;
         if (!this.isUnlocked(node) || this.isLockedByBranch(node)) return;
 
-        const phaserKey = this.skillTreeToPhaserMap(skillId);
+        const phaserKey = this.skillTreeToPhaserMap(skillId) || skillId;
+        
         if (!phaserKey) return;
 
         // ⭐ id = phaserKey 로 완전 통일
@@ -1137,6 +1172,7 @@ export default {
       const idx = parseInt(ev.dataTransfer.getData("item-idx"));
       const item = this.inventory.items[idx];
       if (!item) return;
+      console.log({...item});
 
       this.itemSlots.splice(slotIdx, 1, { ...item });
 

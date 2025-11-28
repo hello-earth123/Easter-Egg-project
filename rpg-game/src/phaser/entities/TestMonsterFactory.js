@@ -56,8 +56,6 @@ export function spawnMonsters(scene) {
           m.setCollideWorldBounds(true);
           // collider box type > circle
           m.body.setCircle(Math.max(m.width, m.height) / 2);
-
-          console.log(m)
         }
       });
     })
