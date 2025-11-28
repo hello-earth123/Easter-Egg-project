@@ -76,9 +76,16 @@ class player(models.Model):
     superGemCount = models.IntegerField(default=0)
 
 
-# class Slot(models.Model):
-#     user = models.ForeignKey(
-#         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="slot"
-#     )
-#     skillSlots = models.
-#     itemSlots
+class Inventory(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="playerInven"
+    )
+    invenItem = models.JSONField(default=list)
+
+
+class Slot(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="slot"
+    )
+    skillSlots = models.JSONField(default=list)
+    itemSlots = models.JSONField(default=list)

@@ -2,8 +2,14 @@ let slotInstance = null;
 
 class EverySlot {
     constructor(data) {
+        if (slotInstance) {
+            return slotInstance;
+        }
+
         this.skillSlots = data.skillSlots || [null, null, null, null];
-        this.itemShortcutSlots = data.itemSlots || [null, null];
+        this.itemSlots = data.itemSlots || [null, null];
+
+        slotInstance = this;
     }
 }
 
