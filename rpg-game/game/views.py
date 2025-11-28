@@ -5,12 +5,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 
 from django.contrib.auth import get_user_model
-from .models import Monster, player, Item
+from .models import Monster, player, Item, Inventory, Slot
 from .serializers import (
     MonsterSerializer,
     MonsterCallSerializer,
     PlayerSerializer,
     ItemSerializer,
+    InventorySerializer,
+    SlotSerializer,
 )
 
 # class CharacterViewSet(viewsets.ModelViewSet):
@@ -45,6 +47,29 @@ def playerConnect(request, userId):
     account = player.objects.get(user=user)
 
     serializer = PlayerSerializer(account)
+
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+def invenConnect(request, userId):
+    User = get_user_model()
+    user = User.objects.get(pk=userId)
+    inventory = Inventory.objects.get(user=user)
+
+    serializer = InventorySerializer(inventory)
+
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+def slotConnect(request, userId):
+    User = get_user_model()
+    user = User.objects.get(pk=userId)
+    slot = Slot.objects.get(user=user)
+
+    serializer = SlotSerializer(slot)
+    print(serializer.data)
 
     return Response(serializer.data)
 

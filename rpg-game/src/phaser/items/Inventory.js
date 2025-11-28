@@ -17,34 +17,71 @@ export function resolveDropItem(drop) {
 
 /** Inventory Use */
 export function useItemFromInventory(state, invIndex) {
-  const item = state.inventory.items[invIndex];
-  // 없으면 종료
-  if (!item) return;
-
-  // // 소모품일 경우
-  // if (item.type === "consume") {
-  //   if (item.effect?.hp)
-  //     state.playerStats.hp = Math.min(
-  //       state.playerStats.maxHp,
-  //       state.playerStats.hp + item.effect.hp
-  //     );
-  //   if (item.effect?.mp)
-  //     state.playerStats.mp = Math.min(
-  //       state.playerStats.maxMp,
-  //       state.playerStats.mp + item.effect.mp
-  //     );
+  const item = state.inventoryData.inventory.items[invIndex];
+  if (!item) return;  // 없으면 종료
 
   item.count -= 1;
 
   if (item.name === 'hpPotion') {
-    state.hp = Math.min(state.maxHp, state.hp + (state.maxHp * item.effect))
+    state.playerStats.hp = Math.min(state.playerStats.maxHp, state.playerStats.hp + (state.playerStats.maxHp * item.effect))
   }
   else if (item.name == 'mpPotion') {
-    state.mp = Math.min(state.maxMp, state.mp + (state.maxMp * item.effect))
+    state.playerStats.mp = Math.min(state.playerStats.maxMp, state.playerStats.mp + (state.playerStats.maxMp * item.effect))
   }
 
   // 전부 사용했을 경우, 슬롯에서 제거
-  if (item.count <= 0) state.inventory.items.splice(invIndex, 1);
+  if (item.count <= 0) state.inventoryData.inventory.items.splice(invIndex, 1);
 
   state.textBar = `${item.name} 사용`;
+}
+
+let invenInstance = null;
+
+class InventoryData {
+  constructor(data) {
+    if (invenInstance) {
+      return invenInstance;
+    }
+
+    this.inventory = { items: data.invenItem } || { items: [] };
+
+    if (!data.invenItem) {
+      this.inventory.items.push(
+        {
+          name: "hpPotion",
+          icon: "static/assets/hpPotion.png",
+          count: 2,
+          effect: 0.3,
+        },
+        {
+          name: "mpPotion",
+          icon: "static/assets/mpPotion.png",
+          count: 1,
+          effect: 0.2,
+        }
+      );
+    }
+
+    invenInstance = this;
+  }
+}
+
+async function fetchInvenData(userId) {
+  const res = await fetch(`http://127.0.0.1:8000/api/inventory/${userId}/`);
+  if (!res.ok) throw new Error("Failed to fetch inventory data");
+  return await res.json();
+}
+
+export async function initInventory(userId) {
+  if (invenInstance) {
+    return invenInstance;
+  }
+
+  try {
+    const data = await fetchInvenData(userId);
+    return new InventoryData(data);
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 }
