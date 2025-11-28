@@ -4,18 +4,52 @@ import { FireSkillBase } from "./FireSkillBase.js";
 export class Napalm extends FireSkillBase {
   cast(scene, caster) {
     const dir = this.getDir(caster);
-    const tx = caster.x + dir.x * this.base.distance;
-    const ty = caster.y + dir.y * this.base.distance;
 
-    const fx = scene.add.sprite(tx, ty, "napalm").play("napalm");
-    scene.time.delayedCall(this.base.duration, () => fx.destroy());
+    const dist = this.base.distance ?? 150;
+    const ox = caster.x + dir.x * dist;
+    const oy = caster.y + dir.y * dist;
 
-    scene.applyPersistentDot({
-      x: tx, y: ty,
-      radius: this.base.radius,
-      tickDmg: this.base.tickDmg,
-      duration: this.base.duration,
+    // 🔥 초기 폭발 애니메이션
+    const boom = scene.add.sprite(ox, oy, "napalm");
+    boom.play("napalm");
+    boom.once("animationcomplete", () => boom.destroy());
+
+    const radius = this.base.radius;
+    const tickDmg = this.base.tickDmg;
+    const duration = this.base.duration;
+    const interval = this.base.interval ?? 450;
+
+    // 🔥 즉발 데미지
+    scene.damageArea({
+      x: ox,
+      y: oy,
+      radius,
+      dmg: this.getDamage(),
+      onHit: () => this.shakeCameraOnHit(scene)
     });
+
+    // 🔥 napalm 불길 반복 sprite
+    const flame = scene.add.sprite(ox, oy, "napalm_flame");
+    flame.play("napalm_flame_loop");   // 반복되는 불길 애니메이션
+
+    // 지속시간 끝나면 제거
+    scene.time.delayedCall(duration, () => {
+      flame.destroy();
+    });
+
+    // 🔥 지속 데미지 loop
+    const ticks = Math.floor(duration / interval);
+    for (let i = 1; i <= ticks; i++) {
+      scene.time.delayedCall(i * interval, () => {
+        scene.damageArea({
+          x: ox,
+          y: oy,
+          radius,
+          dmg: tickDmg,
+          onHit: () => this.shakeCameraOnHit(scene)
+        });
+      });
+    }
 
     scene.textBar = `Napalm (Lv${this.level})`;
   }

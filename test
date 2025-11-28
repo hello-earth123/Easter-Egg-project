@@ -1,0 +1,17 @@
+curl "https://gms.ssafy.io/gmsapi/generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=S14P02AE04-70be2cad-2563-42c7-9427-1c588e6d42dd" \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  -d '{
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "phaser에서 사용가능한 캐릭터 sprite 만들어주세요. 불을 사용하는 마법사이며, 스태프를 사용합니다. 달리는 모션, 버프 캐스팅 모션, 스킬 모션, 몬스터에게 피격되는 모션, 죽는 모션이 포함됩니다."
+          }
+        ]
+      }
+    ],
+    "generationConfig": {
+      "responseModalities": ["Text", "Image"]
+    }
+  }'

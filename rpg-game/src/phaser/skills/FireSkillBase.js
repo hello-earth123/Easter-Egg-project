@@ -23,6 +23,7 @@ export class FireSkillBase extends SkillBase {
     }
 
     shakeCameraOnHit(scene) {
-        scene.cameras.main.shake(120, 0.01);
+        if (!scene || !scene.cameras || !scene.cameras.main) return;
+        scene.cameras.main.shake(120, 0.015);
     }
 }

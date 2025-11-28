@@ -165,6 +165,8 @@ export const CFG = {
     fallSpeed: 700,
     count: 2,
     radius: 60,
+    distance: 160,
+    duration: 330,
 
     frameRate: 10,
   },
@@ -177,9 +179,10 @@ export const CFG = {
     costScale: 0.12,
     cd: 4200,
 
-    fallSpeed: 600,
+    fallSpeed: 700,
     count: 4,
     radius: 75,
+    distance: 160,
 
     frameRate: 10,
   },
@@ -192,9 +195,10 @@ export const CFG = {
     costScale: 0.15,
     cd: 6000,
 
-    fallSpeed: 520,
+    fallSpeed: 700,
     count: 6,
     radius: 90,
+    distance: 160,
 
     frameRate: 12,
   },
@@ -225,6 +229,7 @@ export const CFG = {
     cd: 8000,
 
     radius: 120,
+    distance: 150,
 
     frameRate: 14,
   },
