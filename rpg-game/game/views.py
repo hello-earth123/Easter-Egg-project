@@ -50,6 +50,11 @@ def playerConnect(request, userId):
 
 
 @api_view(["GET"])
+def slotConnect(request, userId):
+    pass
+
+
+@api_view(["GET"])
 def eachItem(request, name):
     item = Item.objects.get(name=name)
     serializer = ItemSerializer(item)

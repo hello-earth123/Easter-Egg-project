@@ -320,16 +320,16 @@ export default {
 
 
       // (기존) 스킬 목록 - QWER용 (fallback)
-      allSkills: [
-        { name: "Skill 1", icon: "/assets/skill1.png", acquired: true },
-        { name: "Skill 2", icon: "/assets/skill2.png", acquired: true },
-        { name: "Skill 3", icon: "/assets/skill3.png", acquired: true },
-        { name: "Skill 4", icon: "/assets/skill4.png", acquired: true },
-        { name: "Skill 5", icon: "/assets/skill5.png", acquired: true },
-        { name: "Skill 6", icon: "/assets/skill6.png", acquired: true },
-        { name: "Skill 7", icon: "/assets/skill7.png", acquired: true },
-        { name: "Skill 8", icon: "/assets/skill8.png", acquired: true },
-      ],
+      // allSkills: [
+      //   { name: "Skill 1", icon: "/assets/skill1.png", acquired: true },
+      //   { name: "Skill 2", icon: "/assets/skill2.png", acquired: true },
+      //   { name: "Skill 3", icon: "/assets/skill3.png", acquired: true },
+      //   { name: "Skill 4", icon: "/assets/skill4.png", acquired: true },
+      //   { name: "Skill 5", icon: "/assets/skill5.png", acquired: true },
+      //   { name: "Skill 6", icon: "/assets/skill6.png", acquired: true },
+      //   { name: "Skill 7", icon: "/assets/skill7.png", acquired: true },
+      //   { name: "Skill 8", icon: "/assets/skill8.png", acquired: true },
+      // ],
 
       // Phaser 연동
       textBar: "",
@@ -1137,6 +1137,7 @@ export default {
       const idx = parseInt(ev.dataTransfer.getData("item-idx"));
       const item = this.inventory.items[idx];
       if (!item) return;
+      console.log({...item});
 
       this.itemSlots.splice(slotIdx, 1, { ...item });
 

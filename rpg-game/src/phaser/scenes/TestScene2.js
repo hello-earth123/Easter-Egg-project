@@ -179,7 +179,7 @@ export default class TestScene2 extends Phaser.Scene {
         };
 
         this.isPlayerLoad = false;
-        initPlayer(2).then(player => {
+        initPlayer(1).then(player => {
             this.playerStats = player;
             this.isPlayerLoad = true;
             console.log(this.playerStats)
@@ -292,14 +292,18 @@ export default class TestScene2 extends Phaser.Scene {
 
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
     setSkillSlots(slots) {
-        this.skillSlots = (slots || []).slice(0, 4).map((s) => (s ? s.name : null));
+        this.skillSlots = (slots || [])
+            .slice(0, 4)
+            .map((s) => (s ? s.name : null));
+        console.log(this.skillSlots);
     }
 
     /** itemSlots에 최대 2개의 아이템을 추가 */
     setItemSlots(itemSlots) {
         this.itemShortcutSlots = (itemSlots || [])
             .slice(0, 2)
-            .map((i) => (i ? { name: i.name, icon: i.icon } : null));
+            .map((i) => (i ? i : null));
+        console.log(this.itemShortcutSlots);
     }
 
     /** skill upgrade */
@@ -406,7 +410,7 @@ export default class TestScene2 extends Phaser.Scene {
         }
 
 
-        if (this.count >= 3) {
+        if (this.count >= 30) {
             this.scene.start('TestScene3');
         }
     }
