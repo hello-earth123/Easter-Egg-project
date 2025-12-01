@@ -62,7 +62,7 @@ export default class TestScene3 extends Phaser.Scene {
     preload() {
         this.load.image("map", "/static/assets/map.png");
         // 포탈 PNG 로드
-        this.load.spritesheet("portal", "/static/assets/portal_atlas.png", {
+        this.load.spritesheet("portal", "/static/assets/portal.png", {
             frameWidth: 102,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
             frameHeight: 138,  // 프레임 높이(실제 png 높이에 맞추기)
         });
@@ -305,13 +305,25 @@ export default class TestScene3 extends Phaser.Scene {
 
         this.count = 0;
 
-        // === 포탈 이미지 생성 ===
-        this.portal = this.physics.add.sprite(200, 600, "portal");
+        // === 포탈 생성(애니메이션) ===
+        this.portal = this.physics.add.sprite(1400, 600, "portal");
+
+        // 애니메이션 생성 (한번만 생성되도록 체크)
+        if (!this.anims.exists("portal-anim")) {
+            this.anims.create({
+                key: "portal-anim",
+                frames: this.anims.generateFrameNumbers("portal", { start: 0, end: 6 }),
+                frameRate: 12,
+                repeat: -1
+            });
+        }
+
+        // 애니메이션 재생
+        this.portal.play("portal-anim");
+
         this.portal.setOrigin(0.5);
         this.portal.setImmovable(true);
-
-        // 포탈 크기가 너무 크면 조정 (필요시)
-        this.portal.setScale(1.0); // 필요시 0.7, 1.2 등으로 변경 가능
+        this.portal.setScale(1.0);
 
         // 상호작용 가능 여부
         this.canInteract = false;
