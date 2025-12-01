@@ -14,6 +14,7 @@ from .serializers import (
     InventorySerializer,
     SlotSerializer,
     NowLocationSerializer,
+    StaffStatus,
 )
 
 # class CharacterViewSet(viewsets.ModelViewSet):
@@ -89,5 +90,16 @@ def nowLocation(request, userId):
     location = player.objects.get(user=user)
 
     serializer = NowLocationSerializer(location)
+
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def staffStatus(request, userId):
+    User = get_user_model()
+    user = User.objects.get(pk=userId)
+    staffStat = player.objects.get(user=user)
+
+    serializer = StaffStatus(staffStat)
 
     return Response(serializer.data)
