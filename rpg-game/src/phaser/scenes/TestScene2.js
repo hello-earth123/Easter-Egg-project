@@ -60,11 +60,16 @@ export default class TestScene2 extends Phaser.Scene {
     // TODO: preload, create의 중첩되는 요소에 대한 singleton 처리
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
-        this.load.image("map", "/static/assets/map.png");
+        this.load.image("map", "/static/assets/tomb0.png");
+        // 포탈 PNG 로드
+        this.load.spritesheet("portal", "/static/assets/portal_atlas.png", {
+            frameWidth: 102,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
+            frameHeight: 138,  // 프레임 높이(실제 png 높이에 맞추기)
+        });
         this.load.image("player", "/static/assets/player.png");
         this.load.image("bullet", "/static/assets/bullet.png");
         this.load.image("item", "/static/assets/item.png");
-        this.load.image("shockwave", "/static/assets/effect_shockwave.png");
+        // this.load.image("shockwave", "/static/assets/effect_shockwave.png");
 
         for (const key of this.itemList) {
             this.load.image(key, `static/assets/${key}.png`)
@@ -108,6 +113,13 @@ export default class TestScene2 extends Phaser.Scene {
     // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
+
+        this.anims.create({
+            key: "portal-anim",
+            frames: this.anims.generateFrameNumbers("portal", { start: 0, end: 6 }),
+            frameRate: 12,
+            repeat: -1
+        });
         // this.anims.create({
         //     key: "lightning-burst",
         //     frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
@@ -294,6 +306,34 @@ export default class TestScene2 extends Phaser.Scene {
         createFireSkillAnims(this);
 
         this.count = 0;
+
+        // === 포탈 이미지 생성 ===
+        this.portal = this.physics.add.sprite(1400, 600, "portal");
+        this.portal.setOrigin(0.5);
+        this.portal.setImmovable(true);
+
+        // 포탈 크기가 너무 크면 조정 (필요시)
+        this.portal.setScale(1.0); // 필요시 0.7, 1.2 등으로 변경 가능
+
+        // 상호작용 가능 여부
+        this.canInteract = false;
+
+        // 안내 문구
+        this.interactText = this.add.text(1400, 520, "F 키를 눌러 이동", {
+            fontSize: "22px",
+            color: "#ffffff",
+            backgroundColor: "rgba(0,0,0,0.45)",
+            padding: { x: 8, y: 4 }
+        }).setOrigin(0.5).setVisible(false);
+
+        // 플레이어가 포탈 위에 올라가면
+        this.physics.add.overlap(this.player, this.portal, () => {
+            this.canInteract = true;
+            this.interactText.setVisible(true);
+        });
+        // F 키 등록
+        this.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+
     }
 
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
@@ -414,8 +454,28 @@ export default class TestScene2 extends Phaser.Scene {
         }
 
 
-        if (this.count >= 300) {
-            this.scene.start('TestScene3');
+        // if (this.count >= 300) {
+        //     this.scene.start('TestScene3');
+        // }
+
+        // === 포탈 상호작용 체크 ===
+        if (this.canInteract) {
+
+            // F 누르면 이동
+            if (Phaser.Input.Keyboard.JustDown(this.keyF)) {
+                this.moveToNextScene();
+            }
+
+            // 포탈에서 벗어나면 상호작용 불가 처리
+            const dist = Phaser.Math.Distance.Between(
+                this.player.x, this.player.y,
+                this.portal.x, this.portal.y
+            );
+
+            if (dist > 160) {  // 포탈 범위 밖
+                this.canInteract = false;
+                this.interactText.setVisible(false);
+            }
         }
     }
 
@@ -995,7 +1055,19 @@ export default class TestScene2 extends Phaser.Scene {
     //     });
     //   }
 
+    /** F 키로 다음 Scene 이동 (데이터 유지됨) */
+    moveToNextScene() {
 
+        this.cameras.main.fadeOut(300, 0, 0, 0);
+
+        this.time.delayedCall(300, () => {
+            this.scene.start("TestScene3", {
+                playerStats: this.playerStats,
+                inventoryData: this.inventoryData,
+                slotData: this.slotData,
+            });
+        });
+    }
 
 }
 
