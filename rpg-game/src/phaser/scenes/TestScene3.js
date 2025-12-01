@@ -18,12 +18,6 @@ import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
 export default class TestScene3 extends Phaser.Scene {
-
-    init(data) {
-        this.playerStats = data.playerStats;
-        this.inventoryData = data.inventoryData;
-        this.slotData = data.slotData;
-    }
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
         super({ key: "TestScene3" });
