@@ -261,8 +261,24 @@
             </div>
           </div>
         </div>
-
         <div style="margin-top: 6px; color: #ccc">닫기: P</div>
+      </div>
+
+      <!-- =================== ESC 메뉴창 =================== -->
+      <div v-if="showMenu" class="modal menu-modal" tabindex="0">
+        <div class="modal-header">Menu</div>
+
+        <div class="menu-body">
+          <button class="menu-btn" @click="saveGame">SAVE</button>
+          <button class="menu-btn" @click="openSoundMenu">SOUND</button>
+          <button class="menu-btn" @click="closeMenu">CLOSE</button>
+        </div>
+
+        <!-- 사운드 설정 -->
+        <div v-if="showSound" class="sound-panel">
+          <h3>SOUND SETTINGS</h3>
+          <button class="menu-btn" @click="closeSoundMenu">BACK</button>
+        </div>
       </div>
     </div>
   </div>
@@ -320,7 +336,6 @@ export default {
       itemSlots: [null, null],
       animSkillPoints: 0,
 
-
       // (기존) 스킬 목록 - QWER용 (fallback)
       // allSkills: [
       //   { name: "Skill 1", icon: "/assets/skill1.png", acquired: true },
@@ -342,6 +357,8 @@ export default {
       showInventory: false,
       showStats: false,
       showSkills: false,
+      showMenu: false,
+      showSound: false,
       windowStack: [],
       topZIndex: 10000,
 
@@ -550,9 +567,11 @@ export default {
     };
 
     const game = new Phaser.Game(config);
+    this.game = game;
     game.scene.start(lastScene);
   
-    window.addEventListener("keydown", this.onGlobalKeyDown);
+    this._keyHandler = (e) => this.onGlobalKeyDown(e);
+    window.addEventListener("keydown", this._keyHandler);
     window.addEventListener("resize", this.onWindowResize);
   
     /* ----------------------------------------------------------------- */
@@ -630,7 +649,7 @@ export default {
   },
 
   beforeUnmount() {
-    window.removeEventListener("keydown", this.onGlobalKeyDown);
+    window.removeEventListener("keydown", this._keyHandler);
     window.removeEventListener("resize", this.onWindowResize);
     if (this.pollTimer) clearInterval(this.pollTimer);
     if (this.weaponRadarChart) this.weaponRadarChart.destroy();
@@ -1038,12 +1057,19 @@ export default {
       if (e.key === "k" || e.key === "K") this.toggleSkills();
 
       if (e.key === "Escape") {
-        const last = this.windowStack.pop();
-        if (!last) return;
 
-        if (last === "inventory") this.showInventory = false;
-        if (last === "stats") this.showStats = false;
-        if (last === "skills") this.showSkills = false;
+        // Vue 스택에 있는 창이 있으면 그 창만 닫고 끝
+        const last = this.windowStack.pop();
+        if (last) {
+          if (last === "inventory") this.showInventory = false;
+          if (last === "stats") this.showStats = false;
+          if (last === "skills") this.showSkills = false;
+          if (last === "menu") this.showMenu = false;
+          return;
+        }
+
+        // Vue 창이 아무것도 안 떠 있으면 메뉴 열기
+        this.openMenu();
       }
     },
 
@@ -1081,6 +1107,23 @@ export default {
         });
       }
     },
+
+    closeMenu() {
+      this.showMenu = false;
+    },
+    openMenu() {
+      this.showMenu = true;
+      this.showSound = false;
+      this.windowStack.push("menu");
+    },
+
+    openSoundMenu() {
+      this.showSound = true;
+    },
+    closeSoundMenu() {
+      this.showSound = false;
+    },
+
 
     /* ===================
        드래그 가능한 모달
@@ -1817,5 +1860,45 @@ export default {
 
 .weapon-reset-btn:hover {
   background: #e44;
+}
+/* ============== 메뉴창 ================= */
+.menu-modal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  background: #222;
+  padding: 12px;
+  border: 1px solid #555;
+  z-index: 99999;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.menu-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu-btn {
+  padding: 10px;
+  background: #444;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.menu-btn:hover {
+  background: #666;
+}
+
+.sound-panel {
+  margin-top: 20px;
+  padding: 10px;
+  background: #333;
+  border-radius: 6px;
 }
 </style>

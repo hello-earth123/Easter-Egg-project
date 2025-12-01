@@ -18,6 +18,29 @@ import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
 export default class TestScene2 extends Phaser.Scene {
+
+    init(data) {
+        const fromPortal = data.fromPortal ?? null;
+        this.playerStats = data.playerStats;
+        this.inventoryData = data.inventoryData;
+        this.slotData = data.slotData;
+
+        const portalSpawnPoints = {
+            east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
+            south: { x: 700, y: 1000 },
+            west: { x: 1400, y: 600 },
+            north: { x: 700, y: 200},
+        };
+
+        if (fromPortal && portalSpawnPoints[fromPortal]) {
+            this.spawnX = portalSpawnPoints[fromPortal].x;
+            this.spawnY = portalSpawnPoints[fromPortal].y;
+        } else {
+            this.spawnX = 400;
+            this.spawnY = 300;
+        }
+    }
+
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
         super({ key: "TestScene2" });
@@ -163,6 +186,14 @@ export default class TestScene2 extends Phaser.Scene {
         //     repeat: 1
         // });
 
+        this.uiState = {
+            inventory: false,
+            skill: false,
+            stat: false,
+            menu: false,
+            sound: false,   // ⭐ 추가
+
+        };
 
         // 맵 크기 설정 (물리적 공간 범위 설정)
         this.physics.world.setBounds(0, 0, CFG.world.width, CFG.world.height);
@@ -178,7 +209,7 @@ export default class TestScene2 extends Phaser.Scene {
         map.displayHeight = CFG.world.height;
 
         // Player(gameObject) 생성 및 rigid body 추가
-        this.player = this.physics.add.sprite(400, 300, "player");
+        this.player = this.physics.add.sprite(this.spawnX, this.spawnY, "player");
         this.player.setCollideWorldBounds(true);
         // 바라보는 방향 설정
         this.player.facing = new Phaser.Math.Vector2(0, -1);
@@ -309,6 +340,7 @@ export default class TestScene2 extends Phaser.Scene {
 
         // === 포탈 생성(애니메이션) ===
         this.portal = this.physics.add.sprite(1400, 600, "portal");
+        this.portal.portalId = "east"; // ⭐ 포탈 ID
 
         // 애니메이션 생성 (한번만 생성되도록 체크)
         if (!this.anims.exists("portal-anim")) {
@@ -329,13 +361,20 @@ export default class TestScene2 extends Phaser.Scene {
         // 상호작용 가능 여부
         this.canInteract = false;
 
-        // 안내 문구
-        this.interactText = this.add.text(1400, 520, "F 키를 눌러 이동", {
+        this.interactText = this.add.text(
+            this.portal.x, 
+            this.portal.y, 
+            "F 키를 눌러 이동", 
+            {
             fontSize: "22px",
             color: "#ffffff",
             backgroundColor: "rgba(0,0,0,0.45)",
             padding: { x: 8, y: 4 }
-        }).setOrigin(0.5).setVisible(false);
+            }
+        )
+        .setOrigin(0.5)
+        .setVisible(false)
+        .setDepth(9999);
 
         // 플레이어가 포탈 위에 올라가면
         this.physics.add.overlap(this.player, this.portal, () => {
@@ -344,6 +383,7 @@ export default class TestScene2 extends Phaser.Scene {
         });
         // F 키 등록
         this.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+
 
     }
 
@@ -1076,8 +1116,37 @@ export default class TestScene2 extends Phaser.Scene {
                 playerStats: this.playerStats,
                 inventoryData: this.inventoryData,
                 slotData: this.slotData,
+                fromPortal: "east",
+                spawnX: this.portal.x,
+                spawnY: this.portal.y + 60
             });
         });
+    }
+
+    collectPlayerData() {
+        return {
+            stats: this.playerStats,
+            inventory: this.inventoryData,
+            slots: this.slotData,
+            position: { x: this.player.x, y: this.player.y },
+            scene: this.scene.key
+        };
+    }
+
+    saveGame() {
+        const data = this.collectPlayerData();
+
+        fetch("/api/save_game/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(() => {
+            console.log("게임 저장 완료!");
+            this.textBar = "게임이 저장되었습니다!";
+        })
+        .catch(err => console.error(err));
     }
 
 }
