@@ -1,0 +1,28 @@
+import { getCurrentScene } from "./sceneRegistry";
+
+function collectPlayerData() {
+    const scene = getCurrentScene();
+    return {
+        stats: scene.playerStats,
+        inventory: scene.inventoryData,
+        slots: scene.slotData,
+        scene: scene.scene.key
+    };
+}
+
+export function saveGame() {
+    const data = collectPlayerData();
+    const scene = getCurrentScene();
+
+    fetch("http://127.0.0.1:8000/api/save_game/1/", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(() => {
+        console.log("게임 저장 완료!");
+        scene.textBar = "게임이 저장되었습니다!";
+    })
+    .catch(err => console.error(err));
+}

@@ -70,10 +70,11 @@ class player(models.Model):
     staffLuk = models.FloatField(default=0)
     point = models.IntegerField(default=0)
 
-    lowGemCount = models.IntegerField(default=0)
-    midGemCount = models.IntegerField(default=0)
-    highGemCount = models.IntegerField(default=0)
-    superGemCount = models.IntegerField(default=0)
+    damageGem = models.FloatField(default=0)
+    coolReduceGem = models.FloatField(default=0)
+    manaReduceGem = models.FloatField(default=0)
+    defenseGem = models.FloatField(default=0)
+    lukGem = models.FloatField(default=0)
 
     nowLocation = models.CharField(default="mainScene")
 

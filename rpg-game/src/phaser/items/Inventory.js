@@ -23,10 +23,35 @@ export function useItemFromInventory(state, invIndex) {
   item.count -= 1;
 
   if (item.name === 'hpPotion') {
-    state.playerStats.hp = Math.min(state.playerStats.maxHp, state.playerStats.hp + (state.playerStats.maxHp * item.effect))
+    state.playerStats.consume('hp', item.effect);
   }
   else if (item.name == 'mpPotion') {
-    state.playerStats.mp = Math.min(state.playerStats.maxMp, state.playerStats.mp + (state.playerStats.maxMp * item.effect))
+    state.playerStats.consume('mp', item.effect);
+  }
+  else if (item.name.includes('Gem')){
+    console.log(state.playerStats.totalGem);
+    if (state.playerStats.totalGem < state.playerStats.maxGem){
+      if (item.name.includes('damage')){
+        state.playerStats.consume('damageGem', item.effect);
+      }
+      else if (item.name.includes('cooldown')){
+        state.playerStats.consume('cooldownGem', item.effect);
+      }
+      else if (item.name.includes('manaCost')){
+        state.playerStats.consume('manaCostGem', item.effect);
+      }
+      else if (item.name.includes('defense')){
+        state.playerStats.consume('defenseGem', item.effect);
+      }
+      else{
+        state.playerStats.consume('luckGem', item.effect);
+      }
+    }
+    else{
+      item.count += 1;
+      state.textBar = `최대 추가 스탯 초과! 사용 불가!`;
+      return;
+    }
   }
 
   // 전부 사용했을 경우, 슬롯에서 제거

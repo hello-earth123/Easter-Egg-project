@@ -269,7 +269,7 @@
         <div class="modal-header">Menu</div>
 
         <div class="menu-body">
-          <button class="menu-btn" @click="saveGame">SAVE</button>
+          <button class="menu-btn" @click="save">SAVE</button>
           <button class="menu-btn" @click="openSoundMenu">SOUND</button>
           <button class="menu-btn" @click="closeMenu">CLOSE</button>
         </div>
@@ -292,6 +292,7 @@ import TestScene2 from "../phaser/scenes/TestScene2";
 import TestScene3 from "../phaser/scenes/TestScene3";
 import { initSlot } from "../phaser/manager/slotManager.js";
 import { increaseStat, resetStat } from "../phaser/player/PlayerStats.js";
+import { saveGame } from "../phaser/manager/saveManager.js";
 
 /* Chart.js Radar import */
 import {
@@ -552,6 +553,12 @@ export default {
     const data = await res.json();
     
     lastScene = data.nowLocation;
+
+    const sceneMap = {
+      TestScene2: TestScene2,
+      TestScene3: TestScene3,
+      MainScene: MainScene
+    };
     
     const config = {
       type: Phaser.AUTO,
@@ -562,8 +569,7 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      // scene: [TestScene2, TestScene3, MainScene],
-      scene: [TestScene3],
+      scene: [sceneMap[lastScene]],
     };
 
     const game = new Phaser.Game(config);
@@ -687,6 +693,11 @@ export default {
   },
 
   methods: {
+    /* 저장 */
+    save(){
+      saveGame();
+    },
+
     /* ===================
        무기 스탯 및 레이더 차트
     ====================== */
@@ -1123,7 +1134,6 @@ export default {
     closeSoundMenu() {
       this.showSound = false;
     },
-
 
     /* ===================
        드래그 가능한 모달

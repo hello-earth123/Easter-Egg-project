@@ -14,16 +14,21 @@ import { spawnMonsters } from "../entities/TestMonsterFactory.js";
 import { FloatingText } from "../effects/FloatingText.js";
 import { preloadFireSkillAssets } from "../preload/preloadFireSkills.js";
 import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
+import TestScene3 from "./TestScene3.js";
+import { setCurrentScene } from "../manager/sceneRegistry.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
 export default class TestScene2 extends Phaser.Scene {
 
     init(data) {
-        const fromPortal = data.fromPortal ?? null;
-        this.playerStats = data.playerStats;
-        this.inventoryData = data.inventoryData;
-        this.slotData = data.slotData;
+        let fromPortal = null;
+        if (data){
+            fromPortal = data.fromPortal;
+        }
+        // this.playerStats = data.playerStats;
+        // this.inventoryData = data.inventoryData;
+        // this.slotData = data.slotData;
 
         const portalSpawnPoints = {
             east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
@@ -83,7 +88,7 @@ export default class TestScene2 extends Phaser.Scene {
     // TODO: preload, create의 중첩되는 요소에 대한 singleton 처리
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
-        this.load.image("map", "/static/assets/tomb0.png");
+        this.load.image("map2", "/static/assets/tomb0.png");
         // 포탈 PNG 로드
         this.load.spritesheet("portal", "/static/assets/portal.png", {
             frameWidth: 102.1428,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
@@ -136,6 +141,7 @@ export default class TestScene2 extends Phaser.Scene {
     // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
+        setCurrentScene(this);
 
         this.anims.create({
             key: "portal-anim",
@@ -202,7 +208,7 @@ export default class TestScene2 extends Phaser.Scene {
         // 카메라의 범위는 게임의 비율과 줌 수준으로 결정
         this.cameras.main.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
-        const map = this.add.image(0, 0, "map").setOrigin(0);
+        const map = this.add.image(0, 0, "map2").setOrigin(0);
 
         // 맵 이미지를 맵 크기에 맞춰 변경
         map.displayWidth = CFG.world.width;
@@ -1108,6 +1114,7 @@ export default class TestScene2 extends Phaser.Scene {
 
     /** F 키로 다음 Scene 이동 (데이터 유지됨) */
     moveToNextScene() {
+        if(!this.scene.get('TestScene3')) this.scene.add('TestScene3', TestScene3);
 
         this.cameras.main.fadeOut(300, 0, 0, 0);
 
@@ -1128,7 +1135,6 @@ export default class TestScene2 extends Phaser.Scene {
             stats: this.playerStats,
             inventory: this.inventoryData,
             slots: this.slotData,
-            position: { x: this.player.x, y: this.player.y },
             scene: this.scene.key
         };
     }
@@ -1136,8 +1142,8 @@ export default class TestScene2 extends Phaser.Scene {
     saveGame() {
         const data = this.collectPlayerData();
 
-        fetch("/api/save_game/", {
-            method: "POST",
+        fetch("/api/save_game/1/", {
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })

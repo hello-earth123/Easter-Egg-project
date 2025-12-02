@@ -14,16 +14,21 @@ import { spawnMonsters } from "../entities/TestMonsterFactory.js";
 import { FloatingText } from "../effects/FloatingText.js";
 import { preloadFireSkillAssets } from "../preload/preloadFireSkills.js";
 import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
+import TestScene2 from "./TestScene2.js";
+import { setCurrentScene } from "../manager/sceneRegistry.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
 export default class TestScene3 extends Phaser.Scene {
 
     init(data) {
-        const fromPortal = data.fromPortal ?? null;
-        this.playerStats = data.playerStats;
-        this.inventoryData = data.inventoryData;
-        this.slotData = data.slotData;
+        let fromPortal = null;
+        if (data){
+            fromPortal = data.fromPortal;
+        }
+        // this.playerStats = data.playerStats;
+        // this.inventoryData = data.inventoryData;
+        // this.slotData = data.slotData;
 
         const portalSpawnPoints = {
             east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
@@ -78,7 +83,7 @@ export default class TestScene3 extends Phaser.Scene {
     // TODO: preload, create의 중첩되는 요소에 대한 singleton 처리
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
-        this.load.image("map", "/static/assets/map.png");
+        this.load.image("map3", "/static/assets/map.png");
         // 포탈 PNG 로드
         this.load.spritesheet("portal", "/static/assets/portal.png", {
             frameWidth: 102,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
@@ -131,6 +136,8 @@ export default class TestScene3 extends Phaser.Scene {
     // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
+        setCurrentScene(this);
+        
         this.anims.create({
             key: "portal-anim",
             frames: this.anims.generateFrameNumbers("portal", { start: 0, end: 6 }),
@@ -197,7 +204,7 @@ export default class TestScene3 extends Phaser.Scene {
         // 카메라의 범위는 게임의 비율과 줌 수준으로 결정
         this.cameras.main.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
-        const map = this.add.image(0, 0, "map").setOrigin(0);
+        const map = this.add.image(0, 0, "map3").setOrigin(0);
 
         // 맵 이미지를 맵 크기에 맞춰 변경
         map.displayWidth = CFG.world.width;
@@ -224,6 +231,7 @@ export default class TestScene3 extends Phaser.Scene {
         this.isPlayerLoad = false;
         initPlayer(1).then(player => {
             this.playerStats = player;
+            console.log(this.playerStats);
         })
         initInventory(1).then(inven => {
             this.inventoryData = inven;
@@ -232,6 +240,7 @@ export default class TestScene3 extends Phaser.Scene {
             this.slotData = slot;
             this.isPlayerLoad = true;
         })
+        
 
         // 카메라가 Player(gameObject)를 추적하도록 설정
         this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
@@ -1074,14 +1083,15 @@ export default class TestScene3 extends Phaser.Scene {
 
     /** F 키로 다음 Scene 이동 (데이터 유지됨) */
     moveToNextScene() {
+        if(!this.scene.get('TestScene2')) this.scene.add('TestScene2', TestScene2);
 
         this.cameras.main.fadeOut(300, 0, 0, 0);
 
         this.time.delayedCall(300, () => {
             this.scene.start("TestScene2", {
-                playerStats: this.playerStats,
-                inventoryData: this.inventoryData,
-                slotData: this.slotData,
+                // playerStats: this.playerStats,
+                // inventoryData: this.inventoryData,
+                // slotData: this.slotData,
                 fromPortal: "west",
                 spawnX: this.portal.x,
                 spawnY: this.portal.y + 60
@@ -1094,16 +1104,24 @@ export default class TestScene3 extends Phaser.Scene {
             stats: this.playerStats,
             inventory: this.inventoryData,
             slots: this.slotData,
-            position: { x: this.player.x, y: this.player.y },
             scene: this.scene.key
         };
     }
 
     saveGame() {
-        const data = this.collectPlayerData();
+        const data = {
+            stats: this.playerStats,
+            inventory: this.inventoryData,
+            slots: this.slotData,
+            scene: this.scene.key
+        }
+        console.log(1);
+        console.log(data);
+        console.log(2);
+        console.log(this.collectPlayerData());
 
-        fetch("/api/save_game/", {
-            method: "POST",
+        fetch("/api/save_game/1/", {
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
@@ -1116,5 +1134,3 @@ export default class TestScene3 extends Phaser.Scene {
     }
 
 }
-
-
