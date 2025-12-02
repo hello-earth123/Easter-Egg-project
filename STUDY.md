@@ -107,8 +107,9 @@ new Phaser.Game(config);
 
 ```
 각 Scene은 동일한 디렉토리 레벨에 위치한 개별 파일로 존재한다.
-이후 Phaser.Game을 통해 어떠한 Scene이 게임에 존재하는지(접근 가능한지) 저장한다.
-(유니티의 Build Setting과 동일)
+유니티의 Build Setting과 달리,
+Scene 등록과 함께 해당 Scene들에 대한 preload, create 등이 동작하므로 동적으로 등록 및 로드가 필요하다.
+※ Phaser Scene 등록을 위한 this.scene.add()는 동일한 key값이 들어왔을 때 이를 자동으로 배제함 (python의 set처럼 동작)
 ```
 
 ```
@@ -125,7 +126,8 @@ const config = {
   width: 800,
   height: 600,
 
-  /** Scene 등록 */
+  /** 로드할 Scene 선언 및 등록 */
+  /** scene의 등록과 함께 preload/create 진행하여 버그 발생 가능 */
   scene: [MainScene, SubScene],
 };
 
