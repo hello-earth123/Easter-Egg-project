@@ -61,9 +61,10 @@ export default class TestScene2 extends Phaser.Scene {
 
         this.monsterData = {
             bat: 10,
-            rabbit: 1,
-            hidden: 15,
+            // rabbit: 3,
+            // hidden: 15,
             lich: 5,
+            skull_b: 3,
         };
 
         this.minLevel = 1;
@@ -94,7 +95,178 @@ export default class TestScene2 extends Phaser.Scene {
             frameWidth: 102.1428,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
             frameHeight: 120,  // 프레임 높이(실제 png 높이에 맞추기)
         });
-        this.load.image("player", "/static/assets/player.png");
+        // 플레이어 PNG 로드
+        this.load.spritesheet("playerSheet", "/static/assets/player.png", {
+            frameWidth: 36,
+            frameHeight: 24,
+        });
+        // 몬스터 PNG 로드
+        // arrow_skeleton
+        this.load.spritesheet("arrow_skeleton", "/static/assets/monsters/arrow_skeleton.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // bat
+        this.load.spritesheet("bat", "/static/assets/monsters/bat.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // bird
+        this.load.spritesheet("bird", "/static/assets/monsters/bird.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // butterfly
+        this.load.spritesheet("butterfly", "/static/assets/monsters/butterfly.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        // coffin
+        });
+        this.load.spritesheet("coffin", "/static/assets/monsters/coffin.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // dwarf
+        this.load.spritesheet("dwarf", "/static/assets/monsters/dwarf.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // eyeball
+        this.load.spritesheet("eyeball", "/static/assets/monsters/eyeball.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // eyebat
+        this.load.spritesheet("eyebat", "/static/assets/monsters/eyebat.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // fire_skull1
+        this.load.spritesheet("fire_skull1", "/static/assets/monsters/fire_skull1.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // fire_skull2
+        this.load.spritesheet("fire_skull2", "/static/assets/monsters/fire_skull2.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // ghost
+        this.load.spritesheet("ghost", "/static/assets/monsters/ghost.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // lich
+        this.load.spritesheet("lich", "/static/assets/monsters/lich.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // mask
+        this.load.spritesheet("mask", "/static/assets/monsters/mask.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // mimic
+        this.load.spritesheet("mimic", "/static/assets/monsters/mimic.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // moai-b
+        this.load.spritesheet("moai-b", "/static/assets/monsters/moai-b.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // moai-s
+        this.load.spritesheet("moai-s", "/static/assets/monsters/moai-s.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // moai-g
+        this.load.spritesheet("moai-g", "/static/assets/monsters/moai-g.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // mummy
+        this.load.spritesheet("mummy", "/static/assets/monsters/mummy.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // mushroom
+        this.load.spritesheet("mushroom", "/static/assets/monsters/mushroom.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // rabbit
+        this.load.spritesheet("rabbit", "/static/assets/monsters/rabbit.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // reaper
+        this.load.spritesheet("reaper", "/static/assets/monsters/reaper.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        //scorpion
+        this.load.spritesheet("scorpion", "/static/assets/monsters/scorpion.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // skeleton
+        this.load.spritesheet("skeleton", "/static/assets/monsters/skeleton.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // skull_b
+        this.load.spritesheet("skull_b", "/static/assets/monsters/skull_b.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // skull_w
+        this.load.spritesheet("skull_w", "/static/assets/monsters/skull_w.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });   
+        // slime
+        this.load.spritesheet("slime", "/static/assets/monsters/slime.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // snail
+        this.load.spritesheet("snail", "/static/assets/monsters/snail.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });       
+        // snake
+        this.load.spritesheet("snake", "/static/assets/monsters/snake.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });   
+        // squirrel
+        this.load.spritesheet("squirrel", "/static/assets/monsters/squirrel.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // stingsnake
+        this.load.spritesheet("stingsnake", "/static/assets/monsters/stingsnake.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });       
+        // vampire
+        this.load.spritesheet("vampire", "/static/assets/monsters/vampire.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // weapon
+        this.load.spritesheet("weapon", "/static/assets/monsters/weapon.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // wolf
+        this.load.spritesheet("wolf", "/static/assets/monsters/wolf.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });        
+
         this.load.image("bullet", "/static/assets/bullet.png");
         this.load.image("item", "/static/assets/item.png");
         // this.load.image("shockwave", "/static/assets/effect_shockwave.png");
@@ -142,13 +314,358 @@ export default class TestScene2 extends Phaser.Scene {
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
-
+        // 포탈
         this.anims.create({
             key: "portal-anim",
             frames: this.anims.generateFrameNumbers("portal", { start: 0, end: 6 }),
             frameRate: 12,
             repeat: -1
         });
+
+        // 플레이어 이동
+        this.anims.create({
+            key: "player_walk",
+            frames: this.anims.generateFrameNumbers("playerSheet", {
+                start: 0,
+                end: 5,
+            }),
+            frameRate: 10,
+            repeat: -1,
+        });
+
+        // 플레이어 피격
+        this.anims.create({
+            key: "player_hit",
+            frames: this.anims.generateFrameNumbers("playerSheet", {
+                start: 30,
+                end: 32,
+            }),
+            frameRate: 12,
+            repeat: 0
+        });
+
+        // 플레이어 사망
+        this.anims.create({
+            key: "player_death",
+            frames: this.anims.generateFrameNumbers("playerSheet", {
+                start: 36,
+                end: 40,
+            }),
+            frameRate: 8,
+            repeat: 0
+        });
+
+        // //========================= 몬스터 이동 ================================
+        // // 몬스터 종류별 이동 애니메이션 key 매핑
+        // this.monsterWalkAnim = {
+        //     arrow_skeleton: "arrow_skeleton_walk",
+        //     bat: "bat_walk",
+        //     bird: "bird_walk",
+        //     butterfly: "butterfly_walk",
+        //     coffin: "coffin_walk",
+        //     colossus: "colossus_walk",
+        //     dwarf: "dwarf_walk",
+        //     eyeball: "eyeball_walk",
+        //     eyebat: "eyebat_walk",
+        //     fire_skull1: "fire_skull1_walk",
+        //     fire_skull2: "fire_skull2_walk",
+        //     ghost: "ghost_walk",
+        //     lich: "lich_walk",
+        //     mask: "mask_walk",
+        //     mimic: "mimic",
+        //     moai_b: "moai-b_walk",
+        //     moai_s: "moai-s_walk",
+        //     moai_g: "moai-g_walk",
+        //     mummy: "mummy_walk",
+        //     mushroom: "mushroom_walk",
+        //     rabbit: "rabbit_walk",
+        //     reaper: "reaper_walk",
+        //     scorpion: "scorpion_walk",
+        //     skeleton: "skeleton_walk",
+        //     skull_b: "skull_b_walk",
+        //     skull_w: "skull_w_walk",
+        //     slime: "slime_walk",
+        //     snail: "snail_walk",
+        //     snake: "snake_walk",
+        //     squirrel: "squirrel_walk",
+        //     stingsnake: "stingsnake_walk",
+        //     vampire: "vampire_walk",
+        //     weapon: "weapon_walk",
+        //     wolf: "wolf_walk",
+        //     hidden: "hidden_walk",
+        // };
+        // arrow_skeleton
+        this.anims.create({
+            key: "arrow_skeleton_walk",
+            frames: this.anims.generateFrameNumbers("arrow_skeleton", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // bat
+        this.anims.create({
+            key: "bat_walk",
+            frames: this.anims.generateFrameNumbers("bat", { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // bird
+        this.anims.create({
+            key: "bird_walk",
+            frames: this.anims.generateFrameNumbers("bird", { start: 0, end: 7 }),
+            frameRate: 8,
+            repeat: -1,
+        });      
+        // butterfly
+        this.anims.create({
+            key: "butterfly_walk",
+            frames: this.anims.generateFrameNumbers("butterfly", { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // coffin
+        this.anims.create({
+            key: "coffin_walk",
+            frames: this.anims.generateFrameNumbers("coffin", { start: 0, end: 10 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // colossus
+        this.anims.create({
+            key: "colossus_walk",
+            frames: this.anims.generateFrameNumbers("colossus", { start: 0, end: 6 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // dwarf
+        this.anims.create({
+            key: "dwarf_walk",
+            frames: this.anims.generateFrameNumbers("dwarf", { start: 0, end: 7 }),
+            frameRate: 8,
+            repeat: -1,
+        });  
+        // eyeball
+        this.anims.create({
+            key: "eyeball_walk",
+            frames: this.anims.generateFrameNumbers("eyeball", { start: 0, end: 14 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // eyebat
+        this.anims.create({
+            key: "eyebat_walk",
+            frames: this.anims.generateFrameNumbers("eyebat", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // fire_skull1
+        this.anims.create({
+            key: "fire_skull1_walk",
+            frames: this.anims.generateFrameNumbers("fire_skull1", { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1,
+        });       
+        // fire_skull2
+        this.anims.create({
+            key: "fire_skull2_walk",
+            frames: this.anims.generateFrameNumbers("fire_skull2", { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // ghost
+        this.anims.create({
+            key: "ghost_walk",
+            frames: this.anims.generateFrameNumbers("ghost", { start: 0, end: 7 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // lich
+        this.anims.create({
+            key: "lich_walk",
+            frames: this.anims.generateFrameNumbers("lich", { start: 0, end: 7 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // mask
+        this.anims.create({
+            key: "mask_walk",
+            frames: this.anims.generateFrameNumbers("mask", { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // mimic
+        this.anims.create({
+            key: "mimic_walk",
+            frames: this.anims.generateFrameNumbers("mimic", { start: 0, end: 9 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // moai-b
+        this.anims.create({
+            key: "moai-b_walk",
+            frames: this.anims.generateFrameNumbers("moai-b", { start: 0, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // moai-s
+        this.anims.create({
+            key: "moai-s_walk",
+            frames: this.anims.generateFrameNumbers("moai-s", { start: 0, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // moai-g
+        this.anims.create({
+            key: "moai-g_walk",
+            frames: this.anims.generateFrameNumbers("moai-g", { start: 0, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // mummy
+        this.anims.create({
+            key: "mummy_walk",
+            frames: this.anims.generateFrameNumbers("mummy", { start: 0, end: 9 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // mushroom
+        this.anims.create({
+            key: "mushroom_walk",
+            frames: this.anims.generateFrameNumbers("mushroom", { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // rabbit
+        this.anims.create({
+            key: "rabbit_walk",
+            frames: this.anims.generateFrameNumbers("rabbit", { start: 0, end: 6 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // reaper
+        this.anims.create({
+            key: "reaper_walk",
+            frames: this.anims.generateFrameNumbers("reaper", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // scorpion
+        this.anims.create({
+            key: "scorpion_walk",
+            frames: this.anims.generateFrameNumbers("scorpion", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // skeleton
+        this.anims.create({
+            key: "skeleton_walk",
+            frames: this.anims.generateFrameNumbers("skeleton", { start: 0, end: 8 }),
+            frameRate: 8,
+            repeat: -1,
+        });  
+        // skull_b
+        this.anims.create({
+            key: "skull_b_walk",
+            frames: this.anims.generateFrameNumbers("skull_b", { start: 0, end: 12 }),
+            frameRate: 8,
+            repeat: -1,
+        });  
+        // skull_w
+        this.anims.create({
+            key: "skull_w_walk",
+            frames: this.anims.generateFrameNumbers("skull_w", { start: 0, end: 12 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // slime
+        this.anims.create({
+            key: "slime_walk",
+            frames: this.anims.generateFrameNumbers("slime", { start: 0, end: 15 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // snail
+        this.anims.create({
+            key: "snail_walk",
+            frames: this.anims.generateFrameNumbers("snail", { start: 0, end: 11 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // snake
+        this.anims.create({
+            key: "snake_walk",
+            frames: this.anims.generateFrameNumbers("snake", { start: 0, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // squirrel
+        this.anims.create({
+            key: "squirrel_walk",
+            frames: this.anims.generateFrameNumbers("squirrel", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // stingsnake
+        this.anims.create({
+            key: "stingsnake_walk",
+            frames: this.anims.generateFrameNumbers("stingsnake", { start: 0, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // vampire
+        this.anims.create({
+            key: "vampire_walk",
+            frames: this.anims.generateFrameNumbers("vampire", { start: 0, end: 11 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // weapon
+        this.anims.create({
+            key: "weapon_walk",
+            frames: this.anims.generateFrameNumbers("weapon", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // wolf
+        this.anims.create({
+            key: "wolf_walk",
+            frames: this.anims.generateFrameNumbers("wolf", { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // =========================
+        // === 스킬 모션 애니메이션 ===
+        // fireball / firebomb / incendiary / napalm
+        this.anims.create({
+            key: "player_cast_small",
+            frames: this.anims.generateFrameNumbers("playerSheet", { start: 18, end: 21 }),
+            frameRate: 12,
+            repeat: 0
+        });
+
+        // buff skill
+        this.anims.create({
+            key: "player_buff",
+            frames: this.anims.generateFrameNumbers("playerSheet", { start: 24, end: 27 }),
+            frameRate: 10,
+            repeat: 0
+        });
+
+        // meteor S, M, L / deathhand / flameA,B,C
+        this.anims.create({
+            key: "player_cast_big",
+            frames: this.anims.generateFrameNumbers("playerSheet", { start: 42, end: 47 }),
+            frameRate: 10,
+            repeat: 0
+        });
+
+        // incendiary 전용 — 홀드 유지 프레임 반복(20~21)
+        this.anims.create({
+            key: "player_incendiary_loop",
+            frames: this.anims.generateFrameNumbers("playerSheet", { start: 20, end: 21 }),
+            frameRate: 6,
+            repeat: -1
+        });
+
         // this.anims.create({
         //     key: "lightning-burst",
         //     frames: this.anims.generateFrameNumbers("lightning", { start: 0, end: 5 }),
@@ -192,6 +709,25 @@ export default class TestScene2 extends Phaser.Scene {
         //     repeat: 1
         // });
 
+        // 스킬 애니메이션 매핑
+        this.skillMotionType = {
+            fireball: "small",
+            firebomb: "small",
+            napalm: "small",
+            incendiary: "small",      // 시작 애니메이션
+            // incendiary_hold: "incendiary-hold",
+
+            buff: "buff",
+
+            meteor_S: "big",
+            meteor_M: "big",
+            meteor_L: "big",
+            deathhand: "big",
+            flameA: "big",
+            flameB: "big",
+            flameC: "big",
+        };
+
         this.uiState = {
             inventory: false,
             skill: false,
@@ -215,10 +751,37 @@ export default class TestScene2 extends Phaser.Scene {
         map.displayHeight = CFG.world.height;
 
         // Player(gameObject) 생성 및 rigid body 추가
-        this.player = this.physics.add.sprite(this.spawnX, this.spawnY, "player");
+        this.player = this.physics.add.sprite(this.spawnX, this.spawnY, "playerSheet");
         this.player.setCollideWorldBounds(true);
+        // 플레이어 크기 확대
+        this.player.setScale(3);
         // 바라보는 방향 설정
         this.player.facing = new Phaser.Math.Vector2(0, -1);
+
+        // 플레이어(hitbox) 보정
+        const pw = this.player.width;   // scale=3 적용된 실제 픽셀 크기
+        const ph = this.player.height;
+
+        // 플레이어 hitbox 비율 (추천값)
+        const PLAYER_HITBOX = {
+            w: 0.55,   // 좌/우 폭 55%만 사용 (옆 판정 줄이기)
+            h: 0.85    // 상/하 판정 거의 유지
+        };
+
+        const hitW = pw * PLAYER_HITBOX.w;
+        const hitH = ph * PLAYER_HITBOX.h;
+
+        // 직사각형 hitbox 적용
+        this.player.body.setSize(hitW, hitH);
+
+        // sprite 중앙 정렬 → 절대 어긋나지 않음
+        this.player.body.setOffset(
+            (pw - hitW) * 0.5,
+            (ph - hitH) * 0.5
+        );
+
+        // 🔥 추가: 캐스팅 플래그
+        this.player.isCasting = false;
 
         // 넉백 변수
         this.player.isKnockback = false;
@@ -425,22 +988,52 @@ export default class TestScene2 extends Phaser.Scene {
         return true;
     }
 
-    /** use skill */
     useSkill(slotIdx) {
         const name = this.slotData.skillSlots[slotIdx];
-
-        // skill이 등록되지 않았거나(이름 미추가), 존재하지 않을 경우, 미동작
         if (!name) return;
+
         const skill = this.skills[name];
         if (!skill) return;
 
-        // 🔥 키다운 스킬 시전 시 즉시 정지
+        // --- 시전 전 상태 백업 ---
+        const prevMp = this.playerStats.mp;
+        const prevLastCastAt = skill.lastCastAt;
+        const prevActive = skill.active;
+
+        // 🔥 실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
+        skill.tryCast(this, this.player);
+
+        // --- 진짜로 "시전이 된 건지" 판별 ---
+        let castSuccess = false;
+
+        // 1) MP가 줄었으면 → 확실히 시전 성공
+        if (this.playerStats.mp < prevMp) {
+            castSuccess = true;
+        }
+        // 2) lastCastAt이 바뀌었다면 → 쿨타임 갱신 = 시전 성공
+        else if (skill.lastCastAt != null && skill.lastCastAt !== prevLastCastAt) {
+            castSuccess = true;
+        }
+        // 3) hold 스킬(Incendiary 등)이라면 active 플래그로 판단
+        else if (skill.isHoldSkill && !prevActive && skill.active) {
+            castSuccess = true;
+        }
+
+        // ❌ 쿨타임, 마나부족, 기타 조건 실패 → 아무 모션도 내보내지 말고 종료
+        if (!castSuccess) return;
+
+        // 🔥 여기까지 왔으면 "실제로 스킬이 발동된 것"만 남음
+        const motionType = this.skillMotionType[name];
+        if (motionType) {
+            this.playPlayerSkillMotion(motionType, skill.isHoldSkill === true);
+        }
+
+        // hold 스킬이면 이동 정지
         if (skill.isHoldSkill) {
             this.player.setVelocity(0, 0);
         }
-
-        skill.tryCast(this, this.player);
     }
+
 
     /** use item */
     useItemShortcut(idx) {
@@ -461,6 +1054,7 @@ export default class TestScene2 extends Phaser.Scene {
     // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
     update() {
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
+        if (this.player?.isDead) return;
 
         const now = this.time.now;
 
@@ -469,7 +1063,7 @@ export default class TestScene2 extends Phaser.Scene {
         // TODO: 시간에 따른 대쉬 감속/정지 >> coroutine으로 대쉬 함수에 편입 가능한지 확인
         this.handleDash(now);
         this.handleMovement();
-        this.updateMonsters();
+        this.updateMonsters(now);
         // TODO: 몬스터 사망 및 아이템 드롭 >> 몬스터 피격 함수로 이전
         this.checkMonstersDeath();
         this.updateMonsterHud();
@@ -507,6 +1101,11 @@ export default class TestScene2 extends Phaser.Scene {
             // 🔥 키에서 손 떼면 종료
             if (Phaser.Input.Keyboard.JustUp(phaserKey)) {
                 if (skill.stop) skill.stop();
+
+                // 🔥 hold 스킬 끝났으니 캐스팅 플래그 및 애니 정리
+                this.player.isCasting = false;
+                this.player.anims.stop();
+                this.player.setFrame(0);
             }
         }
 
@@ -536,47 +1135,65 @@ export default class TestScene2 extends Phaser.Scene {
         }
     }
 
-    /** 플레이어 이동 처리 */
     handleMovement() {
-
         if (this.activeHoldSkill) {
-            // 🔥 키다운 스킬 사용하는 동안 완전 이동 정지
             this.player.setVelocity(0, 0);
             return;
         }
 
-        // 넉백, 대쉬 중에 입력 무시
         if (this.player.isKnockback || this.player.dash.active) return;
 
-        // 프레임 단위로 속도 초기화
         this.player.setVelocity(0);
 
-        // 방향키에 맞춰 속도 및 바라보는 방향 설정
+        let moving = false;
+
+        // 좌
         if (this.cursors.left.isDown) {
-            if (this.current) {
-                this.current = false;
-                this.player.flipX = false;
-            }
             this.player.setVelocityX(-CFG.moveSpeed);
+            this.player.flipX = true;
             this.player.facing.set(-1, 0);
+            moving = true;
         }
+
+        // 우
         if (this.cursors.right.isDown) {
-            if (!this.current) {
-                this.current = true;
-                this.player.flipX = true;
-            }
             this.player.setVelocityX(CFG.moveSpeed);
+            this.player.flipX = false;
             this.player.facing.set(1, 0);
+            moving = true;
         }
+
+        // 하
         if (this.cursors.up.isDown) {
             this.player.setVelocityY(-CFG.moveSpeed);
             this.player.facing.set(0, -1);
+            moving = true;
         }
+
+        // 상
         if (this.cursors.down.isDown) {
             this.player.setVelocityY(CFG.moveSpeed);
             this.player.facing.set(0, 1);
+            moving = true;
+        }
+
+        // 🔥 여기부터 수정
+        if (moving) {
+            // 캐스팅 중이면 walk 애니로 덮어쓰지 않음
+            if (!this.player.isCasting) {
+                if (!this.player.anims.isPlaying || this.player.anims.currentAnim.key !== "player_walk") {
+                    this.player.play("player_walk", true);
+                }
+            }
+        } else {
+            // 캐스팅 중이면 애니 stop 하지 않음
+            if (!this.player.isCasting) {
+                this.player.anims.stop();
+                this.player.setFrame(0);  // 기본 프레임 유지
+            }
         }
     }
+
 
     /** 대쉬 동작 */
     handleArrowDoubleTap(e) {
@@ -743,7 +1360,7 @@ export default class TestScene2 extends Phaser.Scene {
             if (s && s.stop) s.stop();
             this.activeHoldSkill = null;
         }
-
+        
         // TODO: 존재 이유 확인
         if (!player._lastHitAt) player._lastHitAt = 0; // ?? 0일 때 0으로 초기화를 진행
 
@@ -756,10 +1373,10 @@ export default class TestScene2 extends Phaser.Scene {
 
         // 피격 데미지 출력 (빨간색)
         this.showDamageText(player, monster.atk, "#ff3333");
+        this.player.play("player_hit", true);
 
         // 마지막으로 피격된 시간 저장
         player._lastHitAt = now;
-        this.textBar = "Tlqkf"; // ??
 
         // 넉백 거리 정규화
         const dir = new Phaser.Math.Vector2(
@@ -784,7 +1401,27 @@ export default class TestScene2 extends Phaser.Scene {
 
         this.textBar = "적에게 피격!";
 
-        if (this.playerStats.hp <= 0) this.onPlayerDeath();
+        // 사망 체크
+        if (this.playerStats.hp <= 0) {
+
+            // 🔥 1) 플레이어 physics 충돌 완전 비활성화
+            player.body.enable = false;
+
+            // 🔥 2) 반동을 전혀 주지 않도록 속도 제거
+            player.setVelocity(0, 0);
+
+            // 🔥 몬스터들이 플레이어에 의해 밀리지 않도록 충돌 반응 차단
+            this.monsters.children.iterate(m => {
+                if (!m || !m.body) return;
+
+                m.setVelocity(0, 0);   // 즉시 멈춤
+                m.body.immovable = true;  // 반발력 제거
+            });
+
+            // 🔥 4) 사망 루틴 실행
+            this.onPlayerDeath();
+            return;
+        }
         
         // === Incendiary(hold 스킬) 강제 중지 이벤트 ===
         this.events.emit("playerHit", {
@@ -794,19 +1431,49 @@ export default class TestScene2 extends Phaser.Scene {
         });
     };
 
-    /** 플레이어 부활 */
+   /** 플레이어 부활 **/
     onPlayerDeath() {
+        if (this.player.isDead) return; // 중복 사망 방지
+        this.player.isDead = true;
+
+        // HP 0 이하 — 사망 상태
         this.textBar = "사망했습니다.";
 
-        // 부활 대기 시간 이후, 부활
-        this.time.delayedCall(800, () => {
-            this.playerStats.hp = this.playerStats.maxHp;
-            this.player.x = 400;
-            this.player.y = 300;
+        // 모든 움직임 차단
+        this.player.setVelocity(0, 0);
+        this.player.body.enable = false;
 
-            this.cameras.main.flash(200);
+        // 슬로우 모션 사망 애니메이션 재생
+        const deathAnim = this.player.play("player_death");
+
+        // timeScale 적용 (애니메이션 속도 0.4배)
+        deathAnim.timeScale = 0.4;
+
+        // 사망 애니 끝난 뒤 → 2초 기다렸다가 부활
+        this.player.once("animationcomplete-player_death", () => {
+
+            this.time.delayedCall(2000, () => {
+                // 플레이어 HP 회복
+                this.playerStats.hp = this.playerStats.maxHp;
+
+                // 부활 위치로 이동 (원하는 좌표로 직접 설정 가능)
+                this.player.x = 400;
+                this.player.y = 300;
+
+                // 캐릭터 상태 복구
+                this.player.setFrame(0);
+                this.player.body.enable = true;
+                this.player.isDead = false;
+
+                // 카메라 플래시로 부활 연출
+                this.cameras.main.flash(300);
+
+                this.textBar = "부활했습니다!";
+            });
         });
     }
+
+
 
     /** 도트 데미지 스킬 적용 */
     applyDot(monster, dot) {
@@ -832,11 +1499,12 @@ export default class TestScene2 extends Phaser.Scene {
     }
 
     /** 몬스터 동작 */
-    updateMonsters() {
+    updateMonsters(now) {
         // 몬스터 그룹 순회
         this.monsters.children.iterate((m) => {
             if (!m || !m.active) return;
 
+            // 1) 넉백 중이면 넉백 우선
             if (m.isKnockback) {
                 m.setVelocity(m.knockbackVel.x, m.knockbackVel.y);
                 m.knockbackVel.scale(CFG.monsterKB.decay);
@@ -847,15 +1515,95 @@ export default class TestScene2 extends Phaser.Scene {
                 return;
             }
 
-            if (m.isFrozen) {
-                m.setVelocity(0);
+            // // 2) 얼음(빙결) 상태면 멈춤
+            // if (m.isFrozen) {
+            //     m.setVelocity(0);
+            //     return;
+            // }
+
+            // 3) 어그로 상태면 플레이어 추격 (기존 로직 유지)
+            if (m.isAggro) {
+                this.physics.moveToObject(m, this.player, 95);
+
+                // 🔥 추격 방향에 따라 좌우 반전
+                const vx = m.body?.velocity?.x ?? 0;
+                if (vx < 0) m.flipX = false;
+                else if (vx > 0) m.flipX = true;
+
                 return;
             }
 
-            if (m.isAggro) this.physics.moveToObject(m, this.player, 95);
-            else m.setVelocity(0);
+            // 4) 그 외에는 “짧게 왔다갔다” 배회
+            this.updateMonsterWander(m, now);
         });
     }
+
+    /** 배회 타겟 좌표 새로 지정 */
+    pickNewWanderTarget(monster) {
+        const originX = monster.wanderOriginX ?? monster.x;
+        const originY = monster.wanderOriginY ?? monster.y;
+        const range = monster.wanderRange || Phaser.Math.Between(32, 96);
+
+        // “한 칸 ~ 세 칸” 정도 거리
+        const dist = Phaser.Math.Between(range / 3, range);
+        const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+
+        let targetX = originX + Math.cos(angle) * dist;
+        let targetY = originY + Math.sin(angle) * dist;
+
+        // 월드 밖으로 안 나가게 클램프
+        targetX = Phaser.Math.Clamp(targetX, 32, CFG.world.width - 32);
+        targetY = Phaser.Math.Clamp(targetY, 32, CFG.world.height - 32);
+
+        monster.wanderTargetX = targetX;
+        monster.wanderTargetY = targetY;
+    }
+
+/** 몬스터 배회(wander) AI */
+updateMonsterWander(monster, now) {
+    if (!monster) return;
+
+    // 🔥 몬스터별 walk 애니메이션 선택
+    const animKey = this.monsterWalkAnim[monster.name];
+    if (animKey) {
+        if (!monster.anims.isPlaying || monster.anims.currentAnim.key !== animKey) {
+            monster.play(animKey, true);
+        }
+    }
+
+    // 타겟 없으면 찍기
+    if (monster.wanderTargetX == null || monster.wanderTargetY == null) {
+        this.pickNewWanderTarget(monster);
+    }
+
+    // 도착 후 잠깐 쉬기
+    if (monster.wanderPauseUntil && now < monster.wanderPauseUntil) {
+        monster.setVelocity(0);
+        return;
+    }
+
+    const dx = monster.wanderTargetX - monster.x;
+    const dy = monster.wanderTargetY - monster.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist <= 5) {
+        monster.setVelocity(0);
+        monster.wanderPauseUntil = now + Phaser.Math.Between(500, 1500);
+        this.pickNewWanderTarget(monster);
+        return;
+    }
+
+    // 🔥 속도 상향 (테스트용)
+    const speed = monster.wanderSpeed || 80;  
+    const vx = (dx / dist) * speed;
+    const vy = (dy / dist) * speed;
+
+    monster.setVelocity(vx, vy);
+
+    // 🔥 확실한 flip 처리
+    if (vx < -0.1) monster.flipX = false;
+    else if (vx > 0.1) monster.flipX = true;
+}
 
     /** 몬스터 체력바, 이름 출력 */
     updateMonsterHud() {
@@ -919,6 +1667,49 @@ export default class TestScene2 extends Phaser.Scene {
             // });
         });
     }
+
+    // 스킬 시전 시 애니메이션 실행
+    playPlayerSkillMotion(type, isHold = false) {
+        if (!this.player || !this.player.anims) return;
+
+        // 이동 중지
+        this.player.setVelocity(0, 0);
+
+        let animKey = null;
+
+        switch(type) {
+            case "small": // fireball, firebomb, napalm, incendiary start
+                animKey = "player_cast_small";
+                break;
+
+            case "buff": // buff skill
+                animKey = "player_buff";
+                break;
+
+            case "big": // meteor S/M/L, deathhand, flameA/B/C
+                animKey = "player_cast_big";
+                break;
+
+            case "incendiary-hold":
+                animKey = "player_incendiary_loop";
+                break;
+        }
+
+        if (!animKey) return;
+
+        // 🔥 캐스팅 상태 ON
+        this.player.isCasting = true;
+
+        const anim = this.player.play(animKey, true);
+
+        // 🔥 hold 스킬(incendiary 등) 말고, 일반 스킬은 애니 끝나면 캐스팅 해제
+        if (!isHold && type !== "incendiary-hold") {
+            this.player.once(`animationcomplete-${animKey}`, () => {
+                this.player.isCasting = false;
+            });
+        }
+    }
+
     /**
      * 즉발 원형 광역 데미지
      * FireBomb, Meteor, Deathhand 등이 사용
