@@ -53,3 +53,10 @@ class NowLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = player
         fields = ("nowLocation",)
+
+
+class StaffStatus(serializers.ModelSerializer):
+    class Meta:
+        model = player
+        fields = ('staffDamage', 'staffCoolReduce', 'staffManaReduce', 'staffDefense', 'staffLuk', 'point')
+

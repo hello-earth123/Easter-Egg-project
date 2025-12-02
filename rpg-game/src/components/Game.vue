@@ -300,6 +300,7 @@ import TestScene from "../phaser/scenes/TestScene";
 import TestScene2 from "../phaser/scenes/TestScene2";
 import TestScene3 from "../phaser/scenes/TestScene3";
 import { initSlot } from "../phaser/manager/slotManager.js";
+import { increaseStat, resetStat } from "../phaser/player/PlayerStats.js";
 
 /* Chart.js Radar import */
 import {
@@ -513,7 +514,7 @@ export default {
 
       // 각 스킬의 현재 레벨
       skillState: {
-        skill1: 0,
+        skill1: 1,
         skill2: 0,
         skill3: 0,
         skill4a: 0,
@@ -556,8 +557,15 @@ export default {
     },
   },
 
-  mounted() {
+  async mounted() {
     // Phaser 게임 구동
+    let lastScene = 'TestScene2';
+
+    const res = await fetch(`http://127.0.0.1:8000/api/nowLocation/1/`);
+    const data = await res.json();
+    
+    lastScene = data.nowLocation;
+    
     const config = {
       type: Phaser.AUTO,
       width: 900,
@@ -567,50 +575,53 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      scene: [TestScene2, TestScene3, MainScene],
+      // scene: [TestScene2, TestScene3, MainScene],
+      scene: [TestScene3],
     };
+
     const game = new Phaser.Game(config);
     this.game = game;
-
+    game.scene.start(lastScene);
+  
     this._keyHandler = (e) => this.onGlobalKeyDown(e);
     window.addEventListener("keydown", this._keyHandler);
     window.addEventListener("resize", this.onWindowResize);
-
+  
     /* ----------------------------------------------------------------- */
     initSlot(1).then(slotData =>{
       const skillSlotData = slotData.skillSlots;
       const rawSlots = skillSlotData || [null, null, null, null];
-
+  
       // Vue상의 skillSlots는 먼저 초기화
       this.skillSlots = [null, null, null, null];
-
+  
       // DB에서 불러온 스킬을 Vue의 onDropSkillShortcut 방식으로 재적용
       rawSlots.forEach((skill, idx) => {
         if (!skill) return;
-
+  
         // DB는 {name:"fireball"} 형태라고 가정
         const fakeEv = {
           dataTransfer: {
             getData: (key) => (key === "skill-id" ? skill : ""),
           },
         };
-
+  
         // 기존 drop 로직 100% 그대로 활용
         this.onDropSkillShortcut(fakeEv, idx);
       });
-
+  
       if (slotData.itemSlots) {
         this.itemSlots = slotData.itemSlots.map((i) => (i ? { name: i.name, icon: i.icon } : null));
         console.log(this.itemSlots);
       }
     })
-    
     /* ----------------------------------------------------------------- */
 
     // Vue ← Phaser 동기화
     this.pollTimer = setInterval(() => {
       const main = Object.values(game.scene.keys).find((s) => s.scene.isActive());
       this.scene = main;
+      
       if (!main || !main.playerStats) return;
 
       this.playerHP = Math.round(main.playerStats.hp);
@@ -621,6 +632,12 @@ export default {
       this.playerNextEXP = Math.round(main.playerStats.nextExp);
       this.playerLevel = main.playerStats.level || 1;
       this.skillPoints = main.playerStats.skillPoints || 0; // 참고용
+
+      this.weaponStats.damage = main.playerStats.damage;
+      this.weaponStats.cooldown = main.playerStats.cooldown;
+      this.weaponStats.manaCost = main.playerStats.manaCost;
+      this.weaponStats.defense = main.playerStats.defense;
+      this.weaponStats.luck = main.playerStats.luck;
 
       this.textBar = main.textBar || "";
 
@@ -779,12 +796,12 @@ export default {
 
     increaseWeaponStat(key) {
       if (this.weaponStats[key] < this.weaponMaxPerStat) {
-        this.weaponStats[key]++;
+        increaseStat(key);
       }
     },
 
     resetWeaponStats() {
-      for (let k in this.weaponStats) this.weaponStats[k] = 0;
+      resetStat();
     },
 
     /* ===================

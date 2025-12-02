@@ -15,17 +15,20 @@ export class PlayerStats {
     this.maxHp = data.maxHP || 120; this.hp = data.currentHP || 120;
     this.maxMp = data.maxMP || 60; this.mp = data.currentMP || 60;
 
-    this.staffDamage = data.staffDamage || 0;
-    this.staffCoolReduce = data.staffCoolReduce || 0;
-    this.staffManaReduce = data.staffManaReduce || 0;
-    this.staffDefense = data.staffDefense || 0;
-    this.staffLuk = data.staffLuk || 0;
+    this.damage = data.staffDamage || 0;
+    this.cooldown = data.staffCoolReduce || 0;
+    this.manaCost = data.staffManaReduce || 0;
+    this.defense = data.staffDefense || 0;
+    this.luck = data.staffLuk || 0;
     this.point = data.point || 0;
+    this.maxPoint = 50;
 
     this.lowGemCount = data.lowGemCount || 0;
     this.midGemCount = data.midGemCount || 0;
     this.highGemCount = data.highGemCount || 0;
     this.superGemCount = data.superGemCount || 0;
+
+    this.nowLocation = data.nowLocation || NaN;
 
     // tmp
     this.skillPoints = 0;
@@ -72,4 +75,17 @@ export async function initPlayer(userId) {
     console.error(err);
     return null;
   }
+}
+
+export function increaseStat(key){
+  playerInstance[key]++;
+  console.log('player', playerInstance[key]);
+}
+
+export function resetStat(){
+  playerInstance.damage =  0;
+    playerInstance.cooldown =  0;
+    playerInstance.manaCost =  0;
+    playerInstance.defense = 0;
+    playerInstance.luck = 0;
 }
