@@ -210,8 +210,17 @@
           <!-- 2사분면 : 플레이어 외형 -->
           <div class="quad quad-player-image">
             <div class="quad-title">[플레이어 외형]</div>
-            <div class="image-placeholder">
-              플레이어 이미지
+            <div class="image-placeholder" style="position: relative; overflow: hidden;">
+              <img
+                :src="playerSpriteSheet"
+                :style="{
+                  width: playerFrameSize * 10 + 'px',    // 확대 표시 (원하면 조정)
+                  height: playerFrameSize * 10 + 'px',
+                  objectFit: 'none',
+                  objectPosition: '0px 0px',
+                  imageRendering: 'pixelated'
+                }"
+              >
             </div>
           </div>
 
@@ -326,6 +335,10 @@ export default {
       playerNextEXP: 100,
       playerLevel: 1,
       skillPoints: 0, // 씬에서 들어오긴 하지만, 실제 UI는 playerLevel 기반 계산 사용
+
+      playerSpriteSheet: "/static/assets/player.png",
+      playerFrameIndex: 0,  // 무조건 0번 고정
+      playerFrameSize: 16,
 
       // 인벤토리
       inventory: { items: [] },
