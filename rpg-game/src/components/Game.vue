@@ -101,7 +101,11 @@
           <div class="skill-detail-panel">
             <div v-if="selectedSkill">
               <div class="detail-icon-placeholder">
-                ICON
+                <img
+                  v-if="selectedSkill"
+                  :src="'/static/assets/skill_icon/' + selectedSkill.icon"
+                  class="detail-icon-img"
+                />
               </div>
               <div class="detail-name">
                 {{ selectedSkill.name }}
@@ -154,7 +158,11 @@
                   @dragstart="onSkillTreeDragStart($event, node)"
                 >
                   <div class="skill-slot">
-                    <div class="skill-icon-placeholder"></div>
+                    <img
+                      class="skill-icon"
+                      :src="'/static/assets/skill_icon/' + node.icon"
+                      alt=""
+                    />
                     <div class="skill-lv-text">
                       {{ skillLevelOf(node.id) }} / {{ node.maxLevel }}
                     </div>
@@ -202,27 +210,57 @@
           <!-- 1사분면 : 무기 이미지 -->
           <div class="quad quad-weapon-image">
             <div class="quad-title">[무기 이미지]</div>
-            <div class="image-placeholder">
-              무기 이미지
+
+            <div
+              class="image-placeholder"
+              :style="{
+                position: 'relative',
+                overflow: 'hidden',
+                width: weaponFrameWidth * weaponFrameScale + 'px',
+                height: weaponFrameHeight * weaponFrameScale + 'px'
+              }"
+            >
+              <img
+                :src="weaponSpriteSheet"
+                :style="{
+                  imageRendering: 'pixelated',
+                  transformOrigin: 'top left',
+                  transform:
+                    'translate(' +
+                    (-(weaponFrameIndex * weaponFrameWidth) - weaponOffsetX) +
+                    'px, ' +
+                    (-weaponOffsetY) +
+                    'px) ' +
+                    'scale(' + weaponFrameScale + ')'
+                }"
+              />
             </div>
           </div>
 
           <!-- 2사분면 : 플레이어 외형 -->
           <div class="quad quad-player-image">
             <div class="quad-title">[플레이어 외형]</div>
-            <div class="image-placeholder" style="position: relative; overflow: hidden;">
-              <img
-                :src="playerSpriteSheet"
+              <div class="image-placeholder"
                 :style="{
-                  width: playerFrameSize * 10 + 'px',    // 확대 표시 (원하면 조정)
-                  height: playerFrameSize * 10 + 'px',
-                  objectFit: 'none',
-                  objectPosition: '0px 0px',
-                  imageRendering: 'pixelated'
+                  position: 'relative',
+                  overflow: 'hidden',
+                  width: playerFrameWidth * playerFrameScale + 'px',
+                  height: playerFrameHeight * playerFrameScale + 'px'
                 }"
               >
-            </div>
+                <img
+                  :src="playerSpriteSheet"
+                  :style="{
+                    imageRendering: 'pixelated',
+                    transformOrigin: 'top left',
+                    transform: 'translate(' +
+                      (-(playerFrameIndex * playerFrameWidth) - 30) + 'px, -15px) ' +
+                      'scale(' + playerFrameScale + ')'
+                  }"
+                >
+              </div>
           </div>
+
 
           <!-- 3사분면 : 플레이어 능력치 -->
           <div class="quad quad-basic-stats">
@@ -286,6 +324,46 @@
         <!-- 사운드 설정 -->
         <div v-if="showSound" class="sound-panel">
           <h3>SOUND SETTINGS</h3>
+
+          <div class="sound-row">
+            <span>Master</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              v-model.number="soundSettings.master"
+              @input="onChangeSoundSlider"
+            />
+            <span>{{ (soundSettings.master * 100).toFixed(0) }}%</span>
+          </div>
+
+          <div class="sound-row">
+            <span>BGM</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              v-model.number="soundSettings.bgm"
+              @input="onChangeSoundSlider"
+            />
+            <span>{{ (soundSettings.bgm * 100).toFixed(0) }}%</span>
+          </div>
+
+          <div class="sound-row">
+            <span>SFX</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              v-model.number="soundSettings.sfx"
+              @input="onChangeSoundSlider"
+            />
+            <span>{{ (soundSettings.sfx * 100).toFixed(0) }}%</span>
+          </div>
+
           <button class="menu-btn" @click="closeSoundMenu">BACK</button>
         </div>
       </div>
@@ -302,6 +380,7 @@ import TestScene3 from "../phaser/scenes/TestScene3";
 import { initSlot } from "../phaser/manager/slotManager.js";
 import { increaseStat, resetStat } from "../phaser/player/PlayerStats.js";
 import { saveGame } from "../phaser/manager/saveManager.js";
+import SoundManager from "../phaser/manager/SoundManager.js";
 
 /* Chart.js Radar import */
 import {
@@ -338,10 +417,23 @@ export default {
       playerNextEXP: 100,
       playerLevel: 100,
       skillPoints: 0, // 씬에서 들어오긴 하지만, 실제 UI는 playerLevel 기반 계산 사용
-
+      
+      // 스텟창 플레이어
       playerSpriteSheet: "/static/assets/player.png",
       playerFrameIndex: 0,  // 무조건 0번 고정
-      playerFrameSize: 16,
+      playerFrameWidth: 30,   // 🔥 실제 스프라이트 가로
+      playerFrameHeight: 16,  // 🔥 실제 스프라이트 세로
+      playerFrameScale: 8,
+      playerOffsetX: 2,
+
+      // 스탯창 무기
+      weaponSpriteSheet: "/static/assets/player_staff.png",
+      weaponFrameIndex: 1,       // 무기는 항상 1번 프레임 표시
+      weaponFrameWidth: 32,      // 플레이어 스프라이트와 동일
+      weaponFrameHeight: 16,     // 필요 시 조정
+      weaponFrameScale: 8,       // Stats 창에 맞게 확대 (플레이어랑 같게)
+      weaponOffsetX: 55,          // 미세 조정 가능
+      weaponOffsetY: 15,
 
       // 인벤토리
       inventory: { items: [] },
@@ -377,6 +469,13 @@ export default {
       windowStack: [],
       topZIndex: 10000,
 
+      // 🔊 사운드 설정
+      soundSettings: {
+        master: 1,
+        bgm: 1,
+        sfx: 1,
+      },
+
       // ===== 무기 스탯 (레이더) =====
       weaponStats: {
         damage: 0,
@@ -394,6 +493,7 @@ export default {
         {
           id: "skill1",
           name: "fireball",
+          icon: "fireball.png",
           levelReq: 1,
           maxLevel: 10,
           branchGroup: null,
@@ -404,6 +504,7 @@ export default {
         {
           id: "skill2",
           name: "buff",
+          icon: "buff.png",
           levelReq: 5,
           maxLevel: 5,
           branchGroup: null,
@@ -414,6 +515,7 @@ export default {
         {
           id: "skill3",
           name: "flameA",
+          icon: "flameA.png",
           levelReq: 10,
           maxLevel: 5,
           branchGroup: null,
@@ -424,6 +526,7 @@ export default {
         {
           id: "skill4a",
           name: "flameB",
+          icon: "flameB.png",
           levelReq: 15,
           maxLevel: 5,
           branchGroup: "branch15",
@@ -434,6 +537,7 @@ export default {
         {
           id: "skill4b",
           name: "firebomb",
+          icon: "firebomb.png",
           levelReq: 15,
           maxLevel: 5,
           branchGroup: "branch15",
@@ -444,6 +548,7 @@ export default {
         {
           id: "skill5a",
           name: "flameC",
+          icon: "flameC.png",
           levelReq: 20,
           maxLevel: 5,
           branchGroup: "branch20",
@@ -454,6 +559,7 @@ export default {
         {
           id: "skill5b",
           name: "incendiary",
+          icon: "incendiary.png",
           levelReq: 20,
           maxLevel: 5,
           branchGroup: "branch20",
@@ -464,6 +570,7 @@ export default {
         {
           id: "skill6",
           name: "meteor_S",
+          icon: "meteor_S.png",
           levelReq: 25,
           maxLevel: 5,
           branchGroup: null,
@@ -474,6 +581,7 @@ export default {
         {
           id: "skill7",
           name: "meteor_M",
+          icon: "meteor_M.png",
           levelReq: 30,
           maxLevel: 5,
           branchGroup: null,
@@ -484,6 +592,7 @@ export default {
         {
           id: "skill8a",
           name: "meteor_L",
+          icon: "meteor_L.png",
           levelReq: 35,
           maxLevel: 5,
           branchGroup: "branch35",
@@ -494,6 +603,7 @@ export default {
         {
           id: "skill8b",
           name: "napalm",
+          icon: "napalm.png",
           levelReq: 35,
           maxLevel: 5,
           branchGroup: "branch35",
@@ -504,6 +614,7 @@ export default {
         {
           id: "skill9",
           name: "deathhand",
+          icon: "deathhand.png",
           levelReq: 40,
           maxLevel: 5,
           branchGroup: null,
@@ -601,6 +712,13 @@ export default {
     const game = new Phaser.Game(config);
     this.game = game;
     game.scene.start(lastScene);
+
+    // 🔊 사운드 매니저 초기화
+    const sm = SoundManager.init(game);
+    const vols = sm.getVolumes();
+    this.soundSettings.master = vols.master;
+    this.soundSettings.bgm = vols.bgm;
+    this.soundSettings.sfx = vols.sfx;
   
     this._keyHandler = (e) => this.onGlobalKeyDown(e);
     window.addEventListener("keydown", this._keyHandler);
@@ -722,7 +840,9 @@ export default {
   methods: {
     /* 저장 */
     save(){
+      this.playUiClick();
       saveGame(this.skillState);
+
     },
 
     /* ===================
@@ -822,6 +942,8 @@ export default {
     increaseWeaponStat(key) {
       if (this.weaponStats[key] < this.weaponMaxPerStat) {
         increaseStat(key);
+        const sm = SoundManager.getInstance();
+        sm && sm.playStatIncrease();
       }
     },
 
@@ -893,6 +1015,9 @@ export default {
     levelUpSkill(node) {
       if (!this.canLevelUp(node)) return;
 
+      // 사운드 instance 받기
+      const sm = SoundManager.getInstance();
+
       // 분기 그룹이면, 첫 투자 시 해당 분기로 고정
       if (node.branchGroup && !this.branchChosen[node.branchGroup]) {
         this.branchChosen[node.branchGroup] = node.id;
@@ -910,6 +1035,9 @@ export default {
       this.$nextTick(() => {
         this.drawSkillLines();
       });
+
+      // 스킬/스탯 공용 레벨업 SFX
+      if (sm) sm.playStatIncrease(); 
     },
 
     nodeCssClasses(node) {
@@ -1099,11 +1227,16 @@ export default {
 
         // Vue 스택에 있는 창이 있으면 그 창만 닫고 끝
         const last = this.windowStack.pop();
+        
         if (last) {
           if (last === "inventory") this.showInventory = false;
           if (last === "stats") this.showStats = false;
           if (last === "skills") this.showSkills = false;
-          if (last === "menu") this.showMenu = false;
+          if (last === "menu") {
+            this.showMenu = false;
+            this.playUiClose(); // 🔊 창 닫기 사운드
+          }
+          
           return;
         }
 
@@ -1116,10 +1249,13 @@ export default {
       this.showInventory = !this.showInventory;
       if (this.showInventory) {
         this.windowStack.push("inventory");
+        this.playUiOpen();   // 🔊 창 열기 사운드
         this.$nextTick(() => {
           const el = this.$el.querySelector("#inventory");
           this.makeDraggable(el);
         });
+      } else {
+        this.playUiClose();  // 🔊 창 닫기 사운드
       }
     },
 
@@ -1127,11 +1263,14 @@ export default {
       this.showStats = !this.showStats;
       if (this.showStats) {
         this.windowStack.push("stats");
+        this.playUiOpen();   // 🔊 창 열기 사운드
         this.$nextTick(() => {
           const el = this.$el.querySelector("#stats");
           this.makeDraggable(el);
           this.initWeaponRadar();
         });
+      } else {
+        this.playUiClose();  // 🔊 창 닫기 사운드
       }
     },
 
@@ -1139,28 +1278,35 @@ export default {
       this.showSkills = !this.showSkills;
       if (this.showSkills) {
         this.windowStack.push("skills");
+        this.playUiOpen();   // 🔊 창 열기 사운드
         this.$nextTick(() => {
           const el = this.$refs.skillsModal;
           this.makeDraggable(el);
           this.drawSkillLines();
         });
+      } else {
+        this.playUiClose();  // 🔊 창 닫기 사운드
       }
     },
 
     closeMenu() {
       this.showMenu = false;
+      this.playUiClose();  // 🔊 창 닫기 사운드
     },
     openMenu() {
       this.showMenu = true;
       this.showSound = false;
       this.windowStack.push("menu");
+      this.playUiOpen();   // 🔊 창 열기 사운드
     },
 
     openSoundMenu() {
       this.showSound = true;
+      this.playUiClick();
     },
     closeSoundMenu() {
       this.showSound = false;
+      this.playUiClick();
     },
 
     /* ===================
@@ -1215,12 +1361,12 @@ export default {
         const phaserKey = this.skillTreeToPhaserMap(skillId) || skillId;
         if (!phaserKey) return;
 
-        // ⭐ id = phaserKey 로 완전 통일
+        // ⭐ id = phaserKey 로 완전 통일 (스킬 슬롯)
         newSkill = {
           id: phaserKey,
           phaserKey,
           name: phaserKey,
-          icon: `/static/assets/${phaserKey}.png`,
+          icon: `/static/assets/skill_icon/${node.icon}`,
         };
 
       } else {
@@ -1299,6 +1445,40 @@ export default {
       if (!this.scene || !this.scene.skills) return 1;
       return this.scene.skills[skillName]?.level || 1;
     },
+
+    /* ===================
+      사운드 설정 적용
+    ====================== */
+    applySoundSettings() {
+      const sm = SoundManager.getInstance();
+      if (!sm) return;
+      sm.setMasterVolume(this.soundSettings.master);
+      sm.setBgmVolume(this.soundSettings.bgm);
+      sm.setSfxVolume(this.soundSettings.sfx);
+    },
+
+    onChangeSoundSlider() {
+      this.applySoundSettings();
+    },
+
+    /* ===================
+      UI 사운드 헬퍼
+    ====================== */
+    playUiOpen() {
+      const sm = SoundManager.getInstance();
+      sm && sm.playUiOpen();
+    },
+
+    playUiClose() {
+      const sm = SoundManager.getInstance();
+      sm && sm.playUiClose();
+    },
+
+    playUiClick() {
+      const sm = SoundManager.getInstance();
+      sm && sm.playUiClick();
+    },
+
   },
 };
 </script>
@@ -1652,6 +1832,20 @@ export default {
   cursor: not-allowed;
 }
 
+/* 스킬창 */
+.skill-icon {
+  width: 46px;
+  height: 46px;
+  image-rendering: pixelated;
+}
+
+.detail-icon-img {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
 /* 상태에 따른 스타일 */
 .skill-node.is-locked .skill-slot {
   opacity: 0.35;
@@ -1933,10 +2127,33 @@ export default {
   background: #666;
 }
 
+/* ============== 사운드창 ================= */
 .sound-panel {
   margin-top: 20px;
   padding: 10px;
   background: #333;
   border-radius: 6px;
+}
+
+.sound-panel {
+  margin-top: 20px;
+  padding: 10px;
+  background: #333;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.sound-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.sound-row span:first-child {
+  width: 70px;
+}
+.sound-row input[type="range"] {
+  flex: 1;
 }
 </style>

@@ -16,6 +16,7 @@ import { preloadFireSkillAssets } from "../preload/preloadFireSkills.js";
 import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
 import TestScene3 from "./TestScene3.js";
 import { setCurrentScene } from "../manager/sceneRegistry.js";
+import SoundManager from "../manager/SoundManager.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
@@ -62,7 +63,7 @@ export default class TestScene2 extends Phaser.Scene {
         this.monsterData = {
             bat: 10,
             // rabbit: 3,
-            // hidden: 15,
+            hidden: 15,
             lich: 5,
             skull_b: 3,
         };
@@ -266,7 +267,50 @@ export default class TestScene2 extends Phaser.Scene {
         this.load.spritesheet("wolf", "/static/assets/monsters/wolf.png", {
             frameWidth: 16,
             frameHeight: 16,
-        });        
+        });   
+        
+        // ==================== 사운드 ========================
+        // BGM
+        this.load.audio("bgm_field", "/static/assets/sound/background/bgm_field.wav");
+
+        // 몬스터/플레이어 관련
+        this.load.audio("monster_hit", "/static/assets/sound/effects/monster_hit.wav");
+        this.load.audio("monster_attack", "/static/assets/sound/effects/monster_attack.wav");
+        this.load.audio("footstep", "/static/assets/sound/effects/footstep.wav");
+        this.load.audio("monsterDeath", "/static/assets/sound/effects/monsterDeath.wav");
+        this.load.audio("dash", "/static/assets/sound/effects/dash.wav");
+        this.load.audio("portal", "/static/assets/sound/effects/portal.wav");
+
+        // 아이템 관련
+        this.load.audio("item_drop", "/static/assets/sound/effects/item_drop.wav");
+        this.load.audio("item_pickup", "/static/assets/sound/effects/item_pickup.wav");
+        this.load.audio("item_use", "/static/assets/sound/effects/item_use.wav");
+
+        // 레벨/스킬
+        this.load.audio("level_up", "/static/assets/sound/effects/level_up.wav");
+        this.load.audio("stat_increase", "/static/assets/sound/effects/stat_increase.wav");
+
+        // UI
+        this.load.audio("ui_open", "/static/assets/sound/effects/ui_open.wav");
+        this.load.audio("ui_close", "/static/assets/sound/effects/ui_close.wav");
+        this.load.audio("ui_click", "/static/assets/sound/effects/ui_click.wav");
+
+        // 스킬별
+        this.load.audio("skill_fireball", "/static/assets/sound/effects/skill_fireball.wav");
+        this.load.audio("skill_buff", "/static/assets/sound/effects/skill_buff.wav");
+        this.load.audio("skill_flameA", "/static/assets/sound/effects/skill_flameA.wav");
+        this.load.audio("skill_flameB", "/static/assets/sound/effects/skill_flameB.wav");
+        this.load.audio("skill_flameC", "/static/assets/sound/effects/skill_flameC.wav");
+        this.load.audio("skill_firebomb", "/static/assets/sound/effects/skill_firebomb.wav");
+        this.load.audio("skill_incendiary", "/static/assets/sound/effects/skill_incendiary.wav");
+        this.load.audio("skill_meteor_S", "/static/assets/sound/effects/skill_meteor_S.wav");
+        this.load.audio("skill_meteor_M", "/static/assets/sound/effects/skill_meteor_M.wav");
+        this.load.audio("skill_meteor_L", "/static/assets/sound/effects/skill_meteor_L.wav");
+        this.load.audio("skill_napalm", "/static/assets/sound/effects/skill_napalm.wav");
+        this.load.audio("skill_deathhand", "/static/assets/sound/effects/skill_deathhand.wav");
+        // ... 나머지 스킬들도 필요에 따라 등록
+        // ====================================================
+
 
         this.load.image("bullet", "/static/assets/bullet.png");
         this.load.image("item", "/static/assets/item.png");
@@ -315,6 +359,16 @@ export default class TestScene2 extends Phaser.Scene {
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
+        
+        // 사운드 ===========================================
+        this.SoundManager = SoundManager.getInstance();
+        this.footstepCooldown = 0;
+        this.FOOTSTEP_INTERVAL = 315; // 발소리 간격 (ms)
+        this.isMoving = false;        // 🔥 이동 여부 플래그 추가
+
+        // 1. 씬 BGM
+        this.SoundManager.playBgm("bgm_field")
+        // ==================================================
         // 포탈
         this.anims.create({
             key: "portal-anim",
@@ -1003,6 +1057,9 @@ export default class TestScene2 extends Phaser.Scene {
         skill.levelUp();
         this.playerStats.skillPoints -= 1;
 
+        // 스킬 포인트 레벨업 버튼 사운드
+        this.SoundManager.playStatIncrease();
+
         // 시스템 메세지 출력
         this.textBar = `${skillName} 스킬 레벨업! (Lv${skill.level})`;
         console.log(skill.level)
@@ -1044,6 +1101,9 @@ export default class TestScene2 extends Phaser.Scene {
         // ❌ 쿨타임, 마나부족, 기타 조건 실패 → 아무 모션도 내보내지 말고 종료
         if (!castSuccess) return;
 
+        // 스킬 캐스팅 사운드
+        this.SoundManager.playSkillCast(name);
+
         // 🔥 여기까지 왔으면 "실제로 스킬이 발동된 것"만 남음
         const motionType = this.skillMotionType[name];
         if (motionType) {
@@ -1071,14 +1131,20 @@ export default class TestScene2 extends Phaser.Scene {
         if (invIdx === -1) return (this.textBar = "인벤토리에 아이템이 없습니다");
 
         useItemFromInventory(this, invIdx);
+
+        // 아이템 사용 사운드
+        this.SoundManager.playItemUse();
     }
 
     // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
-    update() {
+    update(time, delta) {
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
         if (this.player?.isDead) return;
-
+        
         const now = this.time.now;
+
+        // 발소리 사운드 쿨타임
+        this.footstepCooldown -= delta;
 
         // TODO: 넉백 확인 >> 피격 함수로 이전
         this.handlePlayerKnockback();
@@ -1089,6 +1155,12 @@ export default class TestScene2 extends Phaser.Scene {
         // TODO: 몬스터 사망 및 아이템 드롭 >> 몬스터 피격 함수로 이전
         this.checkMonstersDeath();
         this.updateMonsterHud();
+
+        // 🔥 이동 중일 때 일정 간격으로 발소리 재생
+        if (this.isMoving && this.footstepCooldown <= 0) {
+            this.SoundManager.playFootstep();
+            this.footstepCooldown = this.FOOTSTEP_INTERVAL;
+        }
 
         // 프레임 단위로 키 입력 확인
         if (Phaser.Input.Keyboard.JustDown(this.keys.Q)) this.useSkill(0);
@@ -1199,7 +1271,9 @@ export default class TestScene2 extends Phaser.Scene {
             moving = true;
         }
 
-        // 🔥 여기부터 수정
+        // 🔥 이동 여부 플래그 갱신
+        this.isMoving = moving;
+
         if (moving) {
             // 캐스팅 중이면 walk 애니로 덮어쓰지 않음
             if (!this.player.isCasting) {
@@ -1212,7 +1286,10 @@ export default class TestScene2 extends Phaser.Scene {
             if (!this.player.isCasting) {
                 this.player.anims.stop();
                 this.player.setFrame(0);  // 기본 프레임 유지
+                
             }
+            // 🔥 멈춘 순간 쿨타임 리셋 → 다시 움직이면 바로 소리 나게
+            this.footstepCooldown = 0;
         }
     }
 
@@ -1250,6 +1327,9 @@ export default class TestScene2 extends Phaser.Scene {
 
     /** 대쉬 구현 */
     doDash(dir) {
+        // 🔥 대쉬 사운드
+        this.SoundManager.playDash();
+
         const D = CFG.dash.distance;
         const T = CFG.dash.durationMs;
         const v0 = (2 * D) / (T / 1000);
@@ -1338,6 +1418,8 @@ export default class TestScene2 extends Phaser.Scene {
         //   this.showDamageText(monster, damage, "#ffffff");
         // }
         this.showDamageText(monster, dmg, "#ffffff");
+        // 몬스터 피격 sound
+        this.SoundManager.playMonsterHit();
 
         // 몬스터 어그로
         this.onMonsterAggro(monster);
@@ -1368,7 +1450,8 @@ export default class TestScene2 extends Phaser.Scene {
         else this.inventoryData.inventory.items.push({ ...def }); // Spread Operator : 객체의 모든 속성을 새로운 객체에 복사
 
         itemSprite.destroy();
-
+        // 아이템 획득 사운드
+        this.SoundManager.playItemPickup();
         this.textBar = `${def.name} 획득`;
     };
 
@@ -1393,11 +1476,13 @@ export default class TestScene2 extends Phaser.Scene {
 
         const dmg = monster.atk - (monster.atk * (this.playerStats.defense + this.playerStats.defenseGem) / 100);
         this.playerStats.hp -= dmg
+        // 플레이어 피격 sound
+        this.SoundManager.playMonsterAttack();
 
         // 피격 데미지 출력 (빨간색)
         this.showDamageText(player, dmg, "#ff3333");
         this.player.play("player_hit", true);
-
+        
         // 마지막으로 피격된 시간 저장
         player._lastHitAt = now;
 
@@ -1660,8 +1745,17 @@ updateMonsterWander(monster, now) {
         this.monsters.children.iterate((m) => {
             if (!m || !m.active) return;
             if (m.hp > 0) return;
+            
+            // 🔥 몬스터 사망 사운드
+            this.SoundManager.playMonsterDeath();
+            // 플레이어 이전 레벨
+            const prevLevel = this.playerStats.level;
 
             this.playerStats.addExp(m.expReward);
+            
+            if (this.playerStats.level > prevLevel) {
+                this.SoundManager.playLevelUp();
+            }
 
             // 드랍 테이블 확인
             (m.dropTable || []).forEach((drop) => {
@@ -1672,6 +1766,8 @@ updateMonsterWander(monster, now) {
                     resolveDropItem(drop).then(def => {
                         it.setData('pickDef', def);
                         it.setTexture(def.name)
+                        // 아이템 드랍 사운드
+                        this.SoundManager.playItemDrop();
                         console.log(it.getData('pickDef'))
                     })
 
@@ -1929,6 +2025,9 @@ updateMonsterWander(monster, now) {
 
     /** F 키로 다음 Scene 이동 (데이터 유지됨) */
     moveToNextScene() {
+        // 🔥 포탈 사운드 재생
+        this.SoundManager.playPortal();
+
         if(!this.scene.get('TestScene3')) this.scene.add('TestScene3', TestScene3);
 
         this.cameras.main.fadeOut(300, 0, 0, 0);
