@@ -8,5 +8,5 @@ urlpatterns = [
     path("slot/<int:userId>/", views.slotConnect),
     path("item/<str:name>/", views.eachItem),
     path("nowLocation/<int:userId>/", views.nowLocation),
-    path('staffStatus/<int:userId>/', views.staffStatus),
+    path('save_game/<int:userId>/', views.save),
 ]

@@ -23,10 +23,13 @@ export class PlayerStats {
     this.point = data.point || 0;
     this.maxPoint = 50;
 
-    this.lowGemCount = data.lowGemCount || 0;
-    this.midGemCount = data.midGemCount || 0;
-    this.highGemCount = data.highGemCount || 0;
-    this.superGemCount = data.superGemCount || 0;
+    this.damageGem = data.damageGem || 0;
+    this.cooldownGem = data.CoolReduceGem || 0;
+    this.manaCostGem = data.manaReduceGem || 0;
+    this.defenseGem = data.defenseGem || 0;
+    this.luckGem = data.lukGem || 0;
+    this.totalGem = this.damageGem + this.cooldownGem + this.manaCostGem + this.defenseGem + this.luckGem;
+    this.maxGem = 20;
 
     this.nowLocation = data.nowLocation || NaN;
 
@@ -54,6 +57,20 @@ export class PlayerStats {
     this.mp = this.maxMp;
     this.skillPoints += 1;
     this.point += 1;
+  }
+
+  consume (target, point){
+    if (target == 'hp'){
+      playerInstance.hp = Math.min(playerInstance.maxHp, (playerInstance.hp + point * playerInstance.maxHp));
+    }
+    else if (target == 'mp'){
+      playerInstance.mp = Math.min(playerInstance.maxMp, (playerInstance.mp + point * playerInstance.maxMp));
+    }
+    else{
+      playerInstance[target] = Math.min(playerInstance.maxGem, (playerInstance[target] + point));
+      playerInstance.totalGem = playerInstance.damageGem + playerInstance.cooldownGem + playerInstance.manaCostGem + playerInstance.defenseGem + playerInstance.luckGem;
+      console.log(playerInstance);
+    }
   }
 }
 
@@ -84,8 +101,8 @@ export function increaseStat(key){
 
 export function resetStat(){
   playerInstance.damage =  0;
-    playerInstance.cooldown =  0;
-    playerInstance.manaCost =  0;
-    playerInstance.defense = 0;
-    playerInstance.luck = 0;
+  playerInstance.cooldown =  0;
+  playerInstance.manaCost =  0;
+  playerInstance.defense = 0;
+  playerInstance.luck = 0;
 }

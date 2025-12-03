@@ -94,12 +94,48 @@ def nowLocation(request, userId):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
-def staffStatus(request, userId):
+@api_view(['PUT'])
+def save(request, userId):
+    data = request.data
+
     User = get_user_model()
     user = User.objects.get(pk=userId)
-    staffStat = player.objects.get(user=user)
 
-    serializer = StaffStatus(staffStat)
+    account = player.objects.get(user=user)
+    stats = data.get('stats', {})
 
-    return Response(serializer.data)
+    account.level = stats.get('level', account.level)
+    account.exp = stats.get('exp', account.exp)
+
+    account.maxHP = stats.get('maxHp', account.maxHP)
+    account.currentHP = stats.get('hp', account.currentHP)
+    account.maxMP = stats.get('maxMp', account.maxMP)
+    account.currentMP = stats.get('mp', account.currentMP)
+    
+    account.staffDamage = stats.get('damage', account.staffDamage)
+    account.staffCoolReduce = stats.get('cooldown', account.staffCoolReduce)
+    account.staffManaReduce = stats.get('manaCost', account.staffManaReduce)
+    account.staffDefense = stats.get('defense', account.staffDefense)
+    account.staffLuk = stats.get('luck', account.staffLuk)
+    account.point = stats.get('point', account.point)
+
+    account.damageGem = stats.get('damageGem', account.damageGem)
+    account.coolReduceGem = stats.get('cooldownGem', account.coolReduceGem)
+    account.manaReduceGem = stats.get('manaCostGem', account.manaReduceGem)
+    account.defenseGem = stats.get('defenseGem', account.defenseGem)
+    account.lukGem = stats.get('luckGem', account.lukGem)
+
+    account.nowLocation = data.get('scene', account.nowLocation)
+    account.save()
+
+    inventory = Inventory.objects.get(user=user)
+
+    inventory.invenItem = data.get('inventory', {}).get('items', inventory.invenItem)
+    inventory.save()
+
+    slot = Slot.objects.get(user=user)
+    slot.skillSlots = data.get('slots', {}).get('skillSlots', slot.skillSlots)
+    slot.itemSlots = data.get('slots', {}).get('itemSlots', slot.itemSlots)
+    slot.save()
+
+    return Response({'status': 'saved'})
