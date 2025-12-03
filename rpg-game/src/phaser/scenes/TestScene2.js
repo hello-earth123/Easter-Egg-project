@@ -44,7 +44,7 @@ export default class TestScene2 extends Phaser.Scene {
     //         this.spawnX = 400;
     //         this.spawnY = 300;
     //     }
-    // }
+    }
 
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
