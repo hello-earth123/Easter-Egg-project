@@ -49,6 +49,7 @@ export class FireBomb extends FireSkillBase {
 
           didHitMonster = true;
 
+          scene.showDamageText(mon, dmg, "#ffffff");
           mon.hp -= dmg;
           scene.spawnHitFlash(mon.x, mon.y);
           scene.onMonsterAggro(mon);

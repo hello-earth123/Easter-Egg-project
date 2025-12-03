@@ -9,4 +9,5 @@ urlpatterns = [
     path("item/<str:name>/", views.eachItem),
     path("nowLocation/<int:userId>/", views.nowLocation),
     path('save_game/<int:userId>/', views.save),
+    path('skill/<int:userId>/', views.skillLev),
 ]

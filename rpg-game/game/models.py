@@ -92,3 +92,8 @@ class Slot(models.Model):
     )
     skillSlots = models.JSONField(default=list)
     itemSlots = models.JSONField(default=list)
+
+
+class SkillLevel(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='skillLv')
+    skillLev = models.JSONField(default=dict)

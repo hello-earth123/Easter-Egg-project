@@ -1,17 +1,18 @@
 import { getCurrentScene } from "./sceneRegistry";
 
-function collectPlayerData() {
+function collectPlayerData(skillState) {
     const scene = getCurrentScene();
     return {
         stats: scene.playerStats,
         inventory: scene.inventoryData,
         slots: scene.slotData,
-        scene: scene.scene.key
+        scene: scene.scene.key,
+        skill: skillState
     };
 }
 
-export function saveGame() {
-    const data = collectPlayerData();
+export function saveGame(skillState) {
+    const data = collectPlayerData(skillState);
     const scene = getCurrentScene();
 
     fetch("http://127.0.0.1:8000/api/save_game/1/", {
