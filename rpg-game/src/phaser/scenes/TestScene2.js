@@ -19,27 +19,27 @@ import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
 // Scene : 화면 구성 및 논리 처리 요소
 export default class TestScene2 extends Phaser.Scene {
 
-    init(data) {
-        const fromPortal = data.fromPortal ?? null;
-        this.playerStats = data.playerStats;
-        this.inventoryData = data.inventoryData;
-        this.slotData = data.slotData;
+    // init(data) {
+    //     const fromPortal = data.fromPortal ?? null;
+    //     this.playerStats = data.playerStats;
+    //     this.inventoryData = data.inventoryData;
+    //     this.slotData = data.slotData;
 
-        const portalSpawnPoints = {
-            east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
-            south: { x: 700, y: 1000 },
-            west: { x: 1400, y: 600 },
-            north: { x: 700, y: 200},
-        };
+    //     const portalSpawnPoints = {
+    //         east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
+    //         south: { x: 700, y: 1000 },
+    //         west: { x: 1400, y: 600 },
+    //         north: { x: 700, y: 200},
+    //     };
 
-        if (fromPortal && portalSpawnPoints[fromPortal]) {
-            this.spawnX = portalSpawnPoints[fromPortal].x;
-            this.spawnY = portalSpawnPoints[fromPortal].y;
-        } else {
-            this.spawnX = 400;
-            this.spawnY = 300;
-        }
-    }
+    //     if (fromPortal && portalSpawnPoints[fromPortal]) {
+    //         this.spawnX = portalSpawnPoints[fromPortal].x;
+    //         this.spawnY = portalSpawnPoints[fromPortal].y;
+    //     } else {
+    //         this.spawnX = 400;
+    //         this.spawnY = 300;
+    //     }
+    // }
 
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {

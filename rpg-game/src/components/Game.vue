@@ -575,8 +575,8 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      // scene: [TestScene2, TestScene3, MainScene],
-      scene: [TestScene3],
+      scene: [TestScene2, TestScene3, MainScene],
+      // scene: [TestScene3],
     };
 
     const game = new Phaser.Game(config);
