@@ -1,7 +1,7 @@
 /** 공용 설정과 경험치 계산식 - TODO */
 export const CFG = {
   // 월드 크기
-  world: { width: 1600, height: 1200 },
+  world: { width: 1600, height: 1216 },
 
   // 이동속도
   moveSpeed: 200,

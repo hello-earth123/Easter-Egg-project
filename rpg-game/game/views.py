@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 
 from django.contrib.auth import get_user_model
-from .models import Monster, player, Item, Inventory, Slot
+from .models import Monster, player, Item, Inventory, Slot, SkillLevel
 from .serializers import (
     MonsterSerializer,
     MonsterCallSerializer,
@@ -14,7 +14,7 @@ from .serializers import (
     InventorySerializer,
     SlotSerializer,
     NowLocationSerializer,
-    StaffStatus,
+    SkillSerializer,
 )
 
 # class CharacterViewSet(viewsets.ModelViewSet):
@@ -130,12 +130,28 @@ def save(request, userId):
 
     inventory = Inventory.objects.get(user=user)
 
-    inventory.invenItem = data.get('inventory', {}).get('items', inventory.invenItem)
+    inventory.invenItem = data.get('inventory', {}).get('inventory').get('items', inventory.invenItem)
     inventory.save()
 
     slot = Slot.objects.get(user=user)
     slot.skillSlots = data.get('slots', {}).get('skillSlots', slot.skillSlots)
+    print(slot.skillSlots)
     slot.itemSlots = data.get('slots', {}).get('itemSlots', slot.itemSlots)
     slot.save()
 
+    skill = SkillLevel.objects.get(user=user)
+    skill.skillLev = data.get('skill', skill.skillLev)
+    skill.save()
+
     return Response({'status': 'saved'})
+
+
+@api_view(['GET'])
+def skillLev(request, userId):
+    User = get_user_model()
+    user = User.objects.get(pk=userId)
+    skillLevel = SkillLevel.objects.get(user=user)
+
+    serializer = SkillSerializer(skillLevel)
+
+    return Response(serializer.data)

@@ -31,20 +31,20 @@ export default class TestScene2 extends Phaser.Scene {
         // this.inventoryData = data.inventoryData;
         // this.slotData = data.slotData;
 
-    //     const portalSpawnPoints = {
-    //         east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
-    //         south: { x: 700, y: 1000 },
-    //         west: { x: 1400, y: 600 },
-    //         north: { x: 700, y: 200},
-    //     };
+        const portalSpawnPoints = {
+            east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
+            south: { x: 700, y: 1000 },
+            west: { x: 1400, y: 600 },
+            north: { x: 700, y: 200},
+        };
 
-    //     if (fromPortal && portalSpawnPoints[fromPortal]) {
-    //         this.spawnX = portalSpawnPoints[fromPortal].x;
-    //         this.spawnY = portalSpawnPoints[fromPortal].y;
-    //     } else {
-    //         this.spawnX = 400;
-    //         this.spawnY = 300;
-    //     }
+        if (fromPortal && portalSpawnPoints[fromPortal]) {
+            this.spawnX = portalSpawnPoints[fromPortal].x;
+            this.spawnY = portalSpawnPoints[fromPortal].y;
+        } else {
+            this.spawnX = 400;
+            this.spawnY = 300;
+        }
     }
 
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
@@ -90,7 +90,8 @@ export default class TestScene2 extends Phaser.Scene {
     // TODO: preload, create의 중첩되는 요소에 대한 singleton 처리
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
-        this.load.image("map2", "/static/assets/tomb0.png");
+        this.load.image("map2", "/static/assets/test.png");
+        this.load.tilemapTiledJSON('map2Tile', '/static/assets/test.json');
         // 포탈 PNG 로드
         this.load.spritesheet("portal", "/static/assets/portal.png", {
             frameWidth: 102.1428,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
@@ -799,6 +800,10 @@ export default class TestScene2 extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
         const map = this.add.image(0, 0, "map2").setOrigin(0);
+        const tile = this.make.tilemap({key: 'map2Tile'});
+        const collisionObjects = tile.getObjectLayer("collider");
+
+        
 
         // 맵 이미지를 맵 크기에 맞춰 변경
         map.displayWidth = CFG.world.width;
@@ -894,6 +899,23 @@ export default class TestScene2 extends Phaser.Scene {
             null,
             this
         );
+
+        if (collisionObjects && collisionObjects.objects) {
+            collisionObjects.objects.forEach(obj => {
+                const x = obj.x + obj.width / 2;
+                const y = obj.y + obj.height / 2; // Tiled y 기준 보정
+
+                const collider = this.add.rectangle(x, y, obj.width, obj.height)
+                    .setOrigin(0.5, 0.5);
+
+                // Arcade Physics body 추가
+                this.physics.add.existing(collider, true); // true = static body
+                this.physics.add.collider(this.monsters, collider);
+                this.physics.add.collider(this.player, collider);
+                this.physics.add.collider(this.items, collider);
+                this.physics.add.collider(this.bullets, collider);
+            });
+        }
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -1452,12 +1474,13 @@ export default class TestScene2 extends Phaser.Scene {
         // 피격 무적 시간이 지나지 않았을 경우, 피격 무시
         if (now - player._lastHitAt < CFG.playerKB.invulMs) return;
 
-        this.playerStats.hp -= monster.atk;
+        const dmg = monster.atk - (monster.atk * (this.playerStats.defense + this.playerStats.defenseGem) / 100);
+        this.playerStats.hp -= dmg
         // 플레이어 피격 sound
         this.SoundManager.playMonsterAttack();
 
         // 피격 데미지 출력 (빨간색)
-        this.showDamageText(player, monster.atk, "#ff3333");
+        this.showDamageText(player, dmg, "#ff3333");
         this.player.play("player_hit", true);
         
         // 마지막으로 피격된 시간 저장
@@ -1539,7 +1562,7 @@ export default class TestScene2 extends Phaser.Scene {
 
             this.time.delayedCall(2000, () => {
                 // 플레이어 HP 회복
-                this.playerStats.hp = this.playerStats.maxHp;
+                this.playerStats.hp = this.playerStats.maxHp * 0.3;
 
                 // 부활 위치로 이동 (원하는 좌표로 직접 설정 가능)
                 this.player.x = 400;
@@ -1946,6 +1969,7 @@ updateMonsterWander(monster, now) {
             const halfW = width * 0.5;
             if ((lx * lx + ly * ly) > (halfW * halfW)) return;
 
+            this.showDamageText(monster, dmg, "#ffffff");
             // 🔥 데미지 적용
             monster.hp -= dmg;
             if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);

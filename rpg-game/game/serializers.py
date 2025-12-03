@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item, Monster, Droptable, player, Inventory, Slot
+from .models import Item, Monster, Droptable, player, Inventory, Slot, SkillLevel
 
 # class CharacterSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -55,8 +55,7 @@ class NowLocationSerializer(serializers.ModelSerializer):
         fields = ("nowLocation",)
 
 
-class StaffStatus(serializers.ModelSerializer):
+class SkillSerializer(serializers.ModelSerializer):
     class Meta:
-        model = player
-        fields = ('staffDamage', 'staffCoolReduce', 'staffManaReduce', 'staffDefense', 'staffLuk', 'point')
-
+        model = SkillLevel
+        fields = '__all__'

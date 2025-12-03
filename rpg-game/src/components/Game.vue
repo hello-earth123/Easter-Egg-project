@@ -392,6 +392,7 @@ import {
   Filler,
   Tooltip,
   Legend,
+  BarController,
 } from "chart.js";
 
 Chart.register(
@@ -414,7 +415,7 @@ export default {
       playerMaxMP: 50,
       playerEXP: 0,
       playerNextEXP: 100,
-      playerLevel: 1,
+      playerLevel: 100,
       skillPoints: 0, // 씬에서 들어오긴 하지만, 실제 UI는 playerLevel 기반 계산 사용
       
       // 스텟창 플레이어
@@ -673,9 +674,21 @@ export default {
     // Phaser 게임 구동
     let lastScene = 'TestScene2';
 
+    const skillRes = await fetch(`http://127.0.0.1:8000/api/skill/1/`);
+    const skillData = await skillRes.json();
+    this.skillState = skillData.skillLev;
+    const count = Object.keys(this.skillState).length
+
+    for (let index=0; index < count; index++){
+      let node = this.skillNodes[index];
+      
+      if (this.skillState[node.id] > 0 && node.branchGroup && !this.branchChosen[node.branchGroup]) {
+        this.branchChosen[node.branchGroup] = node.id;
+      }
+    }
+
     const res = await fetch(`http://127.0.0.1:8000/api/nowLocation/1/`);
     const data = await res.json();
-    
     lastScene = data.nowLocation;
 
     const sceneMap = {
@@ -723,6 +736,7 @@ export default {
       rawSlots.forEach((skill, idx) => {
         if (!skill) return;
   
+        console.log(skill);
         // DB는 {name:"fireball"} 형태라고 가정
         const fakeEv = {
           dataTransfer: {
@@ -827,7 +841,7 @@ export default {
     /* 저장 */
     save(){
       this.playUiClick();
-      saveGame();
+      saveGame(this.skillState);
 
     },
 
@@ -982,6 +996,7 @@ export default {
       }
 
       if (this.isLockedByBranch(node)) return false;
+
       return true;
     },
 
@@ -1340,10 +1355,10 @@ export default {
       if (skillId) {
         const node = this.skillNodes.find((n) => (n.id === skillId) || (n.name === skillId));
         if (!node) return;
+        console.log(this.isUnlocked(node), this.isLockedByBranch(node));
         if (!this.isUnlocked(node) || this.isLockedByBranch(node)) return;
 
         const phaserKey = this.skillTreeToPhaserMap(skillId) || skillId;
-        
         if (!phaserKey) return;
 
         // ⭐ id = phaserKey 로 완전 통일 (스킬 슬롯)

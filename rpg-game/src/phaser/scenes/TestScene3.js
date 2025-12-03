@@ -769,7 +769,7 @@ export default class TestScene3 extends Phaser.Scene {
 
         // 부활 대기 시간 이후, 부활
         this.time.delayedCall(800, () => {
-            this.playerStats.hp = this.playerStats.maxHp;
+            this.playerStats.hp = this.playerStats.maxHp * 0.3;
             this.player.x = 400;
             this.player.y = 300;
 
