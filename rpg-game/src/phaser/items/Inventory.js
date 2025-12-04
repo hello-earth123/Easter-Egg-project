@@ -6,6 +6,7 @@ export function resolveDropItem(drop) {
     .then(res => { return res.json(); })
     .then(data => {
       const { name, effect } = data;
+      console.log(name);
       return {
         name,
         effect,

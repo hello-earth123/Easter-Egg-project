@@ -4,7 +4,8 @@
   "dependencies": {
     "chart.js": "^4.5.1",
     "phaser": "^3.90.0",
-    "vue": "^3.5.22"
+    "vue": "^3.5.22",
+    "vue-router": "^4.6.3"
   },
   "scripts": {
     "dev": "vite",
