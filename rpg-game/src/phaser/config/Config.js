@@ -120,11 +120,11 @@ export const CFG = {
 
   // Flame C (십자 5방)
   flameC: {
-    baseDmg: 44,
+    baseDmg: 45,
     dmgScale: 0.2,
     baseCost: 20,
     costScale: 0.12,
-    cd: 4200,
+    cd: 4800,
 
     distance: 200,
     radius: 70,
@@ -141,11 +141,11 @@ export const CFG = {
 
   // Firebomb
   firebomb: {
-    baseDmg: 60,
+    baseDmg: 65,
     dmgScale: 0.20,
     baseCost: 24,
     costScale: 0.12,
-    cd: 4000,
+    cd: 5500,
 
     radius: 90,
 
@@ -162,9 +162,9 @@ export const CFG = {
     dmgScale: 0.15,
     baseCost: 18,
     costScale: 0.1,
-    cd: 5000,
+    cd: 6000,
 
-    tickDmg: 7,
+    tickDmg: 8,
     duration: 2000,
     interval: 150,
 
@@ -181,7 +181,7 @@ export const CFG = {
 
   // Meteor S
   meteor_S: {
-    baseDmg: 72,
+    baseDmg: 45,
     dmgScale: 0.20,
     baseCost: 24,
     costScale: 0.1,
@@ -202,14 +202,14 @@ export const CFG = {
 
   // Meteor M
   meteor_M: {
-    baseDmg: 110,
+    baseDmg: 80,
     dmgScale: 0.22,
     baseCost: 30,
     costScale: 0.12,
-    cd: 4500,
+    cd: 7000,
 
     fallSpeed: 700,
-    count: 4,
+    count: 3,
     radius: 75,
     distance: 200,
 
@@ -222,11 +222,11 @@ export const CFG = {
 
   // Meteor L
   meteor_L: {
-    baseDmg: 140,
+    baseDmg: 90,
     dmgScale: 0.25,
     baseCost: 40,
     costScale: 0.15,
-    cd: 6000,
+    cd: 9500,
 
     fallSpeed: 700,
     count: 6,
@@ -242,14 +242,14 @@ export const CFG = {
 
   // Napalm (장판)
   napalm: {
-    baseDmg: 55,
+    baseDmg: 300,
     dmgScale: 0.18,
     baseCost: 32,
     costScale: 0.12,
-    cd: 4200,
+    cd: 10000,
 
     duration: 3000,
-    tickDmg: 18,
+    tickDmg: 100,
     interval: 450,
     radius: 80,
     length: 140, // napalm 장판 폭
@@ -263,11 +263,11 @@ export const CFG = {
 
   // Death Hand
   deathhand: {
-    baseDmg: 300,
+    baseDmg: 400,
     dmgScale: 0.30,
     baseCost: 55,
     costScale: 0.2,
-    cd: 7000,
+    cd: 10000,
 
     radius: 120,
     distance: 170,

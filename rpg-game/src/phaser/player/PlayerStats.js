@@ -88,8 +88,11 @@ export class PlayerStats {
     // ⭐ 레벨업 기반 공격력 증가 (상한 없음)
     this.baseDamage += growthDamagePerLevel;
 
-    // 스킬 포인트
-    this.skillPoints += 1;
+    if (level % 2 == 0) {
+      // 스킬 포인트
+      this.skillPoints += 1;
+    }
+
 
     // 스탯 포인트 2 지급
     this.point += 2;
@@ -152,11 +155,36 @@ export async function initPlayer(userId) {
 // 스탯 증가 & 초기화 (UI 버튼용) — 기존 유지
 // =============================================================
 export function increaseStat(key) {
+  // 🔒 사용 가능한 스탯 포인트 없으면 바로 리턴
+  if (playerInstance.point <= 0) {
+    console.log("no stat points left");
+    return;
+  }
+  
   playerInstance[key]++;
-  console.log("player", playerInstance[key]);
+  playerInstance.point--;
+  console.log(
+    `Stat increased: ${key}=${playerInstance[key]}, remaining point=${playerInstance.point}`
+  );
 }
 
 export function resetStat() {
+  let tmpPoint = 0;
+
+  tmpPoint = 
+  playerInstance.damage +
+  playerInstance.cooldown +
+  playerInstance.manaCost +
+  playerInstance.defense +
+  playerInstance.luck;
+
+
+  if (tmpPoint == 0) {
+    return;
+  }
+
+  playerInstance.point += tmpPoint;
+
   playerInstance.damage = 0;
   playerInstance.cooldown = 0;
   playerInstance.manaCost = 0;

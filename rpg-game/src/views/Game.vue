@@ -1,98 +1,156 @@
 <template>
   <div id="app-wrap">
-    <!-- 좌측 HUD -->
-    <div id="hud">
-      <div class="info-row">
-        <div>Lv {{ playerLevel }}</div>
-      </div>
-
-      <div class="bar label">HP</div>
-      <div class="bar-wrap">
-        <div
-          class="bar-fill"
-          :style="{ width: Math.max(0, (playerHP / playerMaxHP) * 100) + '%' }"
-        ></div>
-        <div class="bar-text">{{ playerHP }} / {{ playerMaxHP }}</div>
-      </div>
-
-      <div class="bar label">MP</div>
-      <div class="bar-wrap">
-        <div
-          class="bar-fill mp"
-          :style="{ width: Math.max(0, (playerMP / playerMaxMP) * 100) + '%' }"
-        ></div>
-        <div class="bar-text">{{ playerMP }} / {{ playerMaxMP }}</div>
-      </div>
-
-      <div class="bar label">EXP</div>
-      <div class="bar-wrap">
-        <div
-          class="bar-fill exp"
-          :style="{ width: Math.max(0, (playerEXP / playerNextEXP) * 100) + '%' }"
-        ></div>
-        <div class="bar-text">{{ playerEXP }} / {{ playerNextEXP }}</div>
-      </div>
-
-      <div class="info-row" style="margin-top: 6px">
-        <!-- HUD에서도 계산된 스킬 포인트 사용 -->
-        <div>Skill Pts: {{ animSkillPoints }}</div>
-        <div style="margin-left: auto; font-size: 12px; color: #ccc">
-          I:Inventory / P:Stats / K:Skills
-        </div>
-      </div>
-
-      <!-- 스킬 슬롯(QWER) -->
-      <div id="shortcut">
-        <div
-          class="shortcut-slot"
-          v-for="(s, idx) in skillSlots"
-          :key="'skill-' + idx"
-          @drop.prevent="onDropSkillShortcut($event, idx)"
-          @dragover.prevent
-          @click="useSkillFromVue(idx)"
-          :class="{ empty: !s }"
-        >
-            <div v-if="s" class="slot-item">
-              <img :src="s.icon" :alt="s.name" />
-              <div class="slot-cd" v-if="cdLeftMs(s.phaserKey) > 0">
-                {{ Math.ceil(cdLeftMs(s.phaserKey) / 1000) }}s
-              </div>
-              <div class="slot-lv">Lv {{ skillLevel(s.phaserKey) }}</div>
-            </div>
-          <div class="slot-key">{{ ["Q", "W", "E", "R"][idx] }}</div>
-        </div>
-      </div>
-
-      <!-- 아이템 슬롯(PgUp/PgDn) -->
-      <div id="shortcut">
-        <div
-          class="shortcut-slot"
-          v-for="(i, idx) in itemSlots"
-          :key="'item-' + idx"
-          @drop.prevent="onDropItemShortcut($event, idx)"
-          @dragover.prevent
-          @click="useItemShortcutFromVue(idx)"
-          :class="{ empty: !i }"
-        >
-          <div v-if="i" class="slot-item">
-            <img :src="i.icon" />
-            <div class="slot-count" v-if="i.count > 1">x{{ i.count }}</div>
-          </div>
-          <div class="slot-key">{{ ["PgUp", "PgDn"][idx] }}</div>
-        </div>
-      </div>
-
-      <div id="text-bar">{{ textBar }}</div>
-    </div>
-
-    <!-- =================== 게임 영역 / 모달 =================== -->
+    <!-- 게임 컨테이너 (Phaser가 붙는 영역) -->
     <div id="game-container">
+      <!-- =================== 오버레이 HUD =================== -->
+      <div class="hud-root">
+        <!-- 🔹 좌측 상단: Lv + HP/MP/EXP 패널 -->
+        <div class="hud-top-left-panel">
+          <div class="hud-level-row">
+            <span class="hud-level-text">Lv {{ playerLevel }}</span>
+            <span class="hud-shortcuts-text">
+              I:Inventory · P:Stats · K:Skills
+            </span>
+          </div>
+
+          <div class="hud-bars">
+            <!-- HP -->
+            <div class="hud-bar">
+              <div class="hud-bar-label hp">HP</div>
+              <div class="bar-wrap">
+                <div
+                  class="bar-fill hp"
+                  :style="{ width: Math.max(0, (playerHP / playerMaxHP) * 100) + '%' }"
+                ></div>
+                <div class="bar-text">
+                  {{ playerHP }} / {{ playerMaxHP }}
+                </div>
+              </div>
+            </div>
+
+            <!-- MP -->
+            <div class="hud-bar">
+              <div class="hud-bar-label mp">MP</div>
+              <div class="bar-wrap">
+                <div
+                  class="bar-fill mp"
+                  :style="{ width: Math.max(0, (playerMP / playerMaxMP) * 100) + '%' }"
+                ></div>
+                <div class="bar-text">
+                  {{ playerMP }} / {{ playerMaxMP }}
+                </div>
+              </div>
+            </div>
+
+            <!-- EXP -->
+            <div class="hud-bar">
+              <div class="hud-bar-label exp">EXP</div>
+              <div class="bar-wrap">
+                <div
+                  class="bar-fill exp"
+                  :style="{ width: Math.max(0, (playerEXP / playerNextEXP) * 100) + '%' }"
+                ></div>
+                <div class="bar-text">
+                  {{ playerEXP }} / {{ playerNextEXP }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Skill Points 표시 (작게) -->
+            <div class="hud-skill-pts-row">
+              <span>Skill Pts: {{ availableSkillPoints }}</span>
+              <span class="hud-skill-pts-sub">
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🔹 하단 중앙: 스킬(QWER) / 아이템(PgUp/PgDn) 숏컷 바 -->
+        <div class="hud-bottom-center-panel">
+          <!-- 스킬 슬롯 -->
+          <div class="shortcut-row skill-row">
+            <div class="shortcut-slot"
+                v-for="(s, idx) in skillSlots"
+                :key="'skill-' + idx"
+                @drop.prevent="onDropSkillShortcut($event, idx)"
+                @dragover.prevent
+                @click="useSkillFromVue(idx)"
+                :class="{ empty: !s }">
+
+              <div v-if="s" class="slot-item">
+                <img :src="s.icon" :alt="s.name" />
+
+                <!-- 쿨다운 남은 시간 (오른쪽 상단) -->
+                <div class="slot-cd-text" v-if="cdLeftMs(s.phaserKey) > 0">
+                  {{ Math.ceil(cdLeftMs(s.phaserKey) / 1000) }}
+                </div>
+
+                <!-- 🔥 시계 방향 쿨다운 마스크 -->
+                <svg
+                  v-if="cdLeftMs(s.phaserKey) > 0"
+                  class="cooldown-mask"
+                  viewBox="0 0 36 36">
+                  <path
+                    class="cooldown-path"
+                    :style="cooldownPathStyle(s.phaserKey)"
+                    d="M18 2
+                      a 16 16 0 1 1 0 32
+                      a 16 16 0 1 1 0 -32" />
+                </svg>
+
+                <div class="slot-lv">Lv {{ skillLevel(s.phaserKey) }}</div>
+              </div>
+
+              <div class="slot-key">{{ ["Q","W","E","R"][idx] }}</div>
+            </div>
+
+          </div>
+
+          <!-- 아이템 슬롯 -->
+          <div class="shortcut-row item-row">
+            <div
+              class="shortcut-slot item-slot"
+              v-for="(i, idx) in itemSlots"
+              :key="'item-' + idx"
+              @drop.prevent="onDropItemShortcut($event, idx)"
+              @dragover.prevent
+              @click="useItemShortcutFromVue(idx)"
+              :class="{ empty: !i }"
+            >
+              <div v-if="i" class="slot-item">
+                <img :src="i.icon" />
+                <div class="slot-count" v-if="i.count > 1">
+                  x{{ i.count }}
+                </div>
+              </div>
+              <div class="slot-key">
+                {{ ["PgUp", "PgDn"][idx] }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🔹 좌측 하단: 텍스트 로그 바 -->
+        <div class="hud-bottom-left-log">
+          <div class="log-label">LOG</div>
+          <div class="log-content">
+            {{ textBar }}
+          </div>
+        </div>
+      </div>
+
       <!-- =================== 스킬 창 (배틀메이지 스타일 트리) =================== -->
-      <div v-if="showSkills" class="modal skills-modal" tabindex="0" ref="skillsModal">
+      <div
+        v-if="showSkills"
+        class="modal skills-modal"
+        tabindex="0"
+        ref="skillsModal"
+      >
         <div class="modal-header">
-          Skill Tree
-          <span style="margin-left: 8px; font-size: 12px; color: #ddd;">
-            (사용 가능 포인트: {{ animSkillPoints }} / 총 {{ totalSkillPoints }})
+          <span>Skill Tree</span>
+          <span class="modal-header-sub">
+            사용 가능 포인트:
+            <b>{{ availableSkillPoints }}</b> / {{ totalSkillPoints }}
           </span>
         </div>
 
@@ -111,7 +169,8 @@
                 {{ selectedSkill.name }}
               </div>
               <div class="detail-level">
-                Lv {{ skillLevelOf(selectedSkill.id) }} / {{ selectedSkill.maxLevel }}
+                Lv {{ skillLevelOf(selectedSkill.id) }} /
+                {{ selectedSkill.maxLevel }}
               </div>
               <div class="detail-meta">
                 요구 레벨: {{ selectedSkill.levelReq }}
@@ -130,7 +189,8 @@
                 • 분기 스킬은 한쪽을 레벨업하면 다른 한쪽은 영구 잠금됩니다.
               </div>
               <div class="detail-sp-info">
-                사용 가능 스킬 포인트: <b>{{ animSkillPoints }}</b>
+                사용 가능 스킬 포인트:
+                <b>{{ availableSkillPoints }}</b>
               </div>
               <button class="detail-reset-btn" @click="resetAllSkills">
                 스킬 초기화
@@ -193,12 +253,17 @@
           >
             <img :src="it.icon" />
             <div class="inv-info">
-              <div class="inv-name">{{ it.name }}</div>
-              <div class="inv-count" v-if="it.count > 1">x{{ it.count }}</div>
+              <!-- 🔹 긴 이름은 말줄임 + title 툴팁 -->
+              <div class="inv-name" :title="it.name">
+                {{ it.name }}
+              </div>
+              <div class="inv-count" v-if="it.count > 1">
+                x{{ it.count }}
+              </div>
             </div>
           </div>
         </div>
-        <div style="margin-top: 8px; color: #ccc">닫기: I</div>
+        <div class="window-footer">닫기: I</div>
       </div>
 
       <!-- =================== Stats 창 =================== -->
@@ -207,12 +272,40 @@
 
         <!-- ===== 2x2 사분면 배치 ===== -->
         <div class="stats-layout">
-          <!-- 1사분면 : 무기 이미지 -->
-          <div class="quad quad-weapon-image">
-            <div class="quad-title">[무기 이미지]</div>
+          <!-- 1사분면 : 플레이어 외형 -->
+          <div class="quad quad-player-image">
+            <div class="quad-title">플레이어 외형</div>
 
             <div
-              class="image-placeholder"
+              class="image-placeholder framed"
+              :style="{
+                position: 'relative',
+                overflow: 'hidden',
+                width: playerFrameWidth * playerFrameScale + 'px',
+                height: playerFrameHeight * playerFrameScale + 'px'
+              }"
+            >
+              <img
+                :src="playerSpriteSheet"
+                :style="{
+                  imageRendering: 'pixelated',
+                  transformOrigin: 'top left',
+                  transform:
+                    'translate(' +
+                    (-(playerFrameIndex * playerFrameWidth) - 30) +
+                    'px, -15px) ' +
+                    'scale(' + playerFrameScale + ')'
+                }"
+              />
+            </div>
+          </div>
+
+          <!-- 2사분면 : 무기 이미지 -->
+          <div class="quad quad-weapon-image">
+            <div class="quad-title">장비 무기</div>
+
+            <div
+              class="image-placeholder framed"
               :style="{
                 position: 'relative',
                 overflow: 'hidden',
@@ -237,48 +330,112 @@
             </div>
           </div>
 
-          <!-- 2사분면 : 플레이어 외형 -->
-          <div class="quad quad-player-image">
-            <div class="quad-title">[플레이어 외형]</div>
-              <div class="image-placeholder"
-                :style="{
-                  position: 'relative',
-                  overflow: 'hidden',
-                  width: playerFrameWidth * playerFrameScale + 'px',
-                  height: playerFrameHeight * playerFrameScale + 'px'
-                }"
-              >
-                <img
-                  :src="playerSpriteSheet"
-                  :style="{
-                    imageRendering: 'pixelated',
-                    transformOrigin: 'top left',
-                    transform: 'translate(' +
-                      (-(playerFrameIndex * playerFrameWidth) - 30) + 'px, -15px) ' +
-                      'scale(' + playerFrameScale + ')'
-                  }"
-                >
-              </div>
-          </div>
-
-
           <!-- 3사분면 : 플레이어 능력치 -->
           <div class="quad quad-basic-stats">
-            <div class="quad-title">[플레이어 능력치]</div>
+            <div class="quad-title">기본 능력치</div>
+
             <div class="stats-grid">
-              <div><b>Level:</b> {{ playerLevel }}</div>
-              <div><b>HP:</b> {{ playerHP }} / {{ playerMaxHP }}</div>
-              <div><b>MP:</b> {{ playerMP }} / {{ playerMaxMP }}</div>
-              <div><b>EXP:</b> {{ playerEXP }} / {{ playerNextEXP }}</div>
-              <div><b>Skill Pts (사용 가능):</b> {{ availableSkillPoints }}</div>
+              <div><b>Level</b> {{ playerLevel }}</div>
+
+              <div><b>HP</b> {{ playerHP }} / {{ playerMaxHP }}</div>
+
+              <div><b>MP</b> {{ playerMP }} / {{ playerMaxMP }}</div>
+
+              <div><b>EXP</b> {{ playerEXP }} / {{ playerNextEXP }}</div>
+
+              <div><b>Skill Pts</b> {{ availableSkillPoints }}</div>
+
+              <!-- ⭐ 추가된 Stats Pts -->
+              <div><b>Stats Pts</b> {{ statPoints }} / {{ maxStatPoints }}</div>
+            </div>
+
+            <!-- ⭐ Gem 그래프 영역 -->
+            <div class="gem-usage-section">
+              <div class="gem-title">Gem Usage (Total {{ totalGemUsed }}/20)</div>
+
+              <!-- Damage -->
+              <div class="gem-row">
+                <div class="gem-label red">데미지</div>
+                <div class="gem-bar">
+                  <div
+                    class="gem-bar-fill red"
+                    :style="{
+                      width:
+                        (Math.min(gemUsage.damage, maxGemUsage) / maxGemUsage) * 100 + '%'
+                    }"
+                  ></div>
+                </div>
+                <div class="gem-value">{{ gemUsage.damage }}</div>
+              </div>
+              
+              <!-- Cooldown -->
+              <div class="gem-row">
+                <div class="gem-label white">쿨타임</div>
+                <div class="gem-bar">
+                  <div
+                    class="gem-bar-fill white"
+                    :style="{
+                      width:
+                        (Math.min(gemUsage.cooldown, maxGemUsage) / maxGemUsage) * 100 + '%'
+                    }"
+                  ></div>
+                </div>
+                <div class="gem-value">{{ gemUsage.cooldown }}</div>
+              </div>
+
+              <!-- ManaCost -->
+              <div class="gem-row">
+                <div class="gem-label sky">마나 소모</div>
+                <div class="gem-bar">
+                  <div
+                    class="gem-bar-fill sky"
+                    :style="{
+                      width:
+                        (Math.min(gemUsage.manaCost, maxGemUsage) / maxGemUsage) * 100 + '%'
+                    }"
+                  ></div>
+                </div>
+                <div class="gem-value">{{ gemUsage.manaCost }}</div>
+              </div>
+
+              <!-- Defense -->
+              <div class="gem-row">
+                <div class="gem-label yellow">방어력</div>
+                <div class="gem-bar">
+                  <div
+                    class="gem-bar-fill yellow"
+                    :style="{
+                      width:
+                        (Math.min(gemUsage.defense, maxGemUsage) / maxGemUsage) * 100 + '%'
+                    }"
+                  ></div>
+                </div>
+                <div class="gem-value">{{ gemUsage.defense }}</div>
+              </div>
+
+              <!-- Luck -->
+              <div class="gem-row">
+                <div class="gem-label green">행운</div>
+                <div class="gem-bar">
+                  <div
+                    class="gem-bar-fill green"
+                    :style="{
+                      width:
+                        (Math.min(gemUsage.luck, maxGemUsage) / maxGemUsage) * 100 + '%'
+                    }"
+                  ></div>
+                </div>
+                <div class="gem-value">{{ gemUsage.luck }}</div>
+              </div>
             </div>
           </div>
 
+
           <!-- 4사분면 : 무기 스탯 레이더 -->
           <div class="quad quad-radar">
-            <div class="quad-title">[무기 스탯]</div>
+            <div class="quad-title">무기 스탯</div>
 
-            <div class="radar-wrapper">
+            <div class="radar-wrapper framed">
               <canvas ref="weaponRadarCanvas"></canvas>
             </div>
 
@@ -288,7 +445,9 @@
                 :key="key"
                 class="weapon-stat-row"
               >
-                <span class="weapon-stat-label">{{ weaponStatLabel(key) }}</span>
+                <span class="weapon-stat-label">
+                  {{ weaponStatLabel(key) }}
+                </span>
                 <span class="weapon-stat-value">
                   {{ value }} / {{ weaponMaxPerStat }}
                 </span>
@@ -308,12 +467,15 @@
             </div>
           </div>
         </div>
-        <div style="margin-top: 6px; color: #ccc">닫기: P</div>
+
+        <div class="window-footer">닫기: P</div>
       </div>
 
       <!-- =================== ESC 메뉴창 =================== -->
       <div v-if="showMenu" class="modal menu-modal" tabindex="0">
-        <div class="modal-header">Menu</div>
+        <div class="modal-header">
+          <span>Menu</span>
+        </div>
 
         <div class="menu-body">
           <button class="menu-btn" @click="save">SAVE</button>
@@ -417,23 +579,35 @@ export default {
       playerNextEXP: 100,
       playerLevel: 100,
       skillPoints: 0, // 씬에서 들어오긴 하지만, 실제 UI는 playerLevel 기반 계산 사용
-      
+
       // 스텟창 플레이어
       playerSpriteSheet: "/static/assets/player.png",
-      playerFrameIndex: 0,  // 무조건 0번 고정
-      playerFrameWidth: 30,   // 🔥 실제 스프라이트 가로
-      playerFrameHeight: 16,  // 🔥 실제 스프라이트 세로
+      playerFrameIndex: 0, // 무조건 0번 고정
+      playerFrameWidth: 30, // 🔥 실제 스프라이트 가로
+      playerFrameHeight: 16, // 🔥 실제 스프라이트 세로
       playerFrameScale: 8,
       playerOffsetX: 2,
-
+      statPoints: 0,
+      maxStatPoints: 50,
+      
       // 스탯창 무기
       weaponSpriteSheet: "/static/assets/player_staff.png",
-      weaponFrameIndex: 1,       // 무기는 항상 1번 프레임 표시
-      weaponFrameWidth: 32,      // 플레이어 스프라이트와 동일
-      weaponFrameHeight: 16,     // 필요 시 조정
-      weaponFrameScale: 8,       // Stats 창에 맞게 확대 (플레이어랑 같게)
-      weaponOffsetX: 55,          // 미세 조정 가능
+      weaponFrameIndex: 1, // 무기는 항상 1번 프레임 표시
+      weaponFrameWidth: 32, // 플레이어 스프라이트와 동일
+      weaponFrameHeight: 16, // 필요 시 조정
+      weaponFrameScale: 8, // Stats 창에 맞게 확대 (플레이어랑 같게)
+      weaponOffsetX: 55, // 미세 조정 가능
       weaponOffsetY: 15,
+
+      gemUsage: {
+        damage: 0,
+        manaCost: 0,
+        cooldown: 0,
+        defense: 0,
+        luck: 0,
+      },
+      maxGemUsage: 20,
+      gemBarChart: null,
 
       // 인벤토리
       inventory: { items: [] },
@@ -442,18 +616,6 @@ export default {
       skillSlots: [null, null, null, null],
       itemSlots: [null, null],
       animSkillPoints: 0,
-
-      // (기존) 스킬 목록 - QWER용 (fallback)
-      // allSkills: [
-      //   { name: "Skill 1", icon: "/assets/skill1.png", acquired: true },
-      //   { name: "Skill 2", icon: "/assets/skill2.png", acquired: true },
-      //   { name: "Skill 3", icon: "/assets/skill3.png", acquired: true },
-      //   { name: "Skill 4", icon: "/assets/skill4.png", acquired: true },
-      //   { name: "Skill 5", icon: "/assets/skill5.png", acquired: true },
-      //   { name: "Skill 6", icon: "/assets/skill6.png", acquired: true },
-      //   { name: "Skill 7", icon: "/assets/skill7.png", acquired: true },
-      //   { name: "Skill 8", icon: "/assets/skill8.png", acquired: true },
-      // ],
 
       // Phaser 연동
       textBar: "",
@@ -624,7 +786,6 @@ export default {
         },
       ],
 
-
       // 각 스킬의 현재 레벨
       skillState: {
         skill1: 1,
@@ -668,35 +829,49 @@ export default {
     selectedSkill() {
       return this.skillNodes.find((n) => n.id === this.selectedSkillId) || null;
     },
+    totalGemUsed() {
+      const sum =
+        this.gemUsage.damage +
+        this.gemUsage.manaCost +
+        this.gemUsage.cooldown +
+        this.gemUsage.defense +
+        this.gemUsage.luck;
+
+      return Math.min(sum, this.maxGemUsage); // 0 ~ 20
+    },
   },
 
   async mounted() {
     // Phaser 게임 구동
-    let lastScene = 'TestScene2';
+    let lastScene = "TestScene2";
 
-    const skillRes = await fetch(`http://127.0.0.1:8000/api/skill/1/`);
+    const skillRes = await fetch(`http://127.0.0.1:8000/api/skill/3/`);
     const skillData = await skillRes.json();
     this.skillState = skillData.skillLev;
-    const count = Object.keys(this.skillState).length
+    const count = Object.keys(this.skillState).length;
 
-    for (let index=0; index < count; index++){
+    for (let index = 0; index < count; index++) {
       let node = this.skillNodes[index];
-      
-      if (this.skillState[node.id] > 0 && node.branchGroup && !this.branchChosen[node.branchGroup]) {
+
+      if (
+        this.skillState[node.id] > 0 &&
+        node.branchGroup &&
+        !this.branchChosen[node.branchGroup]
+      ) {
         this.branchChosen[node.branchGroup] = node.id;
       }
     }
 
-    const res = await fetch(`http://127.0.0.1:8000/api/nowLocation/1/`);
+    const res = await fetch(`http://127.0.0.1:8000/api/nowLocation/3/`);
     const data = await res.json();
     lastScene = data.nowLocation;
 
     const sceneMap = {
       TestScene2: TestScene2,
       TestScene3: TestScene3,
-      MainScene: MainScene
+      MainScene: MainScene,
     };
-    
+
     const config = {
       type: Phaser.AUTO,
       width: 900,
@@ -719,47 +894,48 @@ export default {
     this.soundSettings.master = vols.master;
     this.soundSettings.bgm = vols.bgm;
     this.soundSettings.sfx = vols.sfx;
-  
+
     this._keyHandler = (e) => this.onGlobalKeyDown(e);
     window.addEventListener("keydown", this._keyHandler);
     window.addEventListener("resize", this.onWindowResize);
-  
+
     /* ----------------------------------------------------------------- */
-    initSlot(1).then(slotData =>{
+    initSlot(1).then((slotData) => {
       const skillSlotData = slotData.skillSlots;
       const rawSlots = skillSlotData || [null, null, null, null];
-  
+
       // Vue상의 skillSlots는 먼저 초기화
       this.skillSlots = [null, null, null, null];
-  
+
       // DB에서 불러온 스킬을 Vue의 onDropSkillShortcut 방식으로 재적용
       rawSlots.forEach((skill, idx) => {
         if (!skill) return;
-  
-        console.log(skill);
-        // DB는 {name:"fireball"} 형태라고 가정
+
         const fakeEv = {
           dataTransfer: {
             getData: (key) => (key === "skill-id" ? skill : ""),
           },
         };
-  
+
         // 기존 drop 로직 100% 그대로 활용
         this.onDropSkillShortcut(fakeEv, idx);
       });
-  
+
       if (slotData.itemSlots) {
-        this.itemSlots = slotData.itemSlots.map((i) => (i ? { name: i.name, icon: i.icon } : null));
-        console.log(this.itemSlots);
+        this.itemSlots = slotData.itemSlots.map((i) =>
+          i ? { name: i.name, icon: i.icon } : null
+        );
       }
-    })
+    });
     /* ----------------------------------------------------------------- */
 
     // Vue ← Phaser 동기화
     this.pollTimer = setInterval(() => {
-      const main = Object.values(game.scene.keys).find((s) => s.scene.isActive());
+      const main = Object.values(game.scene.keys).find((s) =>
+        s.scene.isActive()
+      );
       this.scene = main;
-      
+
       if (!main || !main.playerStats) return;
 
       this.playerHP = Math.round(main.playerStats.hp);
@@ -770,6 +946,20 @@ export default {
       this.playerNextEXP = Math.round(main.playerStats.nextExp);
       this.playerLevel = main.playerStats.level || 1;
       this.skillPoints = main.playerStats.skillPoints || 0; // 참고용
+      this.statPoints = main.playerStats.point ?? 0;
+      this.maxStatPoints = main.playerStats.maxPoint ?? 50;
+
+      // Gem 사용량 업데이트 ⭐⭐
+      // Gem 사용량 업데이트 ⭐ PlayerStats 필드에 맞게
+      const g = main.playerStats || {};
+
+      this.gemUsage.damage   = g.damageGem   ?? 0;     // damageGem
+      this.gemUsage.manaCost = g.manaCostGem ?? 0;     // manaCostGem
+      this.gemUsage.cooldown = g.cooldownGem ?? 0;     // cooldownGem
+      this.gemUsage.defense  = g.defenseGem  ?? 0;     // defenseGem
+      this.gemUsage.luck     = g.luckGem     ?? 0;     // luckGem
+
+
 
       this.weaponStats.damage = main.playerStats.damage;
       this.weaponStats.cooldown = main.playerStats.cooldown;
@@ -780,21 +970,15 @@ export default {
       this.textBar = main.textBar || "";
 
       // 인벤토리
-      this.inventory.items = (main.inventoryData.inventory.items || []).map((i) => ({ ...i }));
-
-      // // 스킬 슬롯 (씬 → Vue 미러링)
-      // if (main.skillSlots) {
-      //   this.skillSlots = main.skillSlots.map((name) => {
-      //     if (!name) return null;
-      //     const base = this.allSkills.find((s) => s.name === name);
-      //     return base ? { ...base } : { name, icon: "/assets/skill1.png" };
-      //   });
-      // }
+      this.inventory.items = (main.inventoryData.inventory.items || []).map(
+        (i) => ({ ...i })
+      );
 
       // 아이템 슬롯
       if (main.inventoryData.itemSlots) {
-        this.itemSlots = main.inventoryData.itemSlots.map((i) => (i ? { name: i.name, icon: i.icon } : null));
-        console.log(this.itemSlots);
+        this.itemSlots = main.inventoryData.itemSlots.map((i) =>
+          i ? { name: i.name, icon: i.icon } : null
+        );
       }
     }, 100);
   },
@@ -828,6 +1012,13 @@ export default {
         this.animSkillPoints = newVal;
       }
     },
+    // gem 스탯이 바뀔 때마다 차트 자동 업데이트
+    gemUsage: {
+      deep: true,
+      handler() {
+        this.updateGemChart();
+      }
+    },
     // 무기 스탯이 바뀔 때마다 차트 자동 업데이트
     weaponStats: {
       deep: true,
@@ -839,11 +1030,81 @@ export default {
 
   methods: {
     /* 저장 */
-    save(){
+    save() {
       this.playUiClick();
       saveGame(this.skillState);
-
     },
+
+    /* ===================
+    gem 스탯 및 레이더 차트
+    ====================== */
+    initGemChart() {
+      const canvas = this.$refs.gemChartCanvas;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+
+      if (this.gemBarChart) this.gemBarChart.destroy();
+
+      this.gemBarChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["Damage", "ManaCost", "Cooldown", "Defense", "Luck"],
+          datasets: [
+            {
+              data: [
+                this.gemUsage.damage,
+                this.gemUsage.manaCost,
+                this.gemUsage.cooldown,
+                this.gemUsage.defense,
+                this.gemUsage.luck,
+              ],
+              backgroundColor: [
+                "rgba(255, 80, 80, 0.8)",   // 빨강
+                "rgba(120, 200, 255, 0.8)", // 하늘
+                "rgba(255, 255, 255, 0.8)", // 흰색
+                "rgba(255, 230, 120, 0.8)", // 노랑
+                "rgba(150, 255, 150, 0.8)", // 연두
+              ],
+              borderColor: "rgba(255,255,255,0.45)",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          scales: {
+            x: {
+              min: 0,
+              max: this.maxGemUsage,
+              ticks: { color: "#fff" },
+              grid: { color: "rgba(255,255,255,0.2)" },
+            },
+            y: {
+              ticks: { color: "#fff" },
+            },
+          },
+          plugins: {
+            legend: { display: false },
+          },
+        },
+      });
+    },
+
+    updateGemChart() {
+      if (!this.gemBarChart) return;
+
+      this.gemBarChart.data.datasets[0].data = [
+        this.gemUsage.damage,
+        this.gemUsage.manaCost,
+        this.gemUsage.cooldown,
+        this.gemUsage.defense,
+        this.gemUsage.luck,
+      ];
+      this.gemBarChart.update();
+    },
+
 
     /* ===================
        무기 스탯 및 레이더 차트
@@ -955,22 +1216,23 @@ export default {
        스킬 트리 로직
     ====================== */
     skillTreeToPhaserMap(id) {
-      return {
-        skill1: "fireball",
-        skill2: "buff",
-        skill3: "flameA",
-        skill4a: "flameB",
-        skill5a: "flameC",
-        skill4b: "firebomb",
-        skill5b: "incendiary",
-        skill6: "meteor_S",
-        skill7: "meteor_M",
-        skill8a: "meteor_L",
-        skill8b: "napalm",
-        skill9: "deathhand",
-      }[id] || null;
+      return (
+        {
+          skill1: "fireball",
+          skill2: "buff",
+          skill3: "flameA",
+          skill4a: "flameB",
+          skill5a: "flameC",
+          skill4b: "firebomb",
+          skill5b: "incendiary",
+          skill6: "meteor_S",
+          skill7: "meteor_M",
+          skill8a: "meteor_L",
+          skill8b: "napalm",
+          skill9: "deathhand",
+        }[id] || null
+      );
     },
-
 
     skillLevelOf(id) {
       return this.skillState[id] || 0;
@@ -1022,7 +1284,7 @@ export default {
         const skillObj = this.scene.skills[phaserKey];
         if (!skillObj) continue;
 
-        skillObj.level = lv;   // 🔥 Phaser 스킬 레벨 직접 반영
+        skillObj.level = lv; // 🔥 Phaser 스킬 레벨 직접 반영
       }
     },
 
@@ -1048,11 +1310,11 @@ export default {
       // 레벨업 후에도 라인 강조 등 반영 위해 다시 그림
       this.$nextTick(() => {
         this.drawSkillLines();
-        this.syncSkillLevelToPhaser();  // 🔥 Phaser 반영
+        this.syncSkillLevelToPhaser(); // 🔥 Phaser 반영
       });
 
       // 스킬/스탯 공용 레벨업 SFX
-      if (sm) sm.playStatIncrease(); 
+      if (sm) sm.playStatIncrease();
     },
 
     nodeCssClasses(node) {
@@ -1061,9 +1323,9 @@ export default {
       const branchLocked = this.isLockedByBranch(node);
 
       return {
-        "is-learned": lv >= 1,                       // ✔ 레벨 1 이상일 때만 색칠
-        "is-unlocked-only": lv === 0 && unlocked,    // ✔ 해금만 되었으면 border는 회색
-        "is-locked": !unlocked,                      // ✔ 완전 잠금
+        "is-learned": lv >= 1, // ✔ 레벨 1 이상일 때만 색칠
+        "is-unlocked-only": lv === 0 && unlocked, // ✔ 해금만 되었으면 border는 회색
+        "is-locked": !unlocked, // ✔ 완전 잠금
         "is-branch-locked": branchLocked,
         "is-maxed": lv >= node.maxLevel,
         "is-selected": this.selectedSkillId === node.id,
@@ -1086,7 +1348,7 @@ export default {
       // 선택된 스킬 해제
       this.selectedSkillId = null;
 
-      // QWER 슬롯도 스킬 없도록 초기화 (선택 사항)
+      // QWER 슬롯도 스킬 없도록 초기화
       this.skillSlots = [null, null, null, null];
 
       if (this.scene?.setSkillSlots) {
@@ -1096,10 +1358,10 @@ export default {
       this.$nextTick(() => {
         this.drawSkillLines();
       });
+
       /* ===========================
       🔥 스킬 포인트 환산 애니메이션
       =========================== */
-
       const start = 0;
       const end = this.availableSkillPoints; // 계산된 실제 값
       const duration = 600; // 0.6초
@@ -1109,7 +1371,6 @@ export default {
         const progress = Math.min((now - startTime) / duration, 1);
         // easeOutCubic
         const eased = 1 - Math.pow(1 - progress, 3);
-
         this.animSkillPoints = Math.floor(start + (end - start) * eased);
 
         if (progress < 1) {
@@ -1164,7 +1425,7 @@ export default {
           `.skill-node[data-skill-id="${node.id}"] .skill-slot`
         );
         if (!childSlot) return;
-        
+
         const childRect = childSlot.getBoundingClientRect();
         const childX = childRect.left - treeRect.left + childRect.width / 2;
         const childY = childRect.top - treeRect.top + childRect.height / 2;
@@ -1187,8 +1448,7 @@ export default {
           line.setAttribute("y1", py);
           line.setAttribute("x2", childX);
           line.setAttribute("y2", childY);
-          
-          
+
           // 상태에 따라 색상/굵기 조금 달리 줄 수도 있음
           const parentLearned = this.skillLevelOf(pid) > 0;
           const childLearned = this.skillLevelOf(node.id) > 0;
@@ -1196,7 +1456,7 @@ export default {
           // 잠김 여부 계산
           const childLocked = this.isLockedByBranch(node);
           const parentLocked = this.isLockedByBranch(
-          this.skillNodes.find(n => n.id === pid)
+            this.skillNodes.find((n) => n.id === pid)
           );
 
           // 1) 기본 회색
@@ -1213,12 +1473,11 @@ export default {
             color = "#4caf50";
             width = 2;
           }
-        line.setAttribute("stroke", color);
-        line.setAttribute("stroke-width", width);
-        line.setAttribute("stroke-linecap", "round");
+          line.setAttribute("stroke", color);
+          line.setAttribute("stroke-width", width);
+          line.setAttribute("stroke-linecap", "round");
 
-        // ★ 반드시 필요
-        svg.appendChild(line);
+          svg.appendChild(line);
         });
       });
     },
@@ -1239,10 +1498,9 @@ export default {
       if (e.key === "k" || e.key === "K") this.toggleSkills();
 
       if (e.key === "Escape") {
-
         // Vue 스택에 있는 창이 있으면 그 창만 닫고 끝
         const last = this.windowStack.pop();
-        
+
         if (last) {
           if (last === "inventory") this.showInventory = false;
           if (last === "stats") this.showStats = false;
@@ -1251,7 +1509,7 @@ export default {
             this.showMenu = false;
             this.playUiClose(); // 🔊 창 닫기 사운드
           }
-          
+
           return;
         }
 
@@ -1260,17 +1518,36 @@ export default {
       }
     },
 
+    cooldownPathStyle(skillName) {
+      if (!this.scene || !this.scene.skills) return {};
+
+      const s = this.scene.skills[skillName];
+      if (!s) return {};
+
+      const now = this.scene.time.now;
+      const left = Math.max(0, s.onCooldownUntil - now);
+      const total = s.cooldown * 1000;
+
+      const ratio = left / total; // 1 → 0
+
+      return {
+        strokeDasharray: `${100 * ratio}, 100`,
+        transition: "stroke-dasharray 0.1s linear"
+      };
+    },
+
+
     toggleInventory() {
       this.showInventory = !this.showInventory;
       if (this.showInventory) {
         this.windowStack.push("inventory");
-        this.playUiOpen();   // 🔊 창 열기 사운드
+        this.playUiOpen(); // 🔊 창 열기 사운드
         this.$nextTick(() => {
           const el = this.$el.querySelector("#inventory");
           this.makeDraggable(el);
         });
       } else {
-        this.playUiClose();  // 🔊 창 닫기 사운드
+        this.playUiClose(); // 🔊 창 닫기 사운드
       }
     },
 
@@ -1278,14 +1555,14 @@ export default {
       this.showStats = !this.showStats;
       if (this.showStats) {
         this.windowStack.push("stats");
-        this.playUiOpen();   // 🔊 창 열기 사운드
+        this.playUiOpen(); // 🔊 창 열기 사운드
         this.$nextTick(() => {
           const el = this.$el.querySelector("#stats");
           this.makeDraggable(el);
           this.initWeaponRadar();
         });
       } else {
-        this.playUiClose();  // 🔊 창 닫기 사운드
+        this.playUiClose(); // 🔊 창 닫기 사운드
       }
     },
 
@@ -1293,26 +1570,26 @@ export default {
       this.showSkills = !this.showSkills;
       if (this.showSkills) {
         this.windowStack.push("skills");
-        this.playUiOpen();   // 🔊 창 열기 사운드
+        this.playUiOpen(); // 🔊 창 열기 사운드
         this.$nextTick(() => {
           const el = this.$refs.skillsModal;
           this.makeDraggable(el);
           this.drawSkillLines();
         });
       } else {
-        this.playUiClose();  // 🔊 창 닫기 사운드
+        this.playUiClose(); // 🔊 창 닫기 사운드
       }
     },
 
     closeMenu() {
       this.showMenu = false;
-      this.playUiClose();  // 🔊 창 닫기 사운드
+      this.playUiClose(); // 🔊 창 닫기 사운드
     },
     openMenu() {
       this.showMenu = true;
       this.showSound = false;
       this.windowStack.push("menu");
-      this.playUiOpen();   // 🔊 창 열기 사운드
+      this.playUiOpen(); // 🔊 창 열기 사운드
     },
 
     openSoundMenu() {
@@ -1329,7 +1606,8 @@ export default {
     ====================== */
     makeDraggable(el) {
       if (!el) return;
-      const header = el.querySelector(".modal-header") || el.querySelector("h3");
+      const header =
+        el.querySelector(".modal-header") || el.querySelector("h3");
       if (!header) return;
 
       header.onmousedown = (e) => {
@@ -1339,6 +1617,10 @@ export default {
         const rect = el.getBoundingClientRect();
         let offsetX = startX - rect.left;
         let offsetY = startY - rect.top;
+
+        // 최상단으로 올리기
+        this.topZIndex += 1;
+        el.style.zIndex = this.topZIndex;
 
         document.onmousemove = (ev) => {
           el.style.left = ev.clientX - offsetX + "px";
@@ -1368,9 +1650,11 @@ export default {
       let newSkill = null;
 
       if (skillId) {
-        const node = this.skillNodes.find((n) => (n.id === skillId) || (n.name === skillId));
+        const node = this.skillNodes.find(
+          (n) => n.id === skillId || n.name === skillId
+        );
         if (!node) return;
-        console.log(this.isUnlocked(node), this.isLockedByBranch(node));
+
         if (!this.isUnlocked(node) || this.isLockedByBranch(node)) return;
 
         const phaserKey = this.skillTreeToPhaserMap(skillId) || skillId;
@@ -1383,7 +1667,6 @@ export default {
           name: phaserKey,
           icon: `/static/assets/skill_icon/${node.icon}`,
         };
-
       } else {
         // fallback (기존 skill1~8)
         const idxStr = ev.dataTransfer.getData("skill-idx");
@@ -1421,8 +1704,6 @@ export default {
       }
     },
 
-
-
     onDragStart(ev, idx) {
       ev.dataTransfer.setData("item-idx", idx);
     },
@@ -1431,7 +1712,6 @@ export default {
       const idx = parseInt(ev.dataTransfer.getData("item-idx"));
       const item = this.inventory.items[idx];
       if (!item) return;
-      console.log({...item});
 
       this.itemSlots.splice(slotIdx, 1, { ...item });
 
@@ -1493,7 +1773,6 @@ export default {
       const sm = SoundManager.getInstance();
       sm && sm.playUiClick();
     },
-
   },
 };
 </script>
@@ -1502,137 +1781,268 @@ export default {
 /* ===================== 전체 레이아웃 ===================== */
 #app-wrap {
   display: flex;
-  gap: 8px;
+  justify-content: center;
+  padding: 8px;
   font-family: Arial, sans-serif;
+  background: #050509;
 }
 
-#hud {
-  width: 300px;
-  padding: 10px;
-  color: #fff;
-  background: rgba(10, 10, 10, 0.85);
-}
-
-/* ===================== 게임 영역 ===================== */
 #game-container {
   width: 900px;
   height: 700px;
   background: #000;
   position: relative;
+  overflow: hidden;
 }
 
-/* ===================== HUD ===================== */
-.info-row {
+/* ===================== 오버레이 HUD 공통 ===================== */
+.hud-root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* 기본은 통과, 필요한 곳만 다시 활성화 */
+  z-index: 100;
+}
+
+/* ---------- 좌측 상단 Lv + HP/MP/EXP ---------- */
+.hud-top-left-panel {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 230px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: radial-gradient(circle at top left,
+    rgba(43, 52, 64, 0.2) 0%,
+    rgba(21, 24, 32, 0.2) 55%,
+    rgba(12, 13, 18, 0.2) 100%
+  );  
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #fff;
+  pointer-events: auto;
+}
+
+.hud-level-row {
   display: flex;
   align-items: center;
   margin-bottom: 6px;
 }
 
-.bar {
-  margin-top: 4px;
-  margin-bottom: 2px;
+.hud-level-text {
   font-weight: bold;
+  font-size: 14px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffaf3a, #ffdd7b);
+  color: #31210a;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
 }
 
+.hud-shortcuts-text {
+  margin-left: auto;
+  font-size: 10px;
+  color: #c7d5ff;
+  opacity: 0.85;
+}
+
+.hud-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.hud-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hud-bar-label {
+  width: 34px;
+  font-size: 11px;
+  text-align: right;
+  opacity: 0.9;
+}
+
+.hud-bar-label.hp {
+  color: #ff7b7b;
+}
+.hud-bar-label.mp {
+  color: #7db3ff;
+}
+.hud-bar-label.exp {
+  color: #80e680;
+}
+
+/* 기존 bar 스타일 재활용 + 다듬기 */
 .bar-wrap {
   position: relative;
-  width: 100%;
-  height: 22px;
-  background: #222;
-  border-radius: 4px;
+  flex: 1;
+  height: 18px;
+  border-radius: 6px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .bar-fill {
   height: 100%;
-  background: #c33;
+  background: linear-gradient(90deg, #ff5a5a, #c33);
   transition: width 0.12s linear;
 }
 
 .bar-fill.mp {
-  background: #39c;
+  background: linear-gradient(90deg, #4b86ff, #39c);
 }
 
 .bar-fill.exp {
-  background: #3c9;
+  background: linear-gradient(90deg, #74e38a, #3c9);
 }
 
 .bar-text {
   position: absolute;
   width: 100%;
   text-align: center;
-  line-height: 22px;
-  font-size: 12px;
+  line-height: 18px;
+  font-size: 11px;
   top: 0;
   left: 0;
+  text-shadow: 0 0 3px #000;
 }
 
-/* ===================== QWER / 아이템 슬롯 ===================== */
-#shortcut {
+.hud-skill-pts-row {
+  margin-top: 4px;
+  font-size: 11px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  color: #f7e99b;
+}
+
+.hud-skill-pts-sub {
+  color: #cfd3ff;
+  opacity: 0.8;
+}
+
+/* ---------- 하단 중앙 스킬/아이템 숏컷 바 ---------- */
+.hud-bottom-center-panel {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  background: rgba(136, 189, 231, 0.12);
-  padding: 6px;
-  border-radius: 6px;
-  margin-top: 8px;
+  gap: 4px;
+  pointer-events: auto;
 }
 
+.shortcut-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.0));
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.0);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.skill-row {
+  margin-bottom: 2px;
+}
+
+/* 기존 shortcut-slot 스타일 재구성 */
 .shortcut-slot {
-  width: 100%;
-  height: 56px;
-  background: #111;
-  border-radius: 6px;
+  width: 54px;
+  height: 54px;
+  background: radial-gradient(circle at 30% 20%, #333 0, #111 60%);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  border: 1px dashed rgba(255, 255, 255, 0.08);
+  background: rgba(36, 33, 33, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
 }
 
 .shortcut-slot.empty {
-  opacity: 0.6;
+  opacity: 0.45;
+  border-style: dashed;
 }
 
 .slot-item img {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
+  image-rendering: pixelated;
 }
 
 .slot-key {
   position: absolute;
-  right: 6px;
-  bottom: 4px;
-  font-size: 11px;
-  color: #aaa;
+  right: 4px;
+  bottom: 3px;
+  font-size: 10px;
+  color: #cfd3ff;
+  text-shadow: 0 0 3px #000;
 }
 
 .slot-count {
   position: absolute;
-  right: 6px;
-  top: 4px;
-  font-size: 11px;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 2px 4px;
-  border-radius: 4px;
+  right: 4px;
+  top: 3px;
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.65);
+  padding: 1px 4px;
+  border-radius: 5px;
   color: #fff;
 }
 
 .slot-lv {
   position: absolute;
-  left: 6px;
-  bottom: 4px;
-  font-size: 11px;
+  left: 4px;
+  bottom: 3px;
+  font-size: 10px;
   color: #fff;
+  text-shadow: 0 0 3px #000;
 }
 
-#text-bar {
-  margin-top: 12px;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-  font-size: 13px;
-  min-height: 36px;
+.item-slot {
+  width: 60px;
+}
+
+/* ---------- 좌측 하단 로그 ---------- */
+.hud-bottom-left-log {
+  position: absolute;
+  background: rgba(0,0,0,0.0);
+  border: none;
+  box-shadow: none;
+  left: 12px;
+  bottom: 12px;
+  width: 260px;
+  pointer-events: none;
+}
+
+.log-label {
+  font-size: 11px;
+  color: #9fb5ff;
+  margin-left: 4px;
+  margin-bottom: 2px;
+  opacity: 0.85;
+}
+
+.log-content {
+  min-height: 38px;
+  max-height: 80px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: #e4e7ff;
+  background: radial-gradient(circle at top left, rgba(63, 74, 110, 0.2), rgba(12, 14, 24, 0.25));
+  border-radius: 8px;
+  border: 1px solid rgba(124, 148, 255, 0.4);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ===================== 모달 공통 ===================== */
@@ -1641,21 +2051,33 @@ export default {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 520px;
-  background: #222;
-  border: 1px solid #444;
+  background: radial-gradient(circle at top, #24273a 0, #151624 55%, #090a10 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 10px;
   color: #fff;
   z-index: 9999;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85);
 }
 
 .modal-header {
-  background: linear-gradient(to right, #2d2d2d, #3c3c3c);
+  background: linear-gradient(90deg, #2f3e6a, #3f5a92);
   padding: 6px 10px;
-  border-radius: 6px 6px 0 0;
+  border-radius: 8px 8px 0 0;
   cursor: move;
   user-select: none;
+  font-size: 13px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-header-sub {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: normal;
+  color: #e0e8ff;
 }
 
 /* ===================== 배틀메이지 스타일 스킬 창 ===================== */
@@ -1666,17 +2088,17 @@ export default {
 
 .skill-main {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-top: 6px;
 }
 
 /* 좌측 상세 패널 */
 .skill-detail-panel {
-  width: 260px;
-  background: #151515;
-  border-radius: 8px;
-  padding: 8px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+  width: 270px;
+  background: rgba(10, 11, 20, 0.98);
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1684,7 +2106,7 @@ export default {
 
 .detail-empty {
   width: 100%;
-  min-height: 140px;
+  min-height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1694,16 +2116,15 @@ export default {
 }
 
 .detail-icon-placeholder {
-  width: 80px;
-  height: 80px;
-  border-radius: 8px;
-  background: #333;
+  width: 84px;
+  height: 84px;
+  border-radius: 12px;
+  background: radial-gradient(circle at 30% 20%, #444 0, #1c1c1c 60%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  color: #ddd;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
 }
 
 .detail-name {
@@ -1719,46 +2140,64 @@ export default {
 
 .detail-meta {
   font-size: 12px;
-  color: #bbb;
-  margin-bottom: 8px;
+  color: #bbbbff;
+  margin-bottom: 10px;
 }
 
 .detail-levelup-btn {
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
-  background: #2e7;
+  background: linear-gradient(135deg, #63ff9e, #34d88a);
   color: #111;
   font-weight: bold;
   cursor: pointer;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .detail-levelup-btn:disabled {
   background: #555;
   cursor: not-allowed;
+  color: #ccc;
 }
 
 .detail-help {
   font-size: 11px;
   color: #ccc;
   line-height: 1.4;
+  margin-bottom: 6px;
 }
 
 .detail-sp-info {
   margin-bottom: 8px;
-  margin-top: -4px;
-  font-size: 13px;
+  font-size: 12px;
   color: #ffd86b;
+}
+
+.detail-reset-btn {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #f45b5b, #d63b3b);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+
+.detail-reset-btn:hover {
+  filter: brightness(1.05);
 }
 
 /* 우측 트리 영역 */
 .skill-tree-wrapper {
   flex: 1;
-  background: #151515;
-  border-radius: 8px;
-  padding: 6px;
+  background: rgba(8, 9, 16, 0.96);
+  border-radius: 10px;
+  padding: 8px;
   overflow-x: auto;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
 .skill-tree-inner {
@@ -1777,9 +2216,9 @@ export default {
   display: grid;
   grid-template-rows: repeat(3, 140px); /* 위/중간/아래 3줄 */
   grid-auto-columns: 110px;
-  column-gap: 30px;
-  row-gap: 14px;
-  padding: 8px 12px;
+  column-gap: 32px;
+  row-gap: 16px;
+  padding: 10px 16px;
 }
 
 /* 개별 노드 */
@@ -1795,59 +2234,16 @@ export default {
 .skill-slot {
   width: 72px;
   height: 72px;
-  border-radius: 10px;
-  background: #222;
+  border-radius: 12px;
+  background: radial-gradient(circle at 30% 20%, #333 0, #111 65%);
   border: 2px solid #555;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s, filter 0.15s;
 }
 
-.skill-icon-placeholder {
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
-  background: #333;
-}
-
-.skill-lv-text {
-  position: absolute;
-  bottom: 4px;
-  right: 6px;
-  font-size: 10px;
-  color: #fff;
-}
-
-.skill-node-label {
-  margin-top: 4px;
-  font-size: 11px;
-  color: #ccc;
-}
-
-.detail-reset-btn {
-  margin-top: 10px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: none;
-  background: #c33;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-}
-
-.detail-reset-btn:hover {
-  background: #e44;
-}
-
-.detail-reset-btn:disabled {
-  background: #555;
-  cursor: not-allowed;
-}
-
-/* 스킬창 */
 .skill-icon {
   width: 46px;
   height: 46px;
@@ -1861,6 +2257,21 @@ export default {
   object-fit: contain;
 }
 
+.skill-lv-text {
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  font-size: 10px;
+  color: #fff;
+  text-shadow: 0 0 3px #000;
+}
+
+.skill-node-label {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #ccc;
+}
+
 /* 상태에 따른 스타일 */
 .skill-node.is-locked .skill-slot {
   opacity: 0.35;
@@ -1868,21 +2279,27 @@ export default {
 }
 
 .skill-node.is-branch-locked .skill-slot {
-  opacity: 0.18;
+  opacity: 0.2;
   border-color: #222;
   filter: grayscale(1);
 }
 
+.skill-node.is-unlocked-only .skill-slot {
+  border-color: #888;
+}
+
 .skill-node.is-learned .skill-slot {
   border-color: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.45);
 }
 
 .skill-node.is-maxed .skill-slot {
   border-color: #ff9800;
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.6);
 }
 
 .skill-node.is-selected .skill-slot {
-  box-shadow: 0 0 0 2px #ffd54f;
+  box-shadow: 0 0 0 2px #ffd54f, 0 0 18px rgba(255, 213, 79, 0.7);
   transform: translateY(-1px);
 }
 
@@ -1891,6 +2308,36 @@ export default {
   margin-top: 6px;
   font-size: 12px;
   color: #ccc;
+  text-align: right;
+}
+
+.cooldown-mask {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  top: 0;
+  left: 0;
+  transform: rotate(-90deg); /* 시계 방향 느낌 */
+  z-index: 5;
+  fill: none;
+  pointer-events: none;
+}
+
+.cooldown-path {
+  stroke: rgba(0,0,0,0.55);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.slot-cd-text {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  font-size: 11px;
+  background: rgba(0,0,0,0.55);
+  padding: 1px 4px;
+  border-radius: 4px;
+  color: #fff;
 }
 
 /* ===================== 인벤토리 ===================== */
@@ -1899,23 +2346,26 @@ export default {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 420px;
+  width: 440px;
   max-height: 70vh;
   overflow: auto;
-  background: #222;
-  border: 1px solid #444;
-  padding: 10px;
+  background: radial-gradient(circle at top, #263654 0, #151720 55%, #07080d 100%);
+  border: 1px solid rgba(111, 148, 255, 0.45);
+  padding: 8px 10px 10px 10px;
   color: #fff;
   z-index: 9999;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85);
 }
 
 #inventory h3 {
-  background: linear-gradient(to right, #1d3a5f, #295b85);
+  background: linear-gradient(90deg, #24406b, #36699c);
   padding: 6px 10px;
-  border-radius: 6px 6px 0 0;
+  border-radius: 8px 8px 0 0;
   cursor: move;
   user-select: none;
+  font-size: 13px;
+  margin: -4px -4px 8px -4px;
 }
 
 .inventory-grid {
@@ -1925,31 +2375,48 @@ export default {
 }
 
 .inv-item {
-  width: 80px;
-  height: 80px;
-  background: #111;
-  border-radius: 6px;
+  width: 76px;
+  height: 90px;
+  background: #101119;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   cursor: grab;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
 }
 
 .inv-item img {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
+  image-rendering: pixelated;
+}
+
+.inv-info {
+  margin-top: 4px;
+  text-align: center;
+  max-width: 70px;
 }
 
 .inv-name {
-  font-size: 12px;
-  margin-top: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 🔹 긴 이름 말줄임 처리 */
 }
 
 .inv-count {
-  font-size: 12px;
+  font-size: 11px;
   color: #ddd;
-  margin-top: 2px;
+  margin-top: 1px;
+}
+
+.window-footer {
+  margin-top: 6px;
+  color: #ccc;
+  font-size: 11px;
 }
 
 /* ===================== Stats 창 ===================== */
@@ -1958,58 +2425,135 @@ export default {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 520px;
+  width: 540px;
   max-height: 680px;
-  background: #222;
-  border: 1px solid #444;
-  padding: 8px;
+  background: radial-gradient(circle at top, #2a2351 0, #161725 55%, #080810 100%);
+  border: 1px solid rgba(176, 140, 255, 0.55);
+  padding: 8px 10px 10px 10px;
   overflow: visible;
   color: #fff;
   z-index: 9999;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85);
 }
 
 #stats h3 {
-  background: linear-gradient(to right, #3f2a54, #563b77);
+  background: linear-gradient(90deg, #5b3fb6, #7a57d3);
   padding: 6px 10px;
-  border-radius: 6px 6px 0 0;
+  border-radius: 8px 8px 0 0;
   cursor: move;
   user-select: none;
+  font-size: 13px;
+  margin: -4px -4px 8px -4px;
 }
+
+.gem-usage-section {
+  margin-top: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.45);
+}
+
+.gem-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffd86b;
+  margin-bottom: 8px;
+}
+
+.gem-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.gem-label {
+  width: 80px;
+  font-size: 14px;
+  color: #000;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.gem-bar {
+  flex: 1;
+  height: 20px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.gem-bar-fill {
+  height: 100%;
+  border-radius: 7px;
+  transition: width 0.25s;
+}
+
+.gem-value {
+  width: 30px;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* Gem colors */
+.red { background: rgba(255, 80, 80, 0.85); }
+.sky { background: rgba(120, 200, 255, 0.85); }
+.white { background: rgba(255, 255, 255, 0.85); }
+.yellow { background: rgba(255, 230, 120, 0.85); }
+.green { background: rgba(150, 255, 150, 0.85); }
+
 
 /* ===== 사분면 레이아웃 ===== */
 .stats-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-auto-rows: auto;
-  gap: 6px;
-  margin-top: 6px;
+  gap: 8px;
+  margin-top: 4px;
 }
 
 .quad {
-  background: #111;
-  border-radius: 8px;
-  padding: 6px;
+  background: rgba(7, 7, 13, 0.96);
+  border-radius: 10px;
+  padding: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
 .quad-title {
   font-size: 13px;
   margin-bottom: 4px;
-  color: #ddd;
+  color: #f0e6ff;
 }
 
 /* ===================== 개별 사분면 ===================== */
-.quad-weapon-image {
-  grid-row: 1 / 2;
-  grid-column: 2 / 3;
-}
-
 .quad-player-image {
   grid-row: 1 / 2;
   grid-column: 1 / 2;
 }
 
-/* 플레이어 / 무기 이미지 placeholder 크기 통일 */
+.quad-weapon-image {
+  grid-row: 1 / 2;
+  grid-column: 2 / 3;
+}
+
+/* 플레이어 / 무기 이미지 placeholder */
+.image-placeholder {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.image-placeholder.framed {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: radial-gradient(circle at center, #27293a 0, #151622 65%);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.85);
+}
+
 .quad-player-image .image-placeholder,
 .quad-weapon-image .image-placeholder {
   min-height: 220px;
@@ -2023,8 +2567,14 @@ export default {
 .stats-grid {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   font-size: 13px;
+}
+
+.stats-grid b {
+  display: inline-block;
+  min-width: 70px;
+  color: #ffdf88;
 }
 
 .quad-radar {
@@ -2032,22 +2582,11 @@ export default {
   grid-column: 2 / 3;
 }
 
-/* ===================== 이미지 placeholder ===================== */
-.image-placeholder {
-  border: 1px dashed #555;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: #aaa;
-}
-
 /* ===================== 레이더 차트 ===================== */
 .radar-wrapper {
   width: 100%;
-  height: 120px;
-  margin-bottom: 4px;
+  height: 130px;
+  margin-bottom: 6px;
 }
 
 .radar-wrapper canvas {
@@ -2070,7 +2609,7 @@ export default {
 }
 
 .weapon-stat-label {
-  min-width: 70px;
+  min-width: 80px;
   text-align: right;
 }
 
@@ -2080,12 +2619,13 @@ export default {
 }
 
 .weapon-up-btn {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  background: #2e7;
+  background: linear-gradient(135deg, #63ff9e, #34d88a);
+  font-weight: bold;
 }
 
 .weapon-up-btn:disabled {
@@ -2096,66 +2636,62 @@ export default {
 .weapon-reset-btn {
   margin-top: 6px;
   width: 100%;
-  padding: 4px;
+  padding: 5px;
   border: none;
-  border-radius: 6px;
-  background: #c33;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f45b5b, #d63b3b);
   color: white;
   cursor: pointer;
   font-size: 12px;
 }
 
 .weapon-reset-btn:hover {
-  background: #e44;
+  filter: brightness(1.05);
 }
+
 /* ============== 메뉴창 ================= */
 .menu-modal {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 350px;
-  background: #222;
-  padding: 12px;
-  border: 1px solid #555;
-  z-index: 99999;
-  border-radius: 10px;
-  color: #fff;
+  width: 360px;
 }
 
 .menu-body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 8px;
 }
 
 .menu-btn {
   padding: 10px;
-  background: #444;
+  background: linear-gradient(135deg, #383c4f, #262738);
   border: none;
   color: white;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 13px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+  transition: transform 0.08s, box-shadow 0.08s, filter 0.08s;
 }
 
 .menu-btn:hover {
-  background: #666;
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.9);
 }
 
 /* ============== 사운드창 ================= */
 .sound-panel {
-  margin-top: 20px;
+  margin-top: 16px;
   padding: 10px;
-  background: #333;
-  border-radius: 6px;
+  background: rgba(10, 11, 20, 0.96);
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
 }
 
-.sound-panel {
-  margin-top: 20px;
-  padding: 10px;
-  background: #333;
-  border-radius: 6px;
+.sound-panel h3 {
   font-size: 13px;
+  margin-bottom: 8px;
 }
 
 .sound-row {

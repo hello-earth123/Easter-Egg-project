@@ -62,7 +62,7 @@ export default class TestScene2 extends Phaser.Scene {
 
         this.monsterData = {
             bat: 10,
-            // rabbit: 3,
+            rabbit: 3,
             hidden: 15,
             lich: 5,
             skull_b: 3,
@@ -855,13 +855,13 @@ export default class TestScene2 extends Phaser.Scene {
         };
 
         this.isPlayerLoad = false;
-        initPlayer(1).then(player => {
+        initPlayer(3).then(player => {
             this.playerStats = player;
         })
-        initInventory(1).then(inven => {
+        initInventory(3).then(inven => {
             this.inventoryData = inven;
         })
-        initSlot(1).then(slot => {
+        initSlot(3).then(slot => {
             this.slotData = slot;
             this.isPlayerLoad = true;
         })
