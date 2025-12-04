@@ -14,6 +14,7 @@ export class FireSkillBase extends SkillBase {
         return new Phaser.Math.Vector2(caster.facing.x, caster.facing.y).normalize();
     }
 
+    // 🔥 여기서는 단순히 스케일러만 호출
     getDamage() {
         return this.scaledDamage(this.base.baseDmg || 0);
     }
@@ -28,7 +29,7 @@ export class FireSkillBase extends SkillBase {
     }
 
     // ================================================================
-    // 🔥 (추가) hitbox 스케일 자동 적용: 옵션 A
+    // 🔥 (추가) hitbox 스케일 자동 적용
     // ================================================================
 
     /** 🔥 radius 기반 스킬 hitbox에 scale 자동 적용 */

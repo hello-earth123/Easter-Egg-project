@@ -1012,6 +1012,20 @@ export default {
       this.selectedSkillId = node.id;
     },
 
+    syncSkillLevelToPhaser() {
+      if (!this.scene || !this.scene.skills) return;
+
+      for (const [nodeId, lv] of Object.entries(this.skillState)) {
+        const phaserKey = this.skillTreeToPhaserMap(nodeId);
+        if (!phaserKey) continue;
+
+        const skillObj = this.scene.skills[phaserKey];
+        if (!skillObj) continue;
+
+        skillObj.level = lv;   // 🔥 Phaser 스킬 레벨 직접 반영
+      }
+    },
+
     levelUpSkill(node) {
       if (!this.canLevelUp(node)) return;
 
@@ -1034,6 +1048,7 @@ export default {
       // 레벨업 후에도 라인 강조 등 반영 위해 다시 그림
       this.$nextTick(() => {
         this.drawSkillLines();
+        this.syncSkillLevelToPhaser();  // 🔥 Phaser 반영
       });
 
       // 스킬/스탯 공용 레벨업 SFX

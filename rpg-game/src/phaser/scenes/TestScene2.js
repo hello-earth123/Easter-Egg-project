@@ -1366,7 +1366,7 @@ export default class TestScene2 extends Phaser.Scene {
     }
 
     /** 데미지 출력 */
-    showDamageText(target, damage, color = "#fff") {
+    showDamageText(target, damage, color = "#ffff66") {
         if (!target || !target.x || !target.y) return;
 
         const txt = new FloatingText(
@@ -1417,7 +1417,7 @@ export default class TestScene2 extends Phaser.Scene {
         // } else {
         //   this.showDamageText(monster, damage, "#ffffff");
         // }
-        this.showDamageText(monster, dmg, "#ffffff");
+        this.showDamageText(monster, dmg, "#ffff66");
         // 몬스터 피격 sound
         this.SoundManager.playMonsterHit();
 
@@ -1594,7 +1594,7 @@ export default class TestScene2 extends Phaser.Scene {
                 if (!monster || !monster.active) return;
 
                 monster.hp -= dot.damage;
-                this.showDamageText(monster, dot.damage, "#ffffff");
+                this.showDamageText(monster, dot.damage, "#ffff66");
                 this.spawnHitFlash(monster.x, monster.y);
                 this.onMonsterAggro(monster);
             });
@@ -1846,7 +1846,7 @@ updateMonsterWander(monster, now) {
             if (dx * dx + dy * dy > radius * radius) return;
 
             monster.hp -= dmg;
-            this.showDamageText(monster, dmg, "#ffffff");
+            this.showDamageText(monster, dmg, "#ffff66");
             if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
             if (typeof this.onMonsterAggro === "function") {
                 this.onMonsterAggro(monster);
@@ -1924,7 +1924,7 @@ updateMonsterWander(monster, now) {
                     if (lx * lx + ly * ly > radius * radius) return;
 
                     monster.hp -= tickDmg;
-                    this.showDamageText(monster, tickDmg, "#ffffff");
+                    this.showDamageText(monster, tickDmg, "#ffff66");
                     if (this.spawnHitFlash) {
                         this.spawnHitFlash(monster.x, monster.y);
                     }
@@ -1969,7 +1969,7 @@ updateMonsterWander(monster, now) {
             const halfW = width * 0.5;
             if ((lx * lx + ly * ly) > (halfW * halfW)) return;
 
-            this.showDamageText(monster, dmg, "#ffffff");
+            this.showDamageText(monster, dmg, "#ffff66");
             // 🔥 데미지 적용
             monster.hp -= dmg;
             if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);

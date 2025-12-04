@@ -33,8 +33,8 @@ export const CFG = {
 
   // 경험치 설정
   expCurve: {
-    base: 100,
-    growth: 1.5, // nextExp(level) = floor(base * level^growth)
+    base: 90,
+    growth: 1.6, // nextExp(level) = floor(base * level^growth)
   },
 
   // 스킬 레벨 당 성장치
@@ -49,9 +49,9 @@ export const CFG = {
 
   // Fireball
   fireball: {
-    baseDmg: 40,
+    baseDmg: 24,
     dmgScale: 0.15,
-    baseCost: 12,
+    baseCost: 10,
     costScale: 0.1,
     cd: 2000,
     speed: 500,
@@ -64,13 +64,13 @@ export const CFG = {
 
   // Buff
   buff: {
-    baseCost: 20,
+    baseCost: 24,
     costScale: 0,
-    cd: 30000,
+    cd: 25000,
 
-    duration: 8000,
-    hpUp: 300,
-    mpUp: 500,
+    duration: 10000,
+    hpUp: 200,
+    mpUp: 150,
     frameRate: 15,
 
     // 🔥 연출
@@ -80,15 +80,15 @@ export const CFG = {
 
   // Flame A (1타)
   flameA: {
-    baseDmg: 22,
+    baseDmg: 30,
     dmgScale: 0.15,
-    baseCost: 10,
+    baseCost: 11,
     costScale: 0.1,
     cd: 900,
 
     distance: 200,
     radius: 60,
-    tickDmg: 8,
+    tickDmg: 10,
     duration: 3000,
 
     frameRate: 10,
@@ -100,15 +100,15 @@ export const CFG = {
 
   // Flame B (1타 + 전방 한 칸 추가)
   flameB: {
-    baseDmg: 25,
+    baseDmg: 36,
     dmgScale: 0.15,
-    baseCost: 12,
+    baseCost: 14,
     costScale: 0.1,
     cd: 1200,
 
     distance: 250,
     radius: 60,
-    tickDmg: 10,
+    tickDmg: 12,
     duration: 3500,
 
     frameRate: 12,
@@ -120,15 +120,15 @@ export const CFG = {
 
   // Flame C (십자 5방)
   flameC: {
-    baseDmg: 30,
+    baseDmg: 44,
     dmgScale: 0.2,
-    baseCost: 16,
+    baseCost: 20,
     costScale: 0.12,
-    cd: 4000,
+    cd: 4200,
 
     distance: 200,
     radius: 70,
-    tickDmg: 12,
+    tickDmg: 14,
     duration: 1200,
     spread: 60,
 
@@ -141,9 +141,9 @@ export const CFG = {
 
   // Firebomb
   firebomb: {
-    baseDmg: 45,
+    baseDmg: 60,
     dmgScale: 0.20,
-    baseCost: 20,
+    baseCost: 24,
     costScale: 0.12,
     cd: 4000,
 
@@ -158,13 +158,13 @@ export const CFG = {
 
   // Incendiary (화염 방사기)
   incendiary: {
-    baseDmg: 25,
+    baseDmg: 22,
     dmgScale: 0.15,
-    baseCost: 14,
+    baseCost: 18,
     costScale: 0.1,
     cd: 5000,
 
-    tickDmg: 6,
+    tickDmg: 7,
     duration: 2000,
     interval: 150,
 
@@ -181,11 +181,11 @@ export const CFG = {
 
   // Meteor S
   meteor_S: {
-    baseDmg: 70,
+    baseDmg: 72,
     dmgScale: 0.20,
-    baseCost: 22,
+    baseCost: 24,
     costScale: 0.1,
-    cd: 3000,
+    cd: 3200,
 
     fallSpeed: 700,
     count: 2,
@@ -202,11 +202,11 @@ export const CFG = {
 
   // Meteor M
   meteor_M: {
-    baseDmg: 120,
+    baseDmg: 110,
     dmgScale: 0.22,
-    baseCost: 28,
+    baseCost: 30,
     costScale: 0.12,
-    cd: 4200,
+    cd: 4500,
 
     fallSpeed: 700,
     count: 4,
@@ -222,9 +222,9 @@ export const CFG = {
 
   // Meteor L
   meteor_L: {
-    baseDmg: 200,
+    baseDmg: 140,
     dmgScale: 0.25,
-    baseCost: 35,
+    baseCost: 40,
     costScale: 0.15,
     cd: 6000,
 
@@ -242,14 +242,14 @@ export const CFG = {
 
   // Napalm (장판)
   napalm: {
-    baseDmg: 65,
+    baseDmg: 55,
     dmgScale: 0.18,
-    baseCost: 30,
+    baseCost: 32,
     costScale: 0.12,
     cd: 4200,
 
     duration: 3000,
-    tickDmg: 15,
+    tickDmg: 18,
     interval: 450,
     radius: 80,
     length: 140, // napalm 장판 폭
@@ -265,9 +265,9 @@ export const CFG = {
   deathhand: {
     baseDmg: 300,
     dmgScale: 0.30,
-    baseCost: 50,
+    baseCost: 55,
     costScale: 0.2,
-    cd: 6500,
+    cd: 7000,
 
     radius: 120,
     distance: 170,
