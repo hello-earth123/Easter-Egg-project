@@ -83,7 +83,7 @@ export default class TestScene2 extends Phaser.Scene {
         this.inventoryData;
         this.slotData;
 
-        this.itemList = ['hpPotion', 'mpPotion', 'lowGem', 'midGem', 'highGem', 'superGem'];
+        this.itemList = ['hpPotion', 'mpPotion', 'damageGemLow', 'damageGemMid', 'damageGemHigh', 'damageGemSuper', 'cooldownGemLow', 'cooldownGemMid', 'cooldownGemHigh', 'cooldownGemSuper', 'manaCostGemLow', 'manaCostGemMid', 'manaCostGemHigh', 'manaCostGemSuper', 'defenseGemLow', 'defenseGemMid', 'defenseGemHigh', 'defenseGemSuper', 'luckGemLow', 'luckGemMid', 'luckGemHigh', 'luckGemSuper'];
         this.skills;
     }
 

@@ -50,6 +50,8 @@ def playerConnect(request, userId):
 
     serializer = PlayerSerializer(account)
 
+    print(serializer.data)
+
     return Response(serializer.data)
 
 
