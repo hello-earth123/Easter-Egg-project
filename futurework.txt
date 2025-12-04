@@ -19,4 +19,9 @@ extra
 
 npm install
 npm install chart.js
+npm install router
 npm run dev
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
