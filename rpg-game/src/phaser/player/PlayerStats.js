@@ -2,6 +2,16 @@ import { calcNextExp } from "../config/Config.js";
 
 let playerInstance = null;
 
+// 🔹 플레이어 성장 곡선 (비선형: 지수 성장)
+const growthHpPerLevel = 1.20;   // 기존보다 10% 증가 → 중후반 체력 안정
+const growthMpPerLevel = 1.15;   // 기존보다 소폭 증가
+
+// 🔹 공격력 자동 성장 (레벨업 기반)
+const growthDamagePerLevel = 5.0; // 레벨 1당 +5 (중후반 체감 상승)
+
+// =============================================================
+// PlayerStats
+// =============================================================
 export class PlayerStats {
   constructor(data) {
     if (playerInstance) {
@@ -12,33 +22,51 @@ export class PlayerStats {
     this.exp = data.exp || 0;
     this.nextExp = calcNextExp(this.level);
 
-    this.maxHp = data.maxHP || 120; this.hp = data.currentHP || 120;
-    this.maxMp = data.maxMP || 60; this.mp = data.currentMP || 60;
+    this.maxHp = data.maxHP || 120;
+    this.hp = data.currentHP || this.maxHp;
+    this.maxMp = data.maxMP || 60;
+    this.mp = data.currentMP || this.maxMp;
 
-    this.damage = data.staffDamage || 0;
+    // ⭐ 기존 staffDamage → baseDamage 로 승격 (레벨 성장 대상)
+    this.baseDamage = data.staffDamage || 0;
+
+    // ⭐ 기존 damage 는 버튼 스탯 (0~50 유지)
+    this.damage = data.staffDamagePoint || 0;
+
     this.cooldown = data.staffCoolReduce || 0;
     this.manaCost = data.staffManaReduce || 0;
     this.defense = data.staffDefense || 0;
     this.luck = data.staffLuk || 0;
+
     this.point = data.point || 0;
     this.maxPoint = 50;
 
+    // 젬
     this.damageGem = data.damageGem || 0;
     this.cooldownGem = data.CoolReduceGem || 0;
     this.manaCostGem = data.manaReduceGem || 0;
     this.defenseGem = data.defenseGem || 0;
     this.luckGem = data.lukGem || 0;
-    this.totalGem = this.damageGem + this.cooldownGem + this.manaCostGem + this.defenseGem + this.luckGem;
+
+    this.totalGem =
+      this.damageGem +
+      this.cooldownGem +
+      this.manaCostGem +
+      this.defenseGem +
+      this.luckGem;
+
     this.maxGem = 20;
 
     this.nowLocation = data.nowLocation || NaN;
 
-    // tmp
     this.skillPoints = 0;
 
     playerInstance = this;
   }
 
+  // =============================================================
+  // EXP & LEVEL
+  // =============================================================
   addExp(amount) {
     this.exp += amount;
     while (this.exp >= this.nextExp) {
@@ -50,30 +78,57 @@ export class PlayerStats {
   levelUp() {
     this.level++;
     this.nextExp = calcNextExp(this.level);
-    // 성장: HP/MP 동시 증가 + 스킬 포인트
-    this.maxHp += 20;
-    this.maxMp += 10;
+
+    // HP / MP 성장
+    this.maxHp = Math.floor(this.maxHp * growthHpPerLevel);
+    this.maxMp = Math.floor(this.maxMp * growthMpPerLevel);
     this.hp = this.maxHp;
     this.mp = this.maxMp;
+
+    // ⭐ 레벨업 기반 공격력 증가 (상한 없음)
+    this.baseDamage += growthDamagePerLevel;
+
+    // 스킬 포인트
     this.skillPoints += 1;
-    this.point += 1;
+
+    // 스탯 포인트 2 지급
+    this.point += 2;
   }
 
-  consume (target, point){
-    if (target == 'hp'){
-      playerInstance.hp = Math.min(playerInstance.maxHp, (playerInstance.hp + point * playerInstance.maxHp));
-    }
-    else if (target == 'mp'){
-      playerInstance.mp = Math.min(playerInstance.maxMp, (playerInstance.mp + point * playerInstance.maxMp));
-    }
-    else{
-      playerInstance[target] = Math.min(playerInstance.maxGem, (playerInstance[target] + point));
-      playerInstance.totalGem = playerInstance.damageGem + playerInstance.cooldownGem + playerInstance.manaCostGem + playerInstance.defenseGem + playerInstance.luckGem;
-      console.log(playerInstance);
+  // =============================================================
+  // 스탯 소비 로직 (기존 유지)
+  // =============================================================
+  consume(target, point) {
+    if (target === "hp") {
+      playerInstance.hp = Math.min(
+        playerInstance.maxHp,
+        playerInstance.hp + point * playerInstance.maxHp
+      );
+    } else if (target === "mp") {
+      playerInstance.mp = Math.min(
+        playerInstance.maxMp,
+        playerInstance.mp + point * playerInstance.maxMp
+      );
+    } else {
+      // ⭐ 버튼 스탯은 기존대로 maxGem 루트 유지
+      playerInstance[target] = Math.min(
+        playerInstance.maxGem,
+        playerInstance[target] + point
+      );
+
+      playerInstance.totalGem =
+        playerInstance.damageGem +
+        playerInstance.cooldownGem +
+        playerInstance.manaCostGem +
+        playerInstance.defenseGem +
+        playerInstance.luckGem;
     }
   }
 }
 
+// =============================================================
+// 외부 함수
+// =============================================================
 async function fetchPlayerData(userId) {
   const res = await fetch(`http://127.0.0.1:8000/api/player/${userId}/`);
   if (!res.ok) throw new Error("Failed to fetch player data");
@@ -84,7 +139,6 @@ export async function initPlayer(userId) {
   if (playerInstance) {
     return playerInstance;
   }
-
   try {
     const data = await fetchPlayerData(userId);
     return new PlayerStats(data);
@@ -94,15 +148,18 @@ export async function initPlayer(userId) {
   }
 }
 
-export function increaseStat(key){
+// =============================================================
+// 스탯 증가 & 초기화 (UI 버튼용) — 기존 유지
+// =============================================================
+export function increaseStat(key) {
   playerInstance[key]++;
-  console.log('player', playerInstance[key]);
+  console.log("player", playerInstance[key]);
 }
 
-export function resetStat(){
-  playerInstance.damage =  0;
-  playerInstance.cooldown =  0;
-  playerInstance.manaCost =  0;
+export function resetStat() {
+  playerInstance.damage = 0;
+  playerInstance.cooldown = 0;
+  playerInstance.manaCost = 0;
   playerInstance.defense = 0;
   playerInstance.luck = 0;
 }
