@@ -164,6 +164,8 @@
                   class="detail-icon-img"
                 />
               </div>
+
+              스킬 상세 표시
               <div class="detail-name">
                 {{ selectedSkill.name }}
               </div>
@@ -183,6 +185,32 @@
                 레벨업
               </button>
 
+              <!-- 스킬 상세 내용 -->
+              <div class="skill-detail-body">
+                <div v-if="selectedSkillDetail">
+
+                  <!-- 설명 -->
+                  <p class="skill-desc">
+                    {{ selectedSkillDetail.description }}
+                  </p>
+
+                  <!-- 정보 그리드 -->
+                  <div class="skill-info">
+                    <div class="label">소비 마나 : </div>
+                    <div class="value">{{ selectedSkillDetail.manaCost }}</div>
+
+                    <div class="label">쿨타임 : </div>
+                    <div class="value">{{ selectedSkillDetail.cooldownSec }} 초</div>
+                  </div>
+
+                </div>
+
+                <div v-else class="skill-desc">
+                  상세 정보를 불러오는 중입니다...
+                </div>
+              </div>
+
+              <!-- 스킬 포인트, 스킬 트리 작동 방식 -->
               <div class="detail-help">
                 • 스킬 포인트는 2레벨마다 1개씩 획득됩니다.<br />
                 • 분기 스킬은 한쪽을 레벨업하면 다른 한쪽은 영구 잠금됩니다.
@@ -817,17 +845,63 @@ export default {
     totalSkillPoints() {
       return Math.floor(this.playerLevel / 2);
     },
+
     // 현재 사용된 포인트 합
     spentSkillPoints() {
       return Object.values(this.skillState).reduce((sum, lv) => sum + lv, 0);
     },
+
     // 사용 가능한 포인트
     availableSkillPoints() {
       return Math.max(0, this.totalSkillPoints - this.spentSkillPoints);
     },
+
     selectedSkill() {
       return this.skillNodes.find((n) => n.id === this.selectedSkillId) || null;
     },
+
+    selectedSkillDetail() {
+      // 기본 가드
+      if (!this.selectedSkill) return null;
+      if (!this.scene || !this.scene.skills) return null;
+
+      // skillNodes의 id -> Phaser 스킬 key로 매핑
+      const node = this.selectedSkill;
+      const phaserKey = this.skillTreeToPhaserMap(node.id) || node.name;
+
+      const skillObj = this.scene.skills[phaserKey];
+      if (!skillObj || !skillObj.base) return null;
+
+      // description 은 Config.js 에서 SkillBase.base 로 들어온 것
+      const description = skillObj.base.description || "";
+
+      // 소비 마나 : SkillBase.getManaCost() 재사용 (스탯/젬 반영)
+      let manaCost = 0;
+      try {
+        // getManaCost 내부에서 lastScene.playerStats 를 쓰니까, 혹시 몰라 세팅
+        skillObj.lastScene = this.scene;
+        if (typeof skillObj.getManaCost === "function") {
+          manaCost = skillObj.getManaCost();
+        } else {
+          manaCost = skillObj.base.baseCost || 0;
+        }
+      } catch (e) {
+        manaCost = skillObj.base.baseCost || 0;
+      }
+
+      // 쿨타임 : SkillBase 생성자에서 this.cooldown = base.cd / 1000 으로 넣어둠
+      const cooldownSec =
+        skillObj.cooldown != null
+          ? skillObj.cooldown
+          : (skillObj.base.cd || 0) / 1000;
+
+      return {
+        description,
+        manaCost,
+        cooldownSec,
+      };
+    },
+
     totalGemUsed() {
       const sum =
         this.gemUsage.damage +
@@ -2227,6 +2301,40 @@ export default {
   background: #555;
   cursor: not-allowed;
   color: #ccc;
+}
+
+.skill-detail-body {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.skill-desc {
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 14px;
+  color: #f8e3b4;
+  text-shadow: 1px 1px 0 #000;
+}
+
+/* 정보 라벨 + 값 그리드 */
+.skill-info {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 8px;
+  column-gap: 12px;
+}
+
+.skill-info .label {
+  font-size: 12px;
+  color: #c8b68a;
+}
+
+.skill-info .value {
+  font-size: 12px;
+  text-align: right;
+  font-weight: bold;
+  color: #ffe7a8;
 }
 
 .detail-help {

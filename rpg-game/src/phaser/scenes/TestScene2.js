@@ -1604,11 +1604,11 @@ export default class TestScene2 extends Phaser.Scene {
         // 처음엔 투명
         this.gameOverImage.setAlpha(0);
 
-        // 2초 동안 천천히 페이드인
+        // 0.5초 동안 천천히 페이드인
         this.tweens.add({
             targets: this.gameOverImage,
             alpha: 1,
-            duration: 20000,
+            duration: 5000,
             ease: "Quad.Out"
         });
 
@@ -1621,11 +1621,34 @@ export default class TestScene2 extends Phaser.Scene {
             deathAnim.timeScale = 0.4;   // 애니 속도 0.4배
         }
 
+        /* ------------------------------
+        🧊 몬스터 어그로 초기화
+        ------------------------------ */
+        if (this.monsters) {
+        this.monsters.children.iterate(mon => {
+            if (!mon) return;
+
+            // 가장 흔한 방식: 타겟 초기화
+            mon.target = null;
+
+            // 추적/공격 상태를 초기화
+            if (mon.state) mon.state = "idle";
+
+            // 이동 정지
+            if (mon.body) {
+            mon.setVelocity(0, 0);
+            }
+
+            // 어그로 플래그 방식일 때
+            if (mon.isAggro !== undefined) mon.isAggro = false;
+        });
+        }
+
         // 사망 애니가 끝났을 때
         this.player.once("animationcomplete-player_death", () => {
 
-            // GAME OVER 화면이 켜진 상태로 2초 유지
-            this.time.delayedCall(17000, () => {
+            // GAME OVER 화면이 켜진 상태로 0.5초 유지
+            this.time.delayedCall(4000, () => {
                 // 🔥 마지막 저장 지점에서 부활 처리
                 this.respawnFromLastSave();
             });
@@ -1725,7 +1748,6 @@ export default class TestScene2 extends Phaser.Scene {
             this.textBar = "마지막 저장 지점에서 부활했습니다!";
         } catch (e) {
             console.error("[respawnFromLastSave] 로드 실패:", e);
-
             // ⚠️ 실패 시에는 최소한 현재 씬에서라도 안전하게 부활
             if (this.playerStats) {
                 this.playerStats.hp = Math.max(
@@ -1741,7 +1763,7 @@ export default class TestScene2 extends Phaser.Scene {
             }
             this.player.isDead = false;
             this.cameras.main.flash(300);
-            this.textBar = "부활했습니다! (저장 데이터를 불러오지 못했습니다)";
+            this.textBar = "부활했습니다!";
         } finally {
             // GAME OVER 이미지 페이드아웃
             if (this.gameOverImage) {
