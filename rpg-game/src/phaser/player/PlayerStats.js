@@ -88,7 +88,7 @@ export class PlayerStats {
     // ⭐ 레벨업 기반 공격력 증가 (상한 없음)
     this.baseDamage += growthDamagePerLevel;
 
-    if (level % 2 == 0) {
+    if (this.level % 2 == 0) {
       // 스킬 포인트
       this.skillPoints += 1;
     }
