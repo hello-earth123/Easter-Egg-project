@@ -17,6 +17,11 @@ import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
 import TestScene3 from "./TestScene3.js";
 import { setCurrentScene } from "../manager/sceneRegistry.js";
 import SoundManager from "../manager/SoundManager.js";
+import { saveGame } from "../manager/saveManager.js"; 
+import { loadGame } from "../manager/saveManager.js";
+
+// 컷씬
+import CutscenePlayer from "../cutscene/CutscenePlayer.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
@@ -280,6 +285,7 @@ export default class TestScene2 extends Phaser.Scene {
         this.load.audio("monsterDeath", "/static/assets/sound/effects/monsterDeath.wav");
         this.load.audio("dash", "/static/assets/sound/effects/dash.wav");
         this.load.audio("portal", "/static/assets/sound/effects/portal.wav");
+        this.load.audio("player_death", "/static/assets/sound/effects/player_death.wav")
 
         // 아이템 관련
         this.load.audio("item_drop", "/static/assets/sound/effects/item_drop.wav");
@@ -311,6 +317,8 @@ export default class TestScene2 extends Phaser.Scene {
         // ... 나머지 스킬들도 필요에 따라 등록
         // ====================================================
 
+        // 사망 시 나오는 gameover 이미지
+        this.load.image("gameover", "/static/assets/gameover.png");
 
         this.load.image("bullet", "/static/assets/bullet.png");
         this.load.image("item", "/static/assets/item.png");
@@ -1029,7 +1037,71 @@ export default class TestScene2 extends Phaser.Scene {
         // F 키 등록
         this.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
 
+        // Vue Dialogue UI 가져오기
+        this.dialogueUI = this.game.vue.$refs.dialogue;
 
+        // SPACE 입력 받을 때 Vue로 전달
+        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.keySpace.on("down", () => {
+            if (this.dialogueActive) {
+                this.dialogueUI.skip();
+            }
+        });
+
+        this.cutscene = new CutscenePlayer(this);
+     
+        // 게임 시작 자동 컷씬 스크립트
+        const introScript = [
+            { cmd: "say", text: "…여긴 어디지?" },
+            { cmd: "say", text: "아… 맞다. 난 이제 막 시골에서 도시로 올라왔지." },
+            { cmd: "say", text: "이름은 이프리트. 마법사가 되고 싶었던 평범한 청년이다." },
+
+            { cmd: "say", text: "하지만 현실은… 생각보다 잔혹했다." },
+            { cmd: "say", text: "도시의 마법사들은 나를 비웃었고, 제대로 상대해 주지도 않았다." },
+            { cmd: "wait", time: 400 },
+
+            { cmd: "say", text: "“그따위 실력으로 마법사를 꿈꾼다고?” 라는 말은 하루에도 열 번 넘게 들었다." },
+            { cmd: "say", text: "…억울했다. 어떻게든 인정받고 싶었는데." },
+
+            { cmd: "say", text: "그러다… 우연히 뒷골목에서 한 잡상인을 만났다." },
+            { cmd: "say", text: "그는 기묘한 광택의 스태프를 팔고 있었다." },
+
+            { cmd: "say", text: "값도 터무니없이 쌌다. 아무도 사지 않았기 때문일까." },
+            { cmd: "say", text: "하지만 그 순간… 이상하게도 손이 멈추지 않았다." },
+
+            { cmd: "say", text: "그리고 나는 그 스태프를 손에 넣었다." },
+            { cmd: "wait", time: 500 },
+
+            { cmd: "say", text: "…" },
+            { cmd: "say", text: "…잠깐. 방금 스태프가… 울었나?" },
+
+            { cmd: "say", text: "???: '드디어… 드디어 나를 깨워주는군.'" },
+            { cmd: "say", text: "이프리트: \"!? 뭐, 뭐야!? 누… 누구야!?\"" },
+
+            { cmd: "say", text: "???: '나는 프라가라흐. 봉인된 지 천 년, 나를 깨운 자여…'" },
+            { cmd: "say", text: "프라가라흐: '내 봉인을 풀어준다면… 너에게 진정한 힘을 주겠다.'" },
+
+            { cmd: "say", text: "이프리트: \"진정한… 힘을?\"" },
+            { cmd: "wait", time: 400 },
+
+            { cmd: "say", text: "그 순간, 스태프가 희미하게 웃은 것 같았다." },
+            { cmd: "say", text: "프라가라흐: '자, 이프리트. 우리의 모험을 시작하자고.'" },
+
+            { cmd: "say", text: "이프리트: \"…그래. 어디까지 갈 수 있을지, 한번 해보자고!\"" },
+
+            { cmd: "wait", time: 300 },
+
+            // 🔥 복선
+            { cmd: "say", text: "프라가라흐: '후후… 그래. 나를 완전히 해방시켜준다면…'" },
+            { cmd: "say", text: "프라가라흐: '이 세계도… 너도… 모든 것이 바뀔 것이다.'" },
+
+            { cmd: "end" }
+        ];
+
+        // 씬 로딩 0.5초 후 자동 실행
+        this.time.delayedCall(500, () => {
+            this.cutscene.play(introScript);
+        });
     }
 
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
@@ -1138,6 +1210,12 @@ export default class TestScene2 extends Phaser.Scene {
 
     // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
     update(time, delta) {
+        // 컷씬 중에는 모든 조작 차단
+        if (this.cutsceneLock) {
+            this.player.setVelocity(0);
+            return;
+        }
+
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
         if (this.player?.isDead) return;
         
@@ -1369,11 +1447,13 @@ export default class TestScene2 extends Phaser.Scene {
     showDamageText(target, damage, color = "#ffff66") {
         if (!target || !target.x || !target.y) return;
 
+        const rounded = Math.round(damage);
+
         const txt = new FloatingText(
             this,
             target.x,
             target.y - 20,
-            `-${damage}`,
+            `-${rounded}`,
             color
         );
     }
@@ -1539,47 +1619,243 @@ export default class TestScene2 extends Phaser.Scene {
         });
     };
 
-   /** 플레이어 부활 **/
+    /** 플레이어 부활 **/
+    /** 플레이어 사망 → GAME OVER 연출 → 마지막 저장 지점에서 리스폰 **/
     onPlayerDeath() {
-        if (this.player.isDead) return; // 중복 사망 방지
+        // 중복 호출 방지
+        if (this.player.isDead) return;
         this.player.isDead = true;
 
-        // HP 0 이하 — 사망 상태
+        // HP를 정확히 0으로 고정 (음수 그대로 남는 문제 방지)
+        if (this.playerStats) {
+            this.playerStats.hp = 0;
+        }
+
+        // 텍스트 로그
         this.textBar = "사망했습니다.";
 
-        // 모든 움직임 차단
+        // 플레이어 조작/충돌 차단
         this.player.setVelocity(0, 0);
-        this.player.body.enable = false;
+        if (this.player.body) {
+            this.player.body.enable = false;
+        }
 
-        // 슬로우 모션 사망 애니메이션 재생
+        // 🔊 사운드 매니저
+        const sm = this.SoundManager || SoundManager.getInstance();
+
+        /* ------------------------------
+            1) BGM 일시정지 + 사망 SFX
+        ------------------------------ */
+        if (sm) {
+            sm.pauseBgm();          // 배경음 멈춤
+            if (sm.playDeath) {
+                sm.playDeath();     // 사망 효과음 (player_death)
+            }
+        }
+
+        /* ------------------------------
+            2) GAME OVER 이미지 페이드인
+        ------------------------------ */
+        const cam = this.cameras.main;
+        const centerX = cam.width / 2;
+        const centerY = cam.height / 2;
+
+        if (!this.gameOverImage) {
+            // gameover는 image 타입
+            this.gameOverImage = this.add.image(centerX, centerY, "gameover");
+            this.gameOverImage.setDepth(9999);
+            this.gameOverImage.setScrollFactor(0); // 카메라 고정
+        } else {
+            this.gameOverImage.setPosition(centerX, centerY);
+            this.gameOverImage.setVisible(true);
+        }
+
+        // 🔥 화면 전체를 덮도록 크기 강제 설정
+        this.gameOverImage.setDisplaySize(cam.width, cam.height);
+
+        // 처음엔 투명
+        this.gameOverImage.setAlpha(0);
+
+        // 0.5초 동안 천천히 페이드인
+        this.tweens.add({
+            targets: this.gameOverImage,
+            alpha: 1,
+            duration: 5000,
+            ease: "Quad.Out"
+        });
+
+
+        /* ------------------------------
+            3) 슬로우 모션 사망 애니메이션
+        ------------------------------ */
         const deathAnim = this.player.play("player_death");
+        if (deathAnim) {
+            deathAnim.timeScale = 0.4;   // 애니 속도 0.4배
+        }
 
-        // timeScale 적용 (애니메이션 속도 0.4배)
-        deathAnim.timeScale = 0.4;
+        /* ------------------------------
+        🧊 몬스터 어그로 초기화
+        ------------------------------ */
+        if (this.monsters) {
+        this.monsters.children.iterate(mon => {
+            if (!mon) return;
 
-        // 사망 애니 끝난 뒤 → 2초 기다렸다가 부활
+            // 가장 흔한 방식: 타겟 초기화
+            mon.target = null;
+
+            // 추적/공격 상태를 초기화
+            if (mon.state) mon.state = "idle";
+
+            // 이동 정지
+            if (mon.body) {
+            mon.setVelocity(0, 0);
+            }
+
+            // 어그로 플래그 방식일 때
+            if (mon.isAggro !== undefined) mon.isAggro = false;
+        });
+        }
+
+        // 사망 애니가 끝났을 때
         this.player.once("animationcomplete-player_death", () => {
 
-            this.time.delayedCall(2000, () => {
-                // 플레이어 HP 회복
-                this.playerStats.hp = this.playerStats.maxHp * 0.3;
-
-                // 부활 위치로 이동 (원하는 좌표로 직접 설정 가능)
-                this.player.x = 400;
-                this.player.y = 300;
-
-                // 캐릭터 상태 복구
-                this.player.setFrame(0);
-                this.player.body.enable = true;
-                this.player.isDead = false;
-
-                // 카메라 플래시로 부활 연출
-                this.cameras.main.flash(300);
-
-                this.textBar = "부활했습니다!";
+            // GAME OVER 화면이 켜진 상태로 0.5초 유지
+            this.time.delayedCall(4000, () => {
+                // 🔥 마지막 저장 지점에서 부활 처리
+                this.respawnFromLastSave();
             });
         });
     }
+
+    /** 마지막 저장 지점 로드 후 부활 처리 */
+    async respawnFromLastSave() {
+        const sm = this.SoundManager || SoundManager.getInstance();
+
+        try {
+            // 1) 백엔드에서 저장 데이터 가져오기
+            const saveData = await loadGame();
+            console.log("[respawnFromLastSave] loaded:", saveData);
+
+            if (!saveData || !saveData.stats) {
+                throw new Error("저장 데이터가 없습니다.");
+            }
+
+            const { stats, inventory, slots, scene } = saveData;
+
+            /* ------------------------------
+                A. 씬이 다른 경우 → 그 씬으로 전환
+            (예: 저장한 장소가 TestScene3 이면 그쪽으로 이동)
+            ------------------------------ */
+            if (scene && scene !== this.scene.key) {
+                // 다른 씬이 saveData를 처리하도록 넘겨줌
+                this.scene.start(scene, { loadedSave: saveData });
+                return;
+            }
+
+            /* ------------------------------
+                B. 같은 씬이면 현재 씬 상태에 그대로 적용
+            ------------------------------ */
+
+            // 1) 스탯 복원
+            this.playerStats = {
+                ...this.playerStats,
+                ...stats,
+            };
+
+            // HP가 0 이하로 저장돼 있었다면 최소 30%로 보정해서 부활시키기
+            if (this.playerStats.hp <= 0) {
+                this.playerStats.hp = Math.max(
+                    1,
+                    Math.floor(this.playerStats.maxHp * 0.3)
+                );
+            }
+
+            // 2) 인벤토리 복원
+            if (inventory) {
+                this.inventoryData = {
+                    ...this.inventoryData,
+                    ...inventory,
+                };
+            }
+
+            // 3) 슬롯(QWER / 아이템) 복원
+            if (slots) {
+                this.slotData = {
+                    ...this.slotData,
+                    ...slots,
+                };
+
+                if (this.setSkillSlots && slots.skillSlots) {
+                    this.setSkillSlots(slots.skillSlots);
+                }
+                if (this.setItemSlots && slots.itemSlots) {
+                    this.setItemSlots(slots.itemSlots);
+                }
+            }
+
+            // 4) 위치 복원 (저장 데이터에 좌표가 있으면 사용, 없으면 기본 스폰으로)
+            if (
+                stats &&
+                typeof stats.x === "number" &&
+                typeof stats.y === "number"
+            ) {
+                this.player.x = stats.x;
+                this.player.y = stats.y;
+            } else {
+                // TestScene2에서 이미 쓰고 있는 기본 스폰 좌표
+                this.player.x = this.spawnX;
+                this.player.y = this.spawnY;
+            }
+
+            // 5) 플레이어 상태 복구
+            this.player.setFrame(0);
+            if (this.player.body) {
+                this.player.body.enable = true;
+            }
+            this.player.isDead = false;
+
+            // 카메라 플래시 연출
+            this.cameras.main.flash(300);
+
+            this.textBar = "마지막 저장 지점에서 부활했습니다!";
+        } catch (e) {
+            console.error("[respawnFromLastSave] 로드 실패:", e);
+            // ⚠️ 실패 시에는 최소한 현재 씬에서라도 안전하게 부활
+            if (this.playerStats) {
+                this.playerStats.hp = Math.max(
+                    1,
+                    Math.floor(this.playerStats.maxHp * 0.3)
+                );
+            }
+            this.player.x = this.spawnX;
+            this.player.y = this.spawnY;
+            this.player.setFrame(0);
+            if (this.player.body) {
+                this.player.body.enable = true;
+            }
+            this.player.isDead = false;
+            this.cameras.main.flash(300);
+            this.textBar = "부활했습니다!";
+        } finally {
+            // GAME OVER 이미지 페이드아웃
+            if (this.gameOverImage) {
+                this.tweens.add({
+                    targets: this.gameOverImage,
+                    alpha: 0,
+                    duration: 500,
+                    onComplete: () => {
+                        this.gameOverImage.setVisible(false);
+                    },
+                });
+            }
+
+            // BGM 재개
+            if (sm) {
+                sm.resumeBgm();
+            }
+        }
+    }
+
 
 
 

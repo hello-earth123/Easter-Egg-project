@@ -15,7 +15,7 @@ export function saveGame(skillState) {
     const data = collectPlayerData(skillState);
     const scene = getCurrentScene();
 
-    fetch("http://127.0.0.1:8000/api/save_game/1/", {
+    fetch("http://127.0.0.1:8000/api/save_game/3/", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -26,4 +26,11 @@ export function saveGame(skillState) {
         scene.textBar = "게임이 저장되었습니다!";
     })
     .catch(err => console.error(err));
+}
+
+// saveManager.js에 추가해야 하는 함수
+export async function loadGame() {
+    const res = await fetch("http://127.0.0.1:8000/api/save_game/3/");
+    const data = await res.json();
+    return data; 
 }

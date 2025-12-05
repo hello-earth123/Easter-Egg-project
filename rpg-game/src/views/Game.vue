@@ -67,6 +67,29 @@
 
         <!-- 🔹 하단 중앙: 스킬(QWER) / 아이템(PgUp/PgDn) 숏컷 바 -->
         <div class="hud-bottom-center-panel">
+                    <!-- 아이템 슬롯 -->
+          <div class="shortcut-row item-row">
+            <div
+              class="shortcut-slot item-slot"
+              v-for="(i, idx) in itemSlots"
+              :key="'item-' + idx"
+              @drop.prevent="onDropItemShortcut($event, idx)"
+              @dragover.prevent
+              @click="useItemShortcutFromVue(idx)"
+              :class="{ empty: !i }"
+            >
+              <div v-if="i" class="slot-item">
+                <img :src="i.icon" />
+                <div class="slot-count" v-if="i.count > 1">
+                  x{{ i.count }}
+                </div>
+              </div>
+              <div class="slot-key">
+                {{ ["PgUp", "PgDn"][idx] }}
+              </div>
+            </div>
+          </div>
+
           <!-- 스킬 슬롯 -->
           <div class="shortcut-row skill-row">
             <div class="shortcut-slot"
@@ -104,29 +127,6 @@
             </div>
 
           </div>
-
-          <!-- 아이템 슬롯 -->
-          <div class="shortcut-row item-row">
-            <div
-              class="shortcut-slot item-slot"
-              v-for="(i, idx) in itemSlots"
-              :key="'item-' + idx"
-              @drop.prevent="onDropItemShortcut($event, idx)"
-              @dragover.prevent
-              @click="useItemShortcutFromVue(idx)"
-              :class="{ empty: !i }"
-            >
-              <div v-if="i" class="slot-item">
-                <img :src="i.icon" />
-                <div class="slot-count" v-if="i.count > 1">
-                  x{{ i.count }}
-                </div>
-              </div>
-              <div class="slot-key">
-                {{ ["PgUp", "PgDn"][idx] }}
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- 🔹 좌측 하단: 텍스트 로그 바 -->
@@ -137,6 +137,10 @@
           </div>
         </div>
       </div>
+      
+      <!-- 🔥 컷씬 대화 UI -->
+      <DialogueUI ref="dialogue" />
+
 
       <!-- =================== 스킬 창 (배틀메이지 스타일 트리) =================== -->
       <div
@@ -164,6 +168,8 @@
                   class="detail-icon-img"
                 />
               </div>
+
+              스킬 상세 표시
               <div class="detail-name">
                 {{ selectedSkill.name }}
               </div>
@@ -183,6 +189,32 @@
                 레벨업
               </button>
 
+              <!-- 스킬 상세 내용 -->
+              <div class="skill-detail-body">
+                <div v-if="selectedSkillDetail">
+
+                  <!-- 설명 -->
+                  <p class="skill-desc">
+                    {{ selectedSkillDetail.description }}
+                  </p>
+
+                  <!-- 정보 그리드 -->
+                  <div class="skill-info">
+                    <div class="label">소비 마나 : </div>
+                    <div class="value">{{ selectedSkillDetail.manaCost }}</div>
+
+                    <div class="label">쿨타임 : </div>
+                    <div class="value">{{ selectedSkillDetail.cooldownSec }} 초</div>
+                  </div>
+
+                </div>
+
+                <div v-else class="skill-desc">
+                  상세 정보를 불러오는 중입니다...
+                </div>
+              </div>
+
+              <!-- 스킬 포인트, 스킬 트리 작동 방식 -->
               <div class="detail-help">
                 • 스킬 포인트는 2레벨마다 1개씩 획득됩니다.<br />
                 • 분기 스킬은 한쪽을 레벨업하면 다른 한쪽은 영구 잠금됩니다.
@@ -542,6 +574,7 @@ import { initSlot } from "../phaser/manager/slotManager.js";
 import { increaseStat, resetStat } from "../phaser/player/PlayerStats.js";
 import { saveGame } from "../phaser/manager/saveManager.js";
 import SoundManager from "../phaser/manager/SoundManager.js";
+import DialogueUI from "../phaser/ui/DialogueUI.vue";
 
 /* Chart.js Radar import */
 import {
@@ -567,6 +600,10 @@ Chart.register(
 );
 
 export default {
+
+  // 컷씬 UI
+  components: { DialogueUI },
+
   data() {
     return {
       // ===== 플레이어 상태 =====
@@ -817,17 +854,63 @@ export default {
     totalSkillPoints() {
       return Math.floor(this.playerLevel / 2);
     },
+
     // 현재 사용된 포인트 합
     spentSkillPoints() {
       return Object.values(this.skillState).reduce((sum, lv) => sum + lv, 0);
     },
+
     // 사용 가능한 포인트
     availableSkillPoints() {
       return Math.max(0, this.totalSkillPoints - this.spentSkillPoints);
     },
+
     selectedSkill() {
       return this.skillNodes.find((n) => n.id === this.selectedSkillId) || null;
     },
+
+    selectedSkillDetail() {
+      // 기본 가드
+      if (!this.selectedSkill) return null;
+      if (!this.scene || !this.scene.skills) return null;
+
+      // skillNodes의 id -> Phaser 스킬 key로 매핑
+      const node = this.selectedSkill;
+      const phaserKey = this.skillTreeToPhaserMap(node.id) || node.name;
+
+      const skillObj = this.scene.skills[phaserKey];
+      if (!skillObj || !skillObj.base) return null;
+
+      // description 은 Config.js 에서 SkillBase.base 로 들어온 것
+      const description = skillObj.base.description || "";
+
+      // 소비 마나 : SkillBase.getManaCost() 재사용 (스탯/젬 반영)
+      let manaCost = 0;
+      try {
+        // getManaCost 내부에서 lastScene.playerStats 를 쓰니까, 혹시 몰라 세팅
+        skillObj.lastScene = this.scene;
+        if (typeof skillObj.getManaCost === "function") {
+          manaCost = skillObj.getManaCost();
+        } else {
+          manaCost = skillObj.base.baseCost || 0;
+        }
+      } catch (e) {
+        manaCost = skillObj.base.baseCost || 0;
+      }
+
+      // 쿨타임 : SkillBase 생성자에서 this.cooldown = base.cd / 1000 으로 넣어둠
+      const cooldownSec =
+        skillObj.cooldown != null
+          ? skillObj.cooldown
+          : (skillObj.base.cd || 0) / 1000;
+
+      return {
+        description,
+        manaCost,
+        cooldownSec,
+      };
+    },
+
     totalGemUsed() {
       const sum =
         this.gemUsage.damage +
@@ -886,6 +969,11 @@ export default {
     const game = new Phaser.Game(config);
     this.game = game;
     game.scene.start(lastScene);
+
+    // 🔥 Vue 인스턴스를 Phaser game에 연결
+    this.$nextTick(() => {
+      game.vue = this;
+    });
 
     // 🔊 사운드 매니저 초기화
     const sm = SoundManager.init(game);
@@ -1490,6 +1578,12 @@ export default {
     /* ===================
          공통 UI
     ====================== */
+    removeFromStack(name) {
+      const idx = this.windowStack.lastIndexOf(name);
+      if (idx !== -1) {
+        this.windowStack.splice(idx, 1);
+      }
+    },
 
     onGlobalKeyDown(e) {
       if (e.key === "i" || e.key === "I") this.toggleInventory();
@@ -1501,13 +1595,12 @@ export default {
         const last = this.windowStack.pop();
 
         if (last) {
+          this.playUiClose(); // 🔊 창 닫기 사운드
+
           if (last === "inventory") this.showInventory = false;
           if (last === "stats") this.showStats = false;
           if (last === "skills") this.showSkills = false;
-          if (last === "menu") {
-            this.showMenu = false;
-            this.playUiClose(); // 🔊 창 닫기 사운드
-          }
+          if (last === "menu") this.showMenu = false;
 
           return;
         }
@@ -1604,6 +1697,7 @@ export default {
           this.makeDraggable(el);
         });
       } else {
+        this.removeFromStack("inventory");   
         this.playUiClose(); // 🔊 창 닫기 사운드
       }
     },
@@ -1619,6 +1713,7 @@ export default {
           this.initWeaponRadar();
         });
       } else {
+        this.removeFromStack("stats");   
         this.playUiClose(); // 🔊 창 닫기 사운드
       }
     },
@@ -1634,6 +1729,7 @@ export default {
           this.drawSkillLines();
         });
       } else {
+        this.removeFromStack("skills");   // ← 추가!
         this.playUiClose(); // 🔊 창 닫기 사운드
       }
     },
@@ -2219,6 +2315,40 @@ export default {
   background: #555;
   cursor: not-allowed;
   color: #ccc;
+}
+
+.skill-detail-body {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.skill-desc {
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 14px;
+  color: #f8e3b4;
+  text-shadow: 1px 1px 0 #000;
+}
+
+/* 정보 라벨 + 값 그리드 */
+.skill-info {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 8px;
+  column-gap: 12px;
+}
+
+.skill-info .label {
+  font-size: 12px;
+  color: #c8b68a;
+}
+
+.skill-info .value {
+  font-size: 12px;
+  text-align: right;
+  font-weight: bold;
+  color: #ffe7a8;
 }
 
 .detail-help {
