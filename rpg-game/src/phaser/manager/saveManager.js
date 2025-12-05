@@ -27,3 +27,10 @@ export function saveGame(skillState) {
     })
     .catch(err => console.error(err));
 }
+
+// saveManager.js에 추가해야 하는 함수
+export async function loadGame() {
+    const res = await fetch("http://127.0.0.1:8000/api/save_game/1/");
+    const data = await res.json();
+    return data; 
+}

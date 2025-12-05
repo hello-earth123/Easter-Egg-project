@@ -67,6 +67,29 @@
 
         <!-- 🔹 하단 중앙: 스킬(QWER) / 아이템(PgUp/PgDn) 숏컷 바 -->
         <div class="hud-bottom-center-panel">
+                    <!-- 아이템 슬롯 -->
+          <div class="shortcut-row item-row">
+            <div
+              class="shortcut-slot item-slot"
+              v-for="(i, idx) in itemSlots"
+              :key="'item-' + idx"
+              @drop.prevent="onDropItemShortcut($event, idx)"
+              @dragover.prevent
+              @click="useItemShortcutFromVue(idx)"
+              :class="{ empty: !i }"
+            >
+              <div v-if="i" class="slot-item">
+                <img :src="i.icon" />
+                <div class="slot-count" v-if="i.count > 1">
+                  x{{ i.count }}
+                </div>
+              </div>
+              <div class="slot-key">
+                {{ ["PgUp", "PgDn"][idx] }}
+              </div>
+            </div>
+          </div>
+
           <!-- 스킬 슬롯 -->
           <div class="shortcut-row skill-row">
             <div class="shortcut-slot"
@@ -103,29 +126,6 @@
               <div class="slot-key">{{ ["Q","W","E","R"][idx] }}</div>
             </div>
 
-          </div>
-
-          <!-- 아이템 슬롯 -->
-          <div class="shortcut-row item-row">
-            <div
-              class="shortcut-slot item-slot"
-              v-for="(i, idx) in itemSlots"
-              :key="'item-' + idx"
-              @drop.prevent="onDropItemShortcut($event, idx)"
-              @dragover.prevent
-              @click="useItemShortcutFromVue(idx)"
-              :class="{ empty: !i }"
-            >
-              <div v-if="i" class="slot-item">
-                <img :src="i.icon" />
-                <div class="slot-count" v-if="i.count > 1">
-                  x{{ i.count }}
-                </div>
-              </div>
-              <div class="slot-key">
-                {{ ["PgUp", "PgDn"][idx] }}
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1490,6 +1490,12 @@ export default {
     /* ===================
          공통 UI
     ====================== */
+    removeFromStack(name) {
+      const idx = this.windowStack.lastIndexOf(name);
+      if (idx !== -1) {
+        this.windowStack.splice(idx, 1);
+      }
+    },
 
     onGlobalKeyDown(e) {
       if (e.key === "i" || e.key === "I") this.toggleInventory();
@@ -1501,13 +1507,12 @@ export default {
         const last = this.windowStack.pop();
 
         if (last) {
+          this.playUiClose(); // 🔊 창 닫기 사운드
+
           if (last === "inventory") this.showInventory = false;
           if (last === "stats") this.showStats = false;
           if (last === "skills") this.showSkills = false;
-          if (last === "menu") {
-            this.showMenu = false;
-            this.playUiClose(); // 🔊 창 닫기 사운드
-          }
+          if (last === "menu") this.showMenu = false;
 
           return;
         }
@@ -1604,6 +1609,7 @@ export default {
           this.makeDraggable(el);
         });
       } else {
+        this.removeFromStack("inventory");   
         this.playUiClose(); // 🔊 창 닫기 사운드
       }
     },
@@ -1619,6 +1625,7 @@ export default {
           this.initWeaponRadar();
         });
       } else {
+        this.removeFromStack("stats");   
         this.playUiClose(); // 🔊 창 닫기 사운드
       }
     },
@@ -1634,6 +1641,7 @@ export default {
           this.drawSkillLines();
         });
       } else {
+        this.removeFromStack("skills");   // ← 추가!
         this.playUiClose(); // 🔊 창 닫기 사운드
       }
     },

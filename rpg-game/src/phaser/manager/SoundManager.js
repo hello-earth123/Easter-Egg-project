@@ -143,6 +143,18 @@ export default class SoundManager {
     }
   }
 
+  pauseBgm() {
+    if (this.currentBgm) {
+      this.currentBgm.pause();
+    }
+  }
+
+  resumeBgm() {
+    if (this.currentBgm) {
+      this.currentBgm.resume();
+    }
+  }
+
   /* =========================
    *  SFX 공통 (효과음)
    * ========================= */
@@ -244,8 +256,13 @@ export default class SoundManager {
     this.playSfx("ui_click");
   }
 
-  //13. 포탈 이동
+  // 13. 포탈 이동
   playPortal() {
     this.playSfx("portal");
+  }
+
+  // 14. 플레이어 사망
+  playDeath() {
+    this.playSfx("player_death")
   }
 }
