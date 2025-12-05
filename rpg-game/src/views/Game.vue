@@ -137,6 +137,10 @@
           </div>
         </div>
       </div>
+      
+      <!-- 🔥 컷씬 대화 UI -->
+      <DialogueUI ref="dialogue" />
+
 
       <!-- =================== 스킬 창 (배틀메이지 스타일 트리) =================== -->
       <div
@@ -570,6 +574,7 @@ import { initSlot } from "../phaser/manager/slotManager.js";
 import { increaseStat, resetStat } from "../phaser/player/PlayerStats.js";
 import { saveGame } from "../phaser/manager/saveManager.js";
 import SoundManager from "../phaser/manager/SoundManager.js";
+import DialogueUI from "../phaser/ui/DialogueUI.vue";
 
 /* Chart.js Radar import */
 import {
@@ -595,6 +600,10 @@ Chart.register(
 );
 
 export default {
+
+  // 컷씬 UI
+  components: { DialogueUI },
+
   data() {
     return {
       // ===== 플레이어 상태 =====
@@ -960,6 +969,11 @@ export default {
     const game = new Phaser.Game(config);
     this.game = game;
     game.scene.start(lastScene);
+
+    // 🔥 Vue 인스턴스를 Phaser game에 연결
+    this.$nextTick(() => {
+      game.vue = this;
+    });
 
     // 🔊 사운드 매니저 초기화
     const sm = SoundManager.init(game);

@@ -20,6 +20,8 @@ import SoundManager from "../manager/SoundManager.js";
 import { saveGame } from "../manager/saveManager.js"; 
 import { loadGame } from "../manager/saveManager.js";
 
+// 컷씬
+import CutscenePlayer from "../cutscene/CutscenePlayer.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
@@ -1035,7 +1037,71 @@ export default class TestScene2 extends Phaser.Scene {
         // F 키 등록
         this.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
 
+        // Vue Dialogue UI 가져오기
+        this.dialogueUI = this.game.vue.$refs.dialogue;
 
+        // SPACE 입력 받을 때 Vue로 전달
+        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.keySpace.on("down", () => {
+            if (this.dialogueActive) {
+                this.dialogueUI.skip();
+            }
+        });
+
+        this.cutscene = new CutscenePlayer(this);
+     
+        // 게임 시작 자동 컷씬 스크립트
+        const introScript = [
+            { cmd: "say", text: "…여긴 어디지?" },
+            { cmd: "say", text: "아… 맞다. 난 이제 막 시골에서 도시로 올라왔지." },
+            { cmd: "say", text: "이름은 이프리트. 마법사가 되고 싶었던 평범한 청년이다." },
+
+            { cmd: "say", text: "하지만 현실은… 생각보다 잔혹했다." },
+            { cmd: "say", text: "도시의 마법사들은 나를 비웃었고, 제대로 상대해 주지도 않았다." },
+            { cmd: "wait", time: 400 },
+
+            { cmd: "say", text: "“그따위 실력으로 마법사를 꿈꾼다고?” 라는 말은 하루에도 열 번 넘게 들었다." },
+            { cmd: "say", text: "…억울했다. 어떻게든 인정받고 싶었는데." },
+
+            { cmd: "say", text: "그러다… 우연히 뒷골목에서 한 잡상인을 만났다." },
+            { cmd: "say", text: "그는 기묘한 광택의 스태프를 팔고 있었다." },
+
+            { cmd: "say", text: "값도 터무니없이 쌌다. 아무도 사지 않았기 때문일까." },
+            { cmd: "say", text: "하지만 그 순간… 이상하게도 손이 멈추지 않았다." },
+
+            { cmd: "say", text: "그리고 나는 그 스태프를 손에 넣었다." },
+            { cmd: "wait", time: 500 },
+
+            { cmd: "say", text: "…" },
+            { cmd: "say", text: "…잠깐. 방금 스태프가… 울었나?" },
+
+            { cmd: "say", text: "???: '드디어… 드디어 나를 깨워주는군.'" },
+            { cmd: "say", text: "이프리트: \"!? 뭐, 뭐야!? 누… 누구야!?\"" },
+
+            { cmd: "say", text: "???: '나는 프라가라흐. 봉인된 지 천 년, 나를 깨운 자여…'" },
+            { cmd: "say", text: "프라가라흐: '내 봉인을 풀어준다면… 너에게 진정한 힘을 주겠다.'" },
+
+            { cmd: "say", text: "이프리트: \"진정한… 힘을?\"" },
+            { cmd: "wait", time: 400 },
+
+            { cmd: "say", text: "그 순간, 스태프가 희미하게 웃은 것 같았다." },
+            { cmd: "say", text: "프라가라흐: '자, 이프리트. 우리의 모험을 시작하자고.'" },
+
+            { cmd: "say", text: "이프리트: \"…그래. 어디까지 갈 수 있을지, 한번 해보자고!\"" },
+
+            { cmd: "wait", time: 300 },
+
+            // 🔥 복선
+            { cmd: "say", text: "프라가라흐: '후후… 그래. 나를 완전히 해방시켜준다면…'" },
+            { cmd: "say", text: "프라가라흐: '이 세계도… 너도… 모든 것이 바뀔 것이다.'" },
+
+            { cmd: "end" }
+        ];
+
+        // 씬 로딩 0.5초 후 자동 실행
+        this.time.delayedCall(500, () => {
+            this.cutscene.play(introScript);
+        });
     }
 
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
@@ -1144,6 +1210,12 @@ export default class TestScene2 extends Phaser.Scene {
 
     // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
     update(time, delta) {
+        // 컷씬 중에는 모든 조작 차단
+        if (this.cutsceneLock) {
+            this.player.setVelocity(0);
+            return;
+        }
+
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
         if (this.player?.isDead) return;
         

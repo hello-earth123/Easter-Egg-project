@@ -25,3 +25,41 @@ npm run dev
 python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
+
+
+
+
+
+컷 씬 생성하는 방법
+✅ 3) 게임 시작 후 자동 컷씬 실행을 위해 TestScene2.js에 추가해야 할 코드
+3-1) import 추가
+
+TestScene2.js 상단에 추가:
+
+import CutscenePlayer from "../cutscene/CutscenePlayer.js";
+
+3-2) create() 내부 마지막에 컷씬 초기화 + 자동 실행 추가
+this.cutscene = new CutscenePlayer(this);
+
+// 게임 시작 자동 컷씬 스크립트
+const introScript = [
+    { cmd: "say", text: "…눈을 떠보니 이상한 숲 속이다." },
+    { cmd: "say", text: "어디지? 어떻게 여기로 온 거지…?" },
+    { cmd: "say", text: "일단 주변을 탐색해봐야겠다." },
+    { cmd: "end" }
+];
+
+// 씬 로딩 0.5초 후 자동 실행
+this.time.delayedCall(500, () => {
+    this.cutscene.play(introScript);
+});
+
+✅ 4) update()에 플레이어 조작 잠금 처리
+
+TestScene2.js → update() 맨 위에 추가:
+
+// 컷씬 중에는 모든 조작 차단
+if (this.cutsceneLock) {
+    this.player.setVelocity(0);
+    return;
+}
