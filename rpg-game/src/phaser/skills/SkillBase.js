@@ -7,6 +7,10 @@ export class SkillBase {
         this.isHoldSkill = false;
         this.onCooldownUntil = 0;
 
+        // 🔥 Vue / TestScene2 에서 쓰는 보조 필드들
+        this.cooldown = this.base?.cd ? this.base.cd / 1000 : 0; // 초 단위
+        this.lastCastAt = null;
+
         // 마지막으로 사용된 scene (스탯/젬 반영용)
         this.lastScene = null;
     }
@@ -89,6 +93,7 @@ export class SkillBase {
     }
 
     startCooldown(scene) {
+        // base.cd는 ms 단위 (Config.js에서 fireball cd: 2000 이런 식)
         let cd = this.base.cd || 0;
 
         const stats = scene?.playerStats;
@@ -97,11 +102,16 @@ export class SkillBase {
                 (stats.cooldown || 0) +
                 (stats.cooldownGem || 0);
 
-            // cooldown 1 당 1.5% 감소, 최소 40%까지만 감소
+            // cooldown 1당 1.5% 감소, 최소 40%
             const reduceScale = Math.max(0.4, 1 - cooldownStat * 0.015);
-            cd = Math.floor(cd * reduceScale);
+            cd = Math.floor(cd * reduceScale); // 여전히 ms
         }
 
+        // 🔥 Vue / TestScene2와 연동되는 필드들
+        this.cooldown  = cd / 1000;        // 초 단위 → Vue에서 *1000
+        this.lastCastAt = scene.time.now;  // TestScene2에서 성공 판정용
+
+        // 숫자 쿨타임 / hasCooldown용 ms 단위
         this.onCooldownUntil = scene.time.now + cd;
     }
     

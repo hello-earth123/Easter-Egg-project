@@ -89,13 +89,12 @@
                 <svg
                   v-if="cdLeftMs(s.phaserKey) > 0"
                   class="cooldown-mask"
-                  viewBox="0 0 36 36">
+                  viewBox="0 0 54 54"
+                >
                   <path
-                    class="cooldown-path"
-                    :style="cooldownPathStyle(s.phaserKey)"
-                    d="M18 2
-                      a 16 16 0 1 1 0 32
-                      a 16 16 0 1 1 0 -32" />
+                    class="cooldown-sector"
+                    :d="cooldownSectorPath(s.phaserKey)"
+                  />
                 </svg>
 
                 <div class="slot-lv">Lv {{ skillLevel(s.phaserKey) }}</div>
@@ -588,7 +587,7 @@ export default {
       playerFrameScale: 8,
       playerOffsetX: 2,
       statPoints: 0,
-      maxStatPoints: 50,
+      maxStatPoints: 100,
       
       // 스탯창 무기
       weaponSpriteSheet: "/static/assets/player_staff.png",
@@ -947,7 +946,7 @@ export default {
       this.playerLevel = main.playerStats.level || 1;
       this.skillPoints = main.playerStats.skillPoints || 0; // 참고용
       this.statPoints = main.playerStats.point ?? 0;
-      this.maxStatPoints = main.playerStats.maxPoint ?? 50;
+      this.maxStatPoints = main.playerStats.maxPoint ?? 100;
 
       // Gem 사용량 업데이트 ⭐⭐
       // Gem 사용량 업데이트 ⭐ PlayerStats 필드에 맞게
@@ -1518,6 +1517,64 @@ export default {
       }
     },
 
+    cooldownRatio(skillName) {
+      if (!this.scene || !this.scene.skills) return 0;
+
+      const skill = this.scene.skills[skillName];
+      if (!skill) return 0;
+
+      const now = this.scene.time.now;
+      const left = Math.max(0, skill.onCooldownUntil - now);
+      const total = skill.cooldown * 1000; // cooldown(sec) → ms
+
+      if (total <= 0) return 0;
+
+      // 1(풀쿨) → 0(쿨 종료)
+      return left / total;
+    },
+
+    cooldownSectorPath(skillName) {
+      const ratio = this.cooldownRatio(skillName);
+
+      // 남은 쿨타임이 없으면 path 없음
+      if (ratio <= 0) {
+        return "";
+      }
+
+      // SVG 좌표계 기준 원 중심/반지름
+      const cx = 27;
+      const cy = 27;
+      const r = 27;
+
+      // 시작 각도(위쪽에서 시작, 시계방향 진행)
+      const startAngle = -90;               // deg, 12시 방향
+      const endAngle = startAngle + 360 * ratio;
+
+      const toRad = (deg) => (Math.PI / 180) * deg;
+
+      const startRad = toRad(startAngle);
+      const endRad = toRad(endAngle);
+
+      const x1 = cx + r * Math.cos(startRad);
+      const y1 = cy + r * Math.sin(startRad);
+      const x2 = cx + r * Math.cos(endRad);
+      const y2 = cy + r * Math.sin(endRad);
+
+      // 180도 초과하면 large-arc-flag = 1
+      const largeArcFlag = (endAngle - startAngle) > 180 ? 1 : 0;
+
+      // M: 중심 → L: 시작점 → A: 호 → Z: 다시 중심
+      const d = [
+        `M ${cx} ${cy}`,
+        `L ${x1} ${y1}`,
+        `A ${r} ${r} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+        "Z",
+      ].join(" ");
+
+      return d;
+    },
+
+
     cooldownPathStyle(skillName) {
       if (!this.scene || !this.scene.skills) return {};
 
@@ -1732,8 +1789,11 @@ export default {
 
     cdLeftMs(skillName) {
       if (!this.scene || !this.scene.skills) return 0;
-      const s = this.scene.skills[skillName];
-      return s ? Math.max(0, s.onCooldownUntil - this.scene.time.now) : 0;
+      const skill = this.scene.skills[skillName];
+      if (!skill) return 0;
+
+      const now = this.scene.time.now;
+      return Math.max(0, skill.onCooldownUntil - now);
     },
 
     skillLevel(skillName) {
@@ -2317,16 +2377,12 @@ export default {
   height: 54px;
   top: 0;
   left: 0;
-  transform: rotate(-90deg); /* 시계 방향 느낌 */
   z-index: 5;
-  fill: none;
   pointer-events: none;
 }
 
-.cooldown-path {
-  stroke: rgba(0,0,0,0.55);
-  stroke-width: 4;
-  stroke-linecap: round;
+.cooldown-sector {
+  fill: rgba(0, 0, 0, 0.55);
 }
 
 .slot-cd-text {

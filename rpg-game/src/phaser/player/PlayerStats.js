@@ -39,7 +39,7 @@ export class PlayerStats {
     this.luck = data.staffLuk || 0;
 
     this.point = data.point || 0;
-    this.maxPoint = 50;
+    this.maxPoint = 100;
 
     // 젬
     this.damageGem = data.damageGem || 0;
