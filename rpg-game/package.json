@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "chart.js": "^4.5.1",
+    "heap-js": "^2.7.1",
     "phaser": "^3.90.0",
     "router": "^2.2.0",
     "vue": "^3.5.22",

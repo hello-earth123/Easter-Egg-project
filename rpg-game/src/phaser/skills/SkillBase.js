@@ -120,6 +120,9 @@ export class SkillBase {
         // 🔥 여기서 마지막 scene 기억 → scaledDamage/Cost 에서 사용
         this.lastScene = scene;
 
+        // 임시 - 보스 테스트용
+        if (caster.name == 'coffin') this.cast(scene, caster);
+
         // 1) 쿨타임 검사
         if (this.hasCooldown(scene)) {
             scene.textBar = `${this.name} 재사용 대기중`;
