@@ -570,6 +570,7 @@ import MainScene from "../phaser/scenes/MainScene";
 import TestScene from "../phaser/scenes/TestScene";
 import TestScene2 from "../phaser/scenes/TestScene2";
 import TestScene3 from "../phaser/scenes/TestScene3";
+import BossScene from "../phaser/scenes/BossScene.js";
 import { initSlot } from "../phaser/manager/slotManager.js";
 import { increaseStat, resetStat } from "../phaser/player/PlayerStats.js";
 import { saveGame } from "../phaser/manager/saveManager.js";
@@ -952,6 +953,7 @@ export default {
       TestScene2: TestScene2,
       TestScene3: TestScene3,
       MainScene: MainScene,
+      BossScene: BossScene,
     };
 
     const config = {

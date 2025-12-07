@@ -11,7 +11,6 @@ export function makeMonsterStats(def, scene) {
 }
 
 /** 몬스터 객체 생성 및 scene에 추가 - TODO */
-/** 251119 - 몬스터 아니고 아이템으로 생성되는 중이며 아이템 습득 시, 인벤토리로 들어가지 않음 */
 export function spawnMonsters(scene) {
   const names = Object.keys(scene.monsterData)
 

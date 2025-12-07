@@ -20,6 +20,7 @@ extra
 npm install
 npm install chart.js
 npm install router
+npm install heap-js
 npm run dev
 
 python manage.py makemigrations
