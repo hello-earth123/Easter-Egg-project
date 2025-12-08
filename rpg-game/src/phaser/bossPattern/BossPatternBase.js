@@ -1,4 +1,4 @@
-export class BossSkillBase {
+export class BossPatternBase {
     constructor(name, baseConfig) {
         this.name = name;            // fireball, flameA 등
         this.base = baseConfig;      // CFG.fireball 같은 설정
@@ -6,34 +6,24 @@ export class BossSkillBase {
 
     // ---- 스케일 계산 ----
     scaledDamage(base) {
-    // 1) 스킬 레벨 기반 성장
-    const perLevel = this.base?.dmgScale ?? 0.15;
-    const levelScaleSkill = 1 + perLevel * (this.level - 1);
+        let value = base * 1;   // 체력 % 데미지
 
-    const stats = this.lastScene?.playerStats;
+        if (stats) {
+            // 2) 버튼/젬으로 찍는 damage 스탯
+            const damageStat =
+            (stats.damage || 0) +
+            (stats.damageGem || 0);
 
-    // 🔹 플레이어의 baseDamage(무기/레벨 성장)을 base에 더해줌
-    const baseWeaponDamage = stats?.baseDamage || 0;
+            const damageScale = 1 + damageStat * 0.02;
 
-    // 👉 "스킬 기본 데미지 + 무기/레벨 기반 데미지" 를 합쳐서 스킬 레벨 보정
-    let value = (base + baseWeaponDamage) * levelScaleSkill;
+            // 3) 플레이어 레벨 보정 (이미 넣어놨다면 유지)
+            const playerLevel = stats.level || 1;
+            const levelScalePlayer = 1 + Math.max(0, playerLevel - 1) * 0.03;
 
-    if (stats) {
-        // 2) 버튼/젬으로 찍는 damage 스탯
-        const damageStat =
-        (stats.damage || 0) +
-        (stats.damageGem || 0);
+            value *= damageScale * levelScalePlayer;
+        }
 
-        const damageScale = 1 + damageStat * 0.02;
-
-        // 3) 플레이어 레벨 보정 (이미 넣어놨다면 유지)
-        const playerLevel = stats.level || 1;
-        const levelScalePlayer = 1 + Math.max(0, playerLevel - 1) * 0.03;
-
-        value *= damageScale * levelScalePlayer;
-    }
-
-    return Math.floor(value);
+        return Math.floor(value);
     }
 
 
