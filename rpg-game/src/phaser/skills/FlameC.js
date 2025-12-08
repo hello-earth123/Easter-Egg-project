@@ -55,30 +55,27 @@ export class FlameC extends FireSkillBase {
       scene.damageArea({
         x: f.x,
         y: f.y,
-        radius: this.getScaledRadius(radius),
+        radius,
         dmg: this.getDamage(),
         onHit: () => this.shakeCameraOnHit(scene),
       });
     }
 
     // ======================================================
-    // 🔥 지속 도트 (2틱)
+    // 🔥 지속 도트 (7틱)
     // ======================================================
-    const interval = duration / 2;
-
-    for (let i = 1; i <= 2; i++) {
-      scene.time.delayedCall(interval * i, () => {
-        for (const f of flames) {
-          scene.damageArea({
-            x: f.x,
-            y: f.y,
-            radius: this.getScaledRadius(radius),
-            dmg: tickDmg,
-            onHit: () => this.shakeCameraOnHit(scene),
-          });
-        }
+    const interval = duration / 7;
+    for (const f of flames) {
+      scene.applyDotArea({
+        x: f.x,
+        y: f.y,
+        radius: radius,
+        tickDmg: tickDmg,
+        duration: duration,
+        interval: interval,
       });
     }
+
 
     // ======================================================
     // 🔥 안전 destroy
