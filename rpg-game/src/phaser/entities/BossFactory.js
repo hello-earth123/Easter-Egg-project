@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { createDefaultSkills } from "../skills/index.js";
+import { createDefaultPatterns } from "../bossPattern/index.js";
 import { Heap } from 'heap-js';
 
 /** 몬스터 레벨 별 수치 변동 */
@@ -90,16 +91,22 @@ export function spawnBoss(scene, boss) {
             wanderPauseUntil: 0,
 
             isAttack: false,
-            skillSet: createDefaultSkills(),    // 진짜 보스 스킬들이 들어감
-            nextSkill: new Heap((a, b) => a - b),    // min Heap
+            // skillSet: createDefaultSkills(),    // 진짜 보스 스킬들이 들어감
+            // nextSkill: new Heap((a, b) => a - b),    // min Heap
+
+            patternSet: createDefaultPatterns(),
+            nextPattern: new Heap((a, b) => a - b)
         });
 
         BossInstance.setCollideWorldBounds(true);
 
-        BossInstance.nextSkill.push(1);
-        BossInstance.nextSkill.push(2);
-        BossInstance.nextSkill.push(3);
-        BossInstance.nextSkill.push(4);
+        // BossInstance.nextSkill.push(1);
+        // BossInstance.nextSkill.push(2);
+        // BossInstance.nextSkill.push(3);
+        // BossInstance.nextSkill.push(4);
+
+        BossInstance.nextPattern.push(1);
+        BossInstance.nextPattern.push(2);
       });
     })
 }
@@ -107,27 +114,36 @@ export function spawnBoss(scene, boss) {
 function CastSkill(skill, scene){
     switch(skill){
         case 1:
-            BossInstance.skillSet['firebomb'].tryCast(scene, BossInstance);
-            cooltime(scene, 1, 8);
+            BossInstance.patternSet['thunder'].tryCast(scene, BossInstance);
+            cooltime(scene, 1, 5);
             break;
         case 2:
-            BossInstance.skillSet['flameC'].tryCast(scene, BossInstance);
+            BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
             cooltime(scene, 2, 10);
             break;
-        case 3:
-            BossInstance.skillSet['flameA'].tryCast(scene, BossInstance);
-            cooltime(scene, 3, 10);
-            break;
-        case 4:
-            BossInstance.skillSet['meteor_L'].tryCast(scene, BossInstance);
-            cooltime(scene, 4, 5);
-            break;
+        // case 1:
+        //     BossInstance.skillSet['firebomb'].tryCast(scene, BossInstance);
+        //     cooltime(scene, 1, 8);
+        //     break;
+        // case 2:
+        //     BossInstance.skillSet['flameC'].tryCast(scene, BossInstance);
+        //     cooltime(scene, 2, 10);
+        //     break;
+        // case 3:
+        //     BossInstance.skillSet['flameA'].tryCast(scene, BossInstance);
+        //     cooltime(scene, 3, 10);
+        //     break;
+        // case 4:
+        //     BossInstance.skillSet['meteor_L'].tryCast(scene, BossInstance);
+        //     cooltime(scene, 4, 5);
+        //     break;
     }
 }
 
 export function ChooseNextSkill(scene){
     if (BossInstance.isAttack) return;
-    if (!BossInstance.nextSkill) return;    // 나중에는 기본 공격과 같이 쿨타임이 없고 우선순위가 제일 낮은 친구가 항상 들어가있어야함
+    // if (!BossInstance.nextSkill) return;    // 나중에는 기본 공격과 같이 쿨타임이 없고 우선순위가 제일 낮은 친구가 항상 들어가있어야함
+    if (!BossInstance.nextPattern) return;
 
     BossInstance.isAttack = true;
 
@@ -135,13 +151,17 @@ export function ChooseNextSkill(scene){
         BossInstance.isAttack = false;
     })
 
-    const skill = BossInstance.nextSkill.pop();
+    // const skill = BossInstance.nextSkill.pop();
+    const pattern = BossInstance.nextPattern.pop();
 
-    CastSkill(skill, scene);
+    CastSkill(pattern, scene);
+
+    // if monster.name == coffin && monster.hp == 0, this.spawnBoss(scene, 'vampire')
 }
 
 function cooltime(scene, target, cool){
     scene.time.delayedCall(cool * 1000, () => {
-        BossInstance.nextSkill.push(target);
+        // BossInstance.nextSkill.push(target);
+        BossInstance.nextPattern.push(target);
     })
 }
