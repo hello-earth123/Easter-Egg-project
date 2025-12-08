@@ -31,31 +31,34 @@ export class FlameA extends FireSkillBase {
     fx.play("flameA");
 
     // =====================================
-    // 🔥 즉발 데미지
+    // 🔥 즉발 데미지 + 피격된 몬스터 목록 수집
     // =====================================
-    scene.damageArea({
+    const hitMonsters = scene.damageArea({
       x: ox,
       y: oy,
       radius,
       dmg: this.getDamage(),
+      collectTargets: true,
       onHit: () => this.shakeCameraOnHit(scene)
     });
+
+    // ❗ 아무 몬스터도 맞지 않았다면 DOT 실행하지 않음
+    if (!hitMonsters || hitMonsters.length === 0) {
+      //console.log("FlameA DOT skipped (no hit)");
+    }
 
     // =====================================
     // 🔥 지속 도트 데미지
     // =====================================
-    const interval = duration / 2; // 원본 로직 유지
-    for (let i = 1; i <= 2; i++) {
-      scene.time.delayedCall(i * interval, () => {
-        scene.damageArea({
-          x: ox,
-          y: oy,
-          radius: this.getScaledRadius(radius),
-          dmg: tickDmg,
-          onHit: () => this.shakeCameraOnHit(scene)
-        });
-      });
-    }
+    const interval = duration / 5; // 원본 로직 유지
+    scene.applyDotArea({
+      x: ox,
+      y: oy,  
+      radius: radius,
+      tickDmg: tickDmg,
+      duration: duration,
+      interval: interval,
+    });
 
     // =====================================
     // 🔥 애니메이션 종료 후 안전 destroy

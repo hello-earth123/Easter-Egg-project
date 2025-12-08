@@ -5,8 +5,10 @@ export default class CutscenePlayer {
     }
 
     async play(script) {
+        // 컷씬, 대화창 활성화 (space바 키)
         this.scene.dialogueActive = true;
-
+        // 플레이어 못움직이게
+        this.scene.cutsceneLock = true;
         for (const cmd of script) {
             if (cmd.cmd === "say") {
                 await this.runSay(cmd.text);
@@ -19,6 +21,7 @@ export default class CutscenePlayer {
 
         this.ui.hide();
         this.scene.dialogueActive = false;
+        this.scene.cutsceneLock = false;
     }
 
     async runSay(text) {

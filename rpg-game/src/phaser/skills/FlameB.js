@@ -61,30 +61,27 @@ export class FlameB extends FireSkillBase {
     });
 
     // ===== 🔥 도트 데미지 =====
-    const interval = duration / 2;
-    for (let i = 1; i <= 2; i++) {
-      scene.time.delayedCall(i * interval, () => {
-
-        // 1타 dot
-        scene.damageArea({
-          x: ox1,
-          y: oy1,
-          radius,
-          dmg: tickDmg,
-          onHit: () => this.shakeCameraOnHit(scene)
-        });
-
-        // 2타 dot
-        scene.damageArea({
-          x: ox2,
-          y: oy2,
-          radius: this.getScaledRadius(radius),
-          dmg: tickDmg,
-          onHit: () => this.shakeCameraOnHit(scene)
-        });
-
+      // 1타 dot
+      const interval = duration / 6; // 원본 로직 유지
+      scene.applyDotArea({
+        x: ox1,
+        y: oy1,  
+        radius: radius,
+        tickDmg: tickDmg,
+        duration: duration,
+        interval: interval,
       });
-    }
+
+      // 2타 dot
+      scene.applyDotArea({
+        x: ox2,
+        y: oy2,  
+        radius: radius,
+        tickDmg: tickDmg,
+        duration: duration,
+        interval: interval,
+      });
+
 
     // ===== 🔥 애니메이션 종료 후 safe destroy =====
     fx1.once("animationcomplete", () => {
