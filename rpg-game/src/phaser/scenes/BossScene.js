@@ -884,6 +884,7 @@ export default class BossScene extends Phaser.Scene {
         this.monsters = this.physics.add.group();
         this.bullets = this.physics.add.group();
         this.items = this.physics.add.group();
+        this.boss = this.physics.add.group();
 
         // spawnMonsters(this);
         spawnBoss(this, ['coffin']);
@@ -902,6 +903,13 @@ export default class BossScene extends Phaser.Scene {
         this.physics.add.collider(
             this.player,
             this.monsters,
+            this.onPlayerHitByMonster,
+            null,
+            this
+        );
+        this.physics.add.collider(
+            this.player,
+            this.boss,
             this.onPlayerHitByMonster,
             null,
             this
@@ -936,6 +944,7 @@ export default class BossScene extends Phaser.Scene {
                 this.physics.add.collider(this.player, collider);
                 this.physics.add.collider(this.items, collider);
                 this.physics.add.collider(this.bullets, collider);
+                this.physics.add.collider(this.boss, collider);
             });
         }
 
