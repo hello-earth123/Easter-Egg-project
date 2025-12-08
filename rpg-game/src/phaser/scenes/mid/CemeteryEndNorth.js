@@ -1,31 +1,30 @@
 import Phaser from "phaser";
-import { CFG } from "../config/Config.js";
-import { clamp01 } from "../utils/MathUtils.js";
-import { initPlayer } from "../player/PlayerStats.js";
-import { initSlot } from "../manager/slotManager.js";
-import { createDefaultSkills } from "../skills/index.js";
+import { CFG } from "../../config/Config.js";
+import { clamp01 } from "../../utils/MathUtils.js";
+import { initPlayer } from "../../player/PlayerStats.js";
+import { initSlot } from "../../manager/slotManager.js";
+import { createDefaultSkills } from "../../skills/index.js";
 import {
     spawnShockwave,
     spawnLightning,
     spawnHitFlash,
-} from "../effects/Effects.js";
-import { initInventory, resolveDropItem, useItemFromInventory } from "../items/Inventory.js";
-import { spawnMonsters } from "../entities/TestMonsterFactory.js";
-import { FloatingText } from "../effects/FloatingText.js";
-import { preloadFireSkillAssets } from "../preload/preloadFireSkills.js";
-import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
-import TestScene3 from "./TestScene3.js";
-import { setCurrentScene } from "../manager/sceneRegistry.js";
-import SoundManager from "../manager/SoundManager.js";
-import { saveGame } from "../manager/saveManager.js"; 
-import { loadGame } from "../manager/saveManager.js";
+} from "../../effects/Effects.js";
+import { initInventory, resolveDropItem, useItemFromInventory } from "../../items/Inventory.js";
+import { spawnMonsters } from "../../entities/TestMonsterFactory.js";
+import { FloatingText } from "../../effects/FloatingText.js";
+import { preloadFireSkillAssets } from "../../preload/preloadFireSkills.js";
+import { createFireSkillAnims } from "../../preload/createFireSkillAnims.js";
+import { setCurrentScene } from "../../manager/sceneRegistry.js";
+import SoundManager from "../../manager/SoundManager.js";
+import { saveGame } from "../../manager/saveManager.js"; 
+import { loadGame } from "../../manager/saveManager.js";
 
 // 컷씬
-import CutscenePlayer from "../cutscene/CutscenePlayer.js";
+import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
-export default class TestScene2 extends Phaser.Scene {
+export default class CemeteryEndNorth extends Phaser.Scene {
 
     init(data) {
         let fromPortal = null;
@@ -34,10 +33,10 @@ export default class TestScene2 extends Phaser.Scene {
         }
 
         const portalSpawnPoints = {
-            east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
-            south: { x: 700, y: 1000 },
-            west: { x: 1400, y: 600 },
-            north: { x: 700, y: 200},
+            // east: { x: 70, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
+            south: { x: 800, y: 200 },
+            // west: { x: 1530, y: 600 },
+            // north: { x: 800, y: 910},
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
@@ -51,7 +50,7 @@ export default class TestScene2 extends Phaser.Scene {
 
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
-        super({ key: "TestScene2" });
+        super({ key: "CemeteryEndNorth" });
 
         this.textBar = "";
         this.lastArrowTap = {
@@ -907,52 +906,55 @@ export default class TestScene2 extends Phaser.Scene {
         this.count = 0;
 
         // === 포탈 생성(애니메이션) ===
-        this.portal = this.physics.add.sprite(1530, 600, "portal"); // 맵 상에서 포탈 위치
-        this.portal.portalId = "east"; // ⭐ 포탈 ID (포탈이 동쪽에 있음을 의미)
 
-        // 애니메이션 생성 (한번만 생성되도록 체크)
-        if (!this.anims.exists("portal-anim")) {
-            this.anims.create({
-                key: "portal-anim",
-                frames: this.anims.generateFrameNumbers("portal", { start: 0, end: 6 }),
-                frameRate: 12,
-                repeat: -1
-            });
+        // 포탈 4개 생성
+        this.portals = {
+            south: this.physics.add.sprite(800, 910, "portal"),
+        };
+
+        for (const key in this.portals) {
+            const portal = this.portals[key];
+            portal.portalId = key;
+            portal.setImmovable(true);
+            portal.setScale(1.0);
+            portal.play("portal-anim");
+
+            portal.setDepth(5000);
+
         }
         // ======================================================================
 
 
 
-        // ==================== 포탈 상호작용 =====================================
-        // 포탈 애니메이션 재생
-        this.portal.play("portal-anim");
-        this.portal.setImmovable(true);
-        // 포탈 크기
-        this.portal.setScale(1.0);
-        // 상호작용 가능 여부
+        // ==================== 포탈 상호작용 ==========================
         this.canInteract = false;
-        // 상호작용 메세지
-        this.interactText = this.add.text(
-            this.portal.x, 
-            this.portal.y, 
-            "F 키를 눌러 이동", 
-            {
+        this.currentPortal = null;
+
+        // UI는 하나만 유지
+        this.interactText = this.add.text(0, 0, "F 키를 눌러 이동", {
             fontSize: "22px",
             color: "#ffffff",
             backgroundColor: "rgba(0,0,0,0.45)",
             padding: { x: 8, y: 4 }
-            }
-        )
+        })
         .setOrigin(0.5)
         .setVisible(false)
         .setDepth(9999);
 
-        // 플레이어가 포탈 위에 올라가면
-        this.physics.add.overlap(this.player, this.portal, () => {
-            this.canInteract = true;
-            this.interactText.setVisible(true);
-        });
-        // F 키 등록
+        // 플레이어가 어떤 포탈이든 밟으면 감지
+        for (const key in this.portals) {
+            const portal = this.portals[key];
+
+            this.physics.add.overlap(this.player, portal, () => {
+                this.canInteract = true;
+                this.currentPortal = portal;
+
+                // 상호작용 UI 위치 업데이트
+                this.interactText.setPosition(portal.x, portal.y - 60);
+                this.interactText.setVisible(true);
+            });
+        }
+
         this.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         // ======================================================================
 
@@ -974,49 +976,49 @@ export default class TestScene2 extends Phaser.Scene {
      
         // 게임 시작 자동 컷씬 스크립트
         const introScript = [
-            { cmd: "say", text: "…여긴 어디지?" },
-            { cmd: "say", text: "아… 맞다. 난 이제 막 시골에서 도시로 올라왔지." },
-            { cmd: "say", text: "이름은 이프리트. 마법사가 되고 싶었던 평범한 청년이다." },
+            // { cmd: "say", text: "…여긴 어디지?" },
+            // { cmd: "say", text: "아… 맞다. 난 이제 막 시골에서 도시로 올라왔지." },
+            // { cmd: "say", text: "이름은 이프리트. 마법사가 되고 싶었던 평범한 청년이다." },
 
-            { cmd: "say", text: "하지만 현실은… 생각보다 잔혹했다." },
-            { cmd: "say", text: "도시의 마법사들은 나를 비웃었고, 제대로 상대해 주지도 않았다." },
-            { cmd: "wait", time: 400 },
+            // { cmd: "say", text: "하지만 현실은… 생각보다 잔혹했다." },
+            // { cmd: "say", text: "도시의 마법사들은 나를 비웃었고, 제대로 상대해 주지도 않았다." },
+            // { cmd: "wait", time: 400 },
 
-            { cmd: "say", text: "“그따위 실력으로 마법사를 꿈꾼다고?” 라는 말은 하루에도 열 번 넘게 들었다." },
-            { cmd: "say", text: "…억울했다. 어떻게든 인정받고 싶었는데." },
+            // { cmd: "say", text: "“그따위 실력으로 마법사를 꿈꾼다고?” 라는 말은 하루에도 열 번 넘게 들었다." },
+            // { cmd: "say", text: "…억울했다. 어떻게든 인정받고 싶었는데." },
 
-            { cmd: "say", text: "그러다… 우연히 뒷골목에서 한 잡상인을 만났다." },
-            { cmd: "say", text: "그는 기묘한 광택의 스태프를 팔고 있었다." },
+            // { cmd: "say", text: "그러다… 우연히 뒷골목에서 한 잡상인을 만났다." },
+            // { cmd: "say", text: "그는 기묘한 광택의 스태프를 팔고 있었다." },
 
-            { cmd: "say", text: "값도 터무니없이 쌌다. 아무도 사지 않았기 때문일까." },
-            { cmd: "say", text: "하지만 그 순간… 이상하게도 손이 멈추지 않았다." },
+            // { cmd: "say", text: "값도 터무니없이 쌌다. 아무도 사지 않았기 때문일까." },
+            // { cmd: "say", text: "하지만 그 순간… 이상하게도 손이 멈추지 않았다." },
 
-            { cmd: "say", text: "그리고 나는 그 스태프를 손에 넣었다." },
-            { cmd: "wait", time: 500 },
+            // { cmd: "say", text: "그리고 나는 그 스태프를 손에 넣었다." },
+            // { cmd: "wait", time: 500 },
 
-            { cmd: "say", text: "…" },
-            { cmd: "say", text: "…잠깐. 방금 스태프가… 울었나?" },
+            // { cmd: "say", text: "…" },
+            // { cmd: "say", text: "…잠깐. 방금 스태프가… 울었나?" },
 
-            { cmd: "say", text: "???: '드디어… 드디어 나를 깨워주는군.'" },
-            { cmd: "say", text: "이프리트: \"!? 뭐, 뭐야!? 누… 누구야!?\"" },
+            // { cmd: "say", text: "???: '드디어… 드디어 나를 깨워주는군.'" },
+            // { cmd: "say", text: "이프리트: \"!? 뭐, 뭐야!? 누… 누구야!?\"" },
 
-            { cmd: "say", text: "???: '나는 프라가라흐. 봉인된 지 천 년, 나를 깨운 자여…'" },
-            { cmd: "say", text: "프라가라흐: '내 봉인을 풀어준다면… 너에게 진정한 힘을 주겠다.'" },
+            // { cmd: "say", text: "???: '나는 프라가라흐. 봉인된 지 천 년, 나를 깨운 자여…'" },
+            // { cmd: "say", text: "프라가라흐: '내 봉인을 풀어준다면… 너에게 진정한 힘을 주겠다.'" },
 
-            { cmd: "say", text: "이프리트: \"진정한… 힘을?\"" },
-            { cmd: "wait", time: 400 },
+            // { cmd: "say", text: "이프리트: \"진정한… 힘을?\"" },
+            // { cmd: "wait", time: 400 },
 
-            { cmd: "say", text: "그 순간, 스태프가 희미하게 웃은 것 같았다." },
-            { cmd: "say", text: "프라가라흐: '자, 이프리트. 우리의 모험을 시작하자고.'" },
+            // { cmd: "say", text: "그 순간, 스태프가 희미하게 웃은 것 같았다." },
+            // { cmd: "say", text: "프라가라흐: '자, 이프리트. 우리의 모험을 시작하자고.'" },
 
-            { cmd: "say", text: "이프리트: \"…그래. 어디까지 갈 수 있을지, 한번 해보자고!\"" },
+            // { cmd: "say", text: "이프리트: \"…그래. 어디까지 갈 수 있을지, 한번 해보자고!\"" },
 
-            { cmd: "wait", time: 300 },
+            // { cmd: "wait", time: 300 },
 
-            { cmd: "say", text: "프라가라흐: '후후… 그래. 나를 완전히 해방시켜준다면…'" },
-            { cmd: "say", text: "프라가라흐: '이 세계도… 너도… 모든 것이 바뀔 것이다.'" },
+            // { cmd: "say", text: "프라가라흐: '후후… 그래. 나를 완전히 해방시켜준다면…'" },
+            // { cmd: "say", text: "프라가라흐: '이 세계도… 너도… 모든 것이 바뀔 것이다.'" },
 
-            { cmd: "end" }
+            // { cmd: "end" }
         ];
 
         // 씬 로딩 0.5초 후 자동 실행
@@ -1236,21 +1238,20 @@ export default class TestScene2 extends Phaser.Scene {
 
 
         // === 포탈 상호작용 체크 ===
-        if (this.canInteract) {
+        if (this.canInteract && this.currentPortal) {
 
-            // F 누르면 이동
             if (Phaser.Input.Keyboard.JustDown(this.keyF)) {
-                this.moveToNextScene();
+                this.moveToNextScene(this.currentPortal.portalId);
             }
 
-            // 포탈에서 벗어나면 상호작용 불가 처리
             const dist = Phaser.Math.Distance.Between(
                 this.player.x, this.player.y,
-                this.portal.x, this.portal.y
+                this.currentPortal.x, this.currentPortal.y
             );
 
-            if (dist > 160) {  // 포탈 범위 밖
+            if (dist > 150) {
                 this.canInteract = false;
+                this.currentPortal = null;
                 this.interactText.setVisible(false);
             }
         }
@@ -2211,22 +2212,38 @@ export default class TestScene2 extends Phaser.Scene {
 
 
     /** F 키로 다음 Scene 이동 (데이터 유지됨) */
-    moveToNextScene() {
-        // 🔥 포탈 사운드 재생
+    moveToNextScene(portalId) {
         this.SoundManager.playPortal();
 
-        if(!this.scene.get('TestScene3')) this.scene.add('TestScene3', TestScene3);
+        // ⭐ 포탈 → 목적지 씬 매핑 테이블
+        const portalToScene = {
+            south: "Cemetery3",
+        };
+
+        const nextScene = portalToScene[portalId];
+        if (!nextScene) {
+            console.warn("Unknown portalId:", portalId);
+            return;
+        }
+
+        // 필요 시 해당 씬을 미리 add() (존재하지 않을 경우)
+        if (!this.scene.get(nextScene)) {
+            this.scene.add(nextScene, window[nextScene]); 
+            // 🔥 주의: TestScene2, TestScene3 같은 씬들은 전역에 등록되어 있어야 함
+        }
+
+        const p = this.currentPortal;
 
         this.cameras.main.fadeOut(300, 0, 0, 0);
 
         this.time.delayedCall(300, () => {
-            this.scene.start("TestScene3", {
+            this.scene.start(nextScene, {
                 playerStats: this.playerStats,
                 inventoryData: this.inventoryData,
                 slotData: this.slotData,
-                fromPortal: "east",
-                spawnX: this.portal.x,
-                spawnY: this.portal.y + 60
+                fromPortal: portalId,
+                spawnX: p.x,
+                spawnY: p.y + 60
             });
         });
     }
