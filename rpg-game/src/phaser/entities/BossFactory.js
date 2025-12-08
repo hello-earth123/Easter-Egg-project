@@ -90,8 +90,8 @@ export function spawnBoss(scene, boss) {
             wanderPauseUntil: 0,
 
             isAttack: false,
-            skillSet: createDefaultSkills(),
-            nextSkill: new Heap((a, b) => a - b)
+            skillSet: createDefaultSkills(),    // 진짜 보스 스킬들이 들어감
+            nextSkill: new Heap((a, b) => a - b),    // min Heap
         });
 
         BossInstance.setCollideWorldBounds(true);
@@ -107,7 +107,7 @@ export function spawnBoss(scene, boss) {
 function CastSkill(skill, scene){
     switch(skill){
         case 1:
-            BossInstance.skillSet['flameA'].tryCast(scene, BossInstance);
+            BossInstance.skillSet['firebomb'].tryCast(scene, BossInstance);
             cooltime(scene, 1, 8);
             break;
         case 2:
@@ -115,7 +115,7 @@ function CastSkill(skill, scene){
             cooltime(scene, 2, 10);
             break;
         case 3:
-            BossInstance.skillSet['firebomb'].tryCast(scene, BossInstance);
+            BossInstance.skillSet['flameA'].tryCast(scene, BossInstance);
             cooltime(scene, 3, 10);
             break;
         case 4:
@@ -127,7 +127,7 @@ function CastSkill(skill, scene){
 
 export function ChooseNextSkill(scene){
     if (BossInstance.isAttack) return;
-    if (!BossInstance.nextSkill) return;
+    if (!BossInstance.nextSkill) return;    // 나중에는 기본 공격과 같이 쿨타임이 없고 우선순위가 제일 낮은 친구가 항상 들어가있어야함
 
     BossInstance.isAttack = true;
 

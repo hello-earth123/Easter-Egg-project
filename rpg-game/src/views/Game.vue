@@ -285,8 +285,8 @@
             <img :src="it.icon" />
             <div class="inv-info">
               <!-- 🔹 긴 이름은 말줄임 + title 툴팁 -->
-              <div class="inv-name" :title="it.name">
-                {{ it.name }}
+              <div class="inv-name" :title="items[it.name]">
+                {{ items[it.name] }}
               </div>
               <div class="inv-count" v-if="it.count > 1">
                 x{{ it.count }}
@@ -648,6 +648,31 @@ export default {
 
       // 인벤토리
       inventory: { items: [] },
+
+      items: {
+        hpPotion: 'HP 포션',
+        mpPotion: 'MP 포션',
+        damageGemLow: '하급 보석\n(데미지)',
+        damageGemMid: '중급 보석\n(데미지)',
+        damageGemHigh: '상급 보석\n(데미지)',
+        damageGemSuper: '특급 보석\n(데미지)',
+        cooldownGemLow: '하급 보석\n(쿨타임)',
+        cooldownGemMid: '중급 보석\n(쿨타임)',
+        cooldownGemHigh: '상급 보석\n(쿨타임)',
+        cooldownGemSuper: '특급 보석\n(쿨타임)',
+        manaCostGemLow: '하급 보석\n(마나 소모)',
+        manaCostGemMid: '중급 보석\n(마나 소모)',
+        manaCostGemHigh: '상급 보석\n(마나 소모)',
+        manaCostGemSuper: '특급 보석\n(마나 소모)',
+        defenseGemLow: '하급 보석\n(방어력)',
+        defenseGemMid: '중급 보석\n(방어력)',
+        defenseGemHigh: '상급 보석\n(방어력)',
+        defenseGemSuper: '특급 보석\n(방어력)',
+        luckGemLow: '하급 보석\n(행운)',
+        luckGemMid: '중급 보석\n(행운)',
+        luckGemHigh: '상급 보석\n(행운)',
+        luckGemSuper: '특급 보석\n(행운)',
+      },
 
       // 슬롯들
       skillSlots: [null, null, null, null],
@@ -1059,9 +1084,7 @@ export default {
       this.textBar = main.textBar || "";
 
       // 인벤토리
-      this.inventory.items = (main.inventoryData.inventory.items || []).map(
-        (i) => ({ ...i })
-      );
+      this.inventory.items = (main.inventoryData.inventory.items || []).map((i) => ({...i, showName: this.items[i.name]}));
 
       // 아이템 슬롯
       if (main.inventoryData.itemSlots) {
@@ -2593,6 +2616,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; /* 🔹 긴 이름 말줄임 처리 */
+  white-space: pre-line;  /* 개행 문자 사용 */
 }
 
 .inv-count {
