@@ -24,7 +24,10 @@ import { loadGame } from "../manager/saveManager.js";
 import CutscenePlayer from "../cutscene/CutscenePlayer.js";
 
 
+// testing
 import { spawnBoss, ChooseNextSkill } from "../entities/BossFactory.js";
+import { preloadBossPattern } from "../preload/preloadBossPattern.js";
+import { createBossPattern } from "../preload/createBossPattern.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
@@ -69,6 +72,8 @@ export default class BossScene extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
+            lich: 3,
+            reaper: 4,
         };
 
         this.minLevel = 50;
@@ -359,6 +364,7 @@ export default class BossScene extends Phaser.Scene {
         //     frameHeight: 64,
         // });
         preloadFireSkillAssets(this);
+        preloadBossPattern(this);
     }
 
     // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
@@ -882,6 +888,15 @@ export default class BossScene extends Phaser.Scene {
         // spawnMonsters(this);
         spawnBoss(this, ['coffin']);
 
+        this.pattern = this.physics.add.group();
+        this.physics.add.overlap(
+            this.player,
+            this.pattern,
+            this.onPlayerHitByPattern,
+            null,
+            this
+        );
+
         // 충돌 이벤트 정의
         this.physics.add.collider(this.monsters, this.monsters);
         this.physics.add.collider(
@@ -987,6 +1002,7 @@ export default class BossScene extends Phaser.Scene {
 
         console.log(6)
         createFireSkillAnims(this);
+        createBossPattern(this);
 
         this.count = 0;
 
@@ -1535,6 +1551,70 @@ export default class BossScene extends Phaser.Scene {
         this.SoundManager.playItemPickup();
         this.textBar = `${def.name} 획득`;
     };
+
+    onPlayerHitByPattern = (player, pattern) => {
+            if (!player || !pattern) return;
+    
+            if (this.activeHoldSkill) {
+                const s = this.skills[this.activeHoldSkill];
+                if (s && s.stop) s.stop();
+                this.activeHoldSkill = null;
+            }
+
+            if (!player._lastHitAt) player._lastHitAt = 0; // ?? 0일 때 0으로 초기화를 진행
+
+        const now = this.time.now;
+
+        // 피격 무적 시간이 지나지 않았을 경우, 피격 무시
+        if (now - player._lastHitAt < CFG.playerKB.invulMs) return;
+            
+            const dmg = pattern.damage;
+            this.playerStats.hp -= pattern.damage;
+            this.SoundManager.playMonsterAttack();
+            this.showDamageText(player, dmg, "#ff3333");
+            this.player.play("player_hit", true);
+            player._lastHitAt = now;
+    
+            this.cameras.main.shake(
+                CFG.playerKB.shake.duration,
+                CFG.playerKB.shake.intensity
+            );
+            player.setTint(0xff6666);
+            this.time.delayedCall(CFG.playerKB.invulMs, () => {
+                if (player) player.clearTint();
+            });
+    
+            this.textBar = "적에게 피격!";
+    
+            // 사망 체크
+            if (this.playerStats.hp <= 0) {
+    
+                //  1) 플레이어 physics 충돌 완전 비활성화
+                player.body.enable = false;
+    
+                //  2) 반동을 전혀 주지 않도록 속도 제거
+                player.setVelocity(0, 0);
+    
+                // 몬스터들이 플레이어에 의해 밀리지 않도록 충돌 반응 차단
+                this.monsters.children.iterate(m => {
+                    if (!m || !m.body) return;
+    
+                    m.setVelocity(0, 0);   // 즉시 멈춤
+                    m.body.immovable = true;  // 반발력 제거
+                });
+    
+                //  4) 사망 루틴 실행
+                this.onPlayerDeath();
+                return;
+            }
+            
+            // === Incendiary(hold 스킬) 강제 중지 이벤트 ===
+            this.events.emit("playerHit", {
+                x: pattern.x,
+                y: pattern.y,
+                knockback: CFG.playerKB.power
+            });
+        }
 
     /** 플레이어 피격 - TODO */
     onPlayerHitByMonster = (player, monster) => {
