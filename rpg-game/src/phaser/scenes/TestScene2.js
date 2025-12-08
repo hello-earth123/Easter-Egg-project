@@ -90,6 +90,31 @@ export default class TestScene2 extends Phaser.Scene {
 
         this.itemList = ['hpPotion', 'mpPotion', 'damageGemLow', 'damageGemMid', 'damageGemHigh', 'damageGemSuper', 'cooldownGemLow', 'cooldownGemMid', 'cooldownGemHigh', 'cooldownGemSuper', 'manaCostGemLow', 'manaCostGemMid', 'manaCostGemHigh', 'manaCostGemSuper', 'defenseGemLow', 'defenseGemMid', 'defenseGemHigh', 'defenseGemSuper', 'luckGemLow', 'luckGemMid', 'luckGemHigh', 'luckGemSuper'];
         this.skills;
+
+        this.itemShow = {
+        hpPotion: 'HP 포션',
+        mpPotion: 'MP 포션',
+        damageGemLow: '하급 보석 (데미지)',
+        damageGemMid: '중급 보석 (데미지)',
+        damageGemHigh: '상급 보석 (데미지)',
+        damageGemSuper: '특급 보석 (데미지)',
+        cooldownGemLow: '하급 보석 (쿨타임)',
+        cooldownGemMid: '중급 보석 (쿨타임)',
+        cooldownGemHigh: '상급 보석 (쿨타임)',
+        cooldownGemSuper: '특급 보석 (쿨타임)',
+        manaCostGemLow: '하급 보석 (마나 소모)',
+        manaCostGemMid: '중급 보석 (마나 소모)',
+        manaCostGemHigh: '상급 보석 (마나 소모)',
+        manaCostGemSuper: '특급 보석 (마나 소모)',
+        defenseGemLow: '하급 보석 (방어력)',
+        defenseGemMid: '중급 보석 (방어력)',
+        defenseGemHigh: '상급 보석 (방어력)',
+        defenseGemSuper: '특급 보석 (방어력)',
+        luckGemLow: '하급 보석 (행운)',
+        luckGemMid: '중급 보석 (행운)',
+        luckGemHigh: '상급 보석 (행운)',
+        luckGemSuper: '특급 보석 (행운)',
+        }
     }
 
     // TODO: preload, create의 중첩되는 요소에 대한 singleton 처리
@@ -1532,7 +1557,7 @@ export default class TestScene2 extends Phaser.Scene {
         itemSprite.destroy();
         // 아이템 획득 사운드
         this.SoundManager.playItemPickup();
-        this.textBar = `${def.name} 획득`;
+        this.textBar = `${this.itemShow[def.name]} 획득`;
     };
 
     /** 플레이어 피격 - TODO */

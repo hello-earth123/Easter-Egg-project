@@ -1,4 +1,28 @@
 // 전체 item DB 가져온 뒤, 싱글톤으로 따로 가지고 다니다가 습득 시 해당 아이템에 맞춰 가져옴
+const items = {
+        hpPotion: 'HP 포션',
+        mpPotion: 'MP 포션',
+        damageGemLow: '하급 보석 (데미지)',
+        damageGemMid: '중급 보석 (데미지)',
+        damageGemHigh: '상급 보석 (데미지)',
+        damageGemSuper: '특급 보석 (데미지)',
+        cooldownGemLow: '하급 보석 (쿨타임)',
+        cooldownGemMid: '중급 보석 (쿨타임)',
+        cooldownGemHigh: '상급 보석 (쿨타임)',
+        cooldownGemSuper: '특급 보석 (쿨타임)',
+        manaCostGemLow: '하급 보석 (마나 소모)',
+        manaCostGemMid: '중급 보석 (마나 소모)',
+        manaCostGemHigh: '상급 보석 (마나 소모)',
+        manaCostGemSuper: '특급 보석 (마나 소모)',
+        defenseGemLow: '하급 보석 (방어력)',
+        defenseGemMid: '중급 보석 (방어력)',
+        defenseGemHigh: '상급 보석 (방어력)',
+        defenseGemSuper: '특급 보석 (방어력)',
+        luckGemLow: '하급 보석 (행운)',
+        luckGemMid: '중급 보석 (행운)',
+        luckGemHigh: '상급 보석 (행운)',
+        luckGemSuper: '특급 보석 (행운)',
+}
 
 /** Item ID에 맞춰 Item 정보 반환 - TODO */
 export function resolveDropItem(drop) {
@@ -55,10 +79,11 @@ export function useItemFromInventory(state, invIndex) {
     }
   }
 
+  console.log(item);
   // 전부 사용했을 경우, 슬롯에서 제거
   if (item.count <= 0) state.inventoryData.inventory.items.splice(invIndex, 1);
 
-  state.textBar = `${item.name} 사용`;
+  state.textBar = `${items[item.name]} 사용`;
 }
 
 let invenInstance = null;
