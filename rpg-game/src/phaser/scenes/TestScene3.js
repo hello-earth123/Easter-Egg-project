@@ -14,7 +14,7 @@ import { spawnMonsters } from "../entities/TestMonsterFactory.js";
 import { FloatingText } from "../effects/FloatingText.js";
 import { preloadFireSkillAssets } from "../preload/preloadFireSkills.js";
 import { createFireSkillAnims } from "../preload/createFireSkillAnims.js";
-import TestScene2 from "./TestScene2.js";
+import TestScene2 from "./high/CastleLobby.js";
 import { setCurrentScene } from "../manager/sceneRegistry.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드

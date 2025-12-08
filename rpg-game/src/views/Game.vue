@@ -566,11 +566,7 @@
 
 <script>
 import Phaser from "phaser";
-import MainScene from "../phaser/scenes/MainScene";
-import TestScene from "../phaser/scenes/TestScene";
-import TestScene2 from "../phaser/scenes/TestScene2";
-import TestScene3 from "../phaser/scenes/TestScene3";
-import BossScene from "../phaser/scenes/BossScene.js";
+import { sceneMap } from "../phaser/manager/sceneRegistry.js";
 import { initSlot } from "../phaser/manager/slotManager.js";
 import { increaseStat, resetStat } from "../phaser/player/PlayerStats.js";
 import { saveGame } from "../phaser/manager/saveManager.js";
@@ -951,7 +947,7 @@ export default {
 
   async mounted() {
     // Phaser 게임 구동
-    let lastScene = "TestScene2";
+    let lastScene = "CastleLobby";
 
     const skillRes = await fetch(`http://127.0.0.1:8000/api/skill/3/`);
     const skillData = await skillRes.json();
@@ -974,13 +970,6 @@ export default {
     const data = await res.json();
     lastScene = data.nowLocation;
 
-    const sceneMap = {
-      TestScene2: TestScene2,
-      TestScene3: TestScene3,
-      MainScene: MainScene,
-      BossScene: BossScene,
-    };
-
     const config = {
       type: Phaser.AUTO,
       width: 900,
@@ -990,7 +979,7 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      scene: [sceneMap[lastScene]],
+      scene: Object.values(sceneMap),
     };
 
     const game = new Phaser.Game(config);
