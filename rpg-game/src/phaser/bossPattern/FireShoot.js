@@ -1,46 +1,50 @@
 import { BossPatternBase } from "./BossPatternBase";
 
-export class Thunder extends BossPatternBase {
+function getDir(caster) {
+        if (!caster || !caster.facing) {
+            return new Phaser.Math.Vector2(1, 0); // fallback (오른쪽)
+        }
+        return new Phaser.Math.Vector2(caster.facing.x, caster.facing.y).normalize();
+}
+
+export class FireShoot extends BossPatternBase {
   cast(scene, caster) {
-    const dir = this.getDir(caster);
+    const dir = getDir(caster);
 
     // 발사 시작 위치
     const sx = caster.x + dir.x * 20;
     const sy = caster.y + dir.y * 20;
 
-    // === 🔥 Fireball 생성 ===
-    const b = scene.bullets.create(sx, sy, "fireball");
-    b.setOrigin(0.5);
+    const baseAngle = Math.atan2(dir.y, dir.x);
 
-    // === 🔥 Config scale 적용 ===
-    const scale = this.base.scale ?? 1.0;
-    b.setScale(scale);
+    // 실 패턴 사용
+    scene.time.delayedCall(500, () => {
+        for(let i=0; i<50; i++){
+          scene.time.delayedCall(i * 50, () => {
+            const b = scene.pattern.create(sx, sy, "fireball");
+            b.setOrigin(0.5);
 
-    // === 🔥 VFX 적용 ===
-    applyVFX(scene, b, this.base.vfx);
+            const scale = this.base.scale ?? 1.0;
+            b.setScale(scale);
 
-    // === 🔥 애니메이션 재생 ===
-    b.play("fireball");
+            b.play("fireball");
 
-    // === 🔥 sprite 회전 (캐릭터 바라보는 방향) ===
-    // dir.x, dir.y 기반으로 자동 회전
-    b.rotation = Math.atan2(dir.y, dir.x);
+            const angle = baseAngle + (i * 15);
+            const dx = Math.cos(angle);
+            const dy = Math.sin(angle);
 
-    // === 🔥 이동 속도 ===
-    const speed = this.base.speed ?? 500;
-    b.setVelocity(dir.x * speed, dir.y * speed);
+            b.rotation = angle;
+            
+            const speed = this.base.speed ?? 500;
+            b.setVelocity(dx * speed, dy * speed);
 
-    // === 🔥 충돌 데미지 ===
-    b.damage = this.getDamage();
+            b.damage = this.getDamage();
 
-    // === 🔥 카메라 흔들림 콜백 유지 ===
-    b.onHit = () => this.shakeCameraOnHit(scene);
-
-    // === 🔥 자동 제거 ===
-    scene.time.delayedCall(1500, () => {
-      if (b && b.active) b.destroy();
-    });
-
-    scene.textBar = `Fireball (Lv${this.level})`;
+            scene.time.delayedCall(800, () => {
+            if (b && b.active) b.destroy();
+            });
+          })
+        }
+    })
   }
 }

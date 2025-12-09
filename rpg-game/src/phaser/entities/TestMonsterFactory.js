@@ -4,9 +4,9 @@ import { CFG } from "../config/Config.js";
 /** 몬스터 레벨 별 수치 변동 */
 export function makeMonsterStats(def, scene) {
   const level = Phaser.Math.Between(scene.minLevel, scene.maxLevel);
-  const maxHp = Math.floor(def.baseHP * Math.pow(level, def.growthHP));
+  const maxHp = Math.floor(def.baseHP * Math.pow(def.growthHP, level));
   const atk = Math.floor(def.baseAtk * Math.pow(def.growthAtk, level));
-  const expRw = Math.floor(def.baseExp * Math.pow(level, def.growthExp));
+  const expRw = Math.floor(def.baseExp * Math.pow(def.growthExp, level));
   return { level, maxHp, atk, expReward: expRw };
 }
 

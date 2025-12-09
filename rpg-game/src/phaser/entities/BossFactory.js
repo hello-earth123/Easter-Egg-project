@@ -6,9 +6,9 @@ import { Heap } from 'heap-js';
 /** 몬스터 레벨 별 수치 변동 */
 export function makeMonsterStats(def, scene) {
   const level = Phaser.Math.Between(scene.minLevel, scene.maxLevel);
-  const maxHp = Math.floor(def.baseHP * Math.pow(level, def.growthHP));
+  const maxHp = Math.floor(def.baseHP * Math.pow(def.growthHP, level));
   const atk = Math.floor(def.baseAtk * Math.pow(def.growthAtk, level));
-  const expRw = Math.floor(def.baseExp * Math.pow(level, def.growthExp));
+  const expRw = Math.floor(def.baseExp * Math.pow(def.growthExp, level));
   return { level, maxHp, atk, expReward: expRw };
 }
 
@@ -97,8 +97,10 @@ export function spawnBoss(scene, boss) {
 
         BossInstance.setCollideWorldBounds(true);
 
-        // BossInstance.nextPattern.push(1);
+        // 초기화용 함수 만들 것
         // BossInstance.nextPattern.push(999);
+        // BossInstance.nextPattern.push(1);
+        BossInstance.nextPattern.push(2);
       });
     })
 }
@@ -113,6 +115,10 @@ function CastSkill(skill, scene){
         case 1:
             BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
             cooltime(scene, 1, 50);
+            break;
+        case 2:
+            BossInstance.patternSet['fireshoot'].tryCast(scene, BossInstance);
+            cooltime(scene, 2, 40);
             break;
     }
 }
