@@ -897,19 +897,26 @@ export default class BossScene extends Phaser.Scene {
             null,
             this
         );
+        this.physics.add.collider(
+            this.player,
+            this.boss,
+            this.onPlayerHitByMonster,
+            null,
+            this
+        );
+        this.physics.add.overlap(
+            this.bullets,
+            this.boss,
+            this.onBulletHitB,
+            null,
+            this
+        );
 
         // 충돌 이벤트 정의
         this.physics.add.collider(this.monsters, this.monsters);
         this.physics.add.collider(
             this.player,
             this.monsters,
-            this.onPlayerHitByMonster,
-            null,
-            this
-        );
-        this.physics.add.collider(
-            this.player,
-            this.boss,
             this.onPlayerHitByMonster,
             null,
             this
@@ -1504,6 +1511,49 @@ export default class BossScene extends Phaser.Scene {
         }
     }
 
+    onBulletHitB = (bullet, monster) => {
+        if (!bullet || !bullet.active || !monster || !monster.active) return;
+
+        // 중복 히트/재귀 방지를 위해 먼저 비활성화
+        if (bullet.body) bullet.body.enable = false;
+
+        const surventC = this.monsters.getLength();
+        console.log(surventC, '1111111111111111');
+
+        // 몬스터 체력 감소 및 피격 이펙트 출력
+        const dmg = bullet.damage - (bullet.damage * surventC / 10);
+        monster.hp -= dmg;
+        this.spawnHitFlash(monster.x, monster.y);
+
+        // 데미지 출력
+        // (크리티컬 판정 로직이 있는 경우에)
+        // if (isCritical) {
+        //   this.showDamageText(monster, damage, "#ffff66"); // 노란색
+        // } else {
+        //   this.showDamageText(monster, damage, "#ffffff");
+        // }
+        this.showDamageText(monster, dmg, "#ffff66");
+        // 몬스터 피격 sound
+        this.SoundManager.playMonsterHit();
+
+        // 몬스터 어그로
+        this.onMonsterAggro(monster);
+
+        // Defensive Code of onHit function
+        try {
+            // 공격의 onHit 함수 실행
+            if (typeof bullet.onHit === "function") bullet.onHit(monster);  // 왜 monster? scene 아니고?
+        } catch (err) {
+            // onHit 함수 실행 중 오류가 발생해도 게임 정지 대신 오류 메세지만 출력
+            console.error("[onHit error]", err);
+        }
+
+        // 도트 데미지
+        if (bullet.dot) this.applyDot(monster, bullet.dot);
+
+        bullet.destroy();
+    };
+
     /** 몬스터 피격 구현 */
     onBulletHit = (bullet, monster) => {
         if (!bullet || !bullet.active || !monster || !monster.active) return;
@@ -1533,7 +1583,7 @@ export default class BossScene extends Phaser.Scene {
         // Defensive Code of onHit function
         try {
             // 공격의 onHit 함수 실행
-            if (typeof bullet.onHit === "function") bullet.onHit(monster);
+            if (typeof bullet.onHit === "function") bullet.onHit(monster);  // 왜 monster? scene 아니고?
         } catch (err) {
             // onHit 함수 실행 중 오류가 발생해도 게임 정지 대신 오류 메세지만 출력
             console.error("[onHit error]", err);
@@ -2200,26 +2250,48 @@ updateMonsterWander(monster, now) {
      * FireBomb, Meteor, Deathhand 등이 사용
      */
     damageArea({ x, y, radius, dmg, onHit }) {
-        if (!this.monsters) return;
+        if (!this.monsters || !this.boss) return;
 
         let hitSomething = false;
 
-        this.monsters.children.iterate((monster) => {
-            if (!monster || !monster.active) return;
+        if (this.monsters){
+            this.monsters.children.iterate((monster) => {
+                if (!monster || !monster.active) return;
 
-            const dx = monster.x - x;
-            const dy = monster.y - y;
-            if (dx * dx + dy * dy > radius * radius) return;
+                const dx = monster.x - x;
+                const dy = monster.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
 
-            monster.hp -= dmg;
-            this.showDamageText(monster, dmg, "#ffff66");
-            if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
-            if (typeof this.onMonsterAggro === "function") {
-                this.onMonsterAggro(monster);
-            }
+                monster.hp -= dmg;
+                this.showDamageText(monster, dmg, "#ffff66");
+                if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
+                if (typeof this.onMonsterAggro === "function") {
+                    this.onMonsterAggro(monster);
+                }
 
-            hitSomething = true;
-        });
+                hitSomething = true;
+            });
+        }
+        if (this.boss){
+            this.boss.children.iterate((b) => {
+                if (!b || !b.active) return;
+
+                const dx = b.x - x;
+                const dy = b.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
+
+                const servuntC = this.monsters.getLength();
+                dmg -= (dmg * servuntC / 10);
+                b.hp -= dmg;
+                this.showDamageText(b, dmg, "#ffff66");
+                if (this.spawnHitFlash) this.spawnHitFlash(b.x, b.y);
+                if (typeof this.onMonsterAggro === "function") {
+                    this.onMonsterAggro(b);
+                }
+
+                hitSomething = true;
+            });
+        }
 
         if (hitSomething && typeof onHit === "function") {
             onHit();
@@ -2231,7 +2303,7 @@ updateMonsterWander(monster, now) {
      * FlameA / FlameB / FlameC 에서 사용
      */
     applyDotArea({ x, y, radius, tickDmg, duration, interval = 400 }) {
-        if (!this.monsters) return;
+        if (!this.monsters || !this.boss) return;
 
         const dot = {
             duration,
@@ -2239,15 +2311,34 @@ updateMonsterWander(monster, now) {
             damage: tickDmg,
         };
 
-        this.monsters.children.iterate((monster) => {
-            if (!monster || !monster.active) return;
+        if (this.monsters){
+            this.monsters.children.iterate((monster) => {
+                if (!monster || !monster.active) return;
 
-            const dx = monster.x - x;
-            const dy = monster.y - y;
-            if (dx * dx + dy * dy > radius * radius) return;
+                const dx = monster.x - x;
+                const dy = monster.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
 
-            this.applyDot(monster, dot);
-        });
+                this.applyDot(monster, dot);
+            });
+        }
+        
+        if(this.boss){
+            this.boss.children.iterate((b) => {
+                if (!b || !b.active) return;
+
+                const dx = b.x - x;
+                const dy = b.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
+
+                const servuntC = this.monsters.getLength();
+                let dmg = dot.damage;
+                dmg -= (dmg * servuntC / 10);
+                dot.damage = dmg;
+
+                this.applyDot(b, dot);
+            });
+        }
     }
 
     /**
@@ -2311,38 +2402,72 @@ updateMonsterWander(monster, now) {
      * length = 전방 거리(px)
      */
     damageRectangle({ originX, originY, dir, width, height, length, dmg, onHit }) {
-        if (!this.monsters) return;
+        if (!this.monsters || !this.boss) return;
 
         const nx = dir.x;
         const ny = dir.y;
 
         let hitSomething = false;
 
-        this.monsters.children.iterate((monster) => {
-            if (!monster || !monster.active) return;
+        if (this.monsters){
+            this.monsters.children.iterate((monster) => {
+                if (!monster || !monster.active) return;
 
-            const vx = monster.x - originX;
-            const vy = monster.y - originY;
+                const vx = monster.x - originX;
+                const vy = monster.y - originY;
 
-            const t = vx * nx + vy * ny;
-            if (t < 0 || t > length) return;
+                const t = vx * nx + vy * ny;
+                if (t < 0 || t > length) return;
 
-            const px = nx * t;
-            const py = ny * t;
-            const lx = vx - px;
-            const ly = vy - py;
+                const px = nx * t;
+                const py = ny * t;
+                const lx = vx - px;
+                const ly = vy - py;
 
-            const halfW = width * 0.5;
-            if ((lx * lx + ly * ly) > (halfW * halfW)) return;
+                const halfW = width * 0.5;
+                if ((lx * lx + ly * ly) > (halfW * halfW)) return;
 
-            this.showDamageText(monster, dmg, "#ffff66");
-            // 🔥 데미지 적용
-            monster.hp -= dmg;
-            if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
-            this.onMonsterAggro(monster);
+                this.showDamageText(monster, dmg, "#ffff66");
+                // 🔥 데미지 적용
+                monster.hp -= dmg;
+                if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
+                this.onMonsterAggro(monster);
 
-            hitSomething = true;
-        });
+                hitSomething = true;
+            });
+        }
+
+        if (this.boss){
+            this.boss.children.iterate((b) => {
+                if (!b || !b.active) return;
+
+                const vx = b.x - originX;
+                const vy = b.y - originY;
+
+                const t = vx * nx + vy * ny;
+                if (t < 0 || t > length) return;
+
+                const px = nx * t;
+                const py = ny * t;
+                const lx = vx - px;
+                const ly = vy - py;
+
+                const halfW = width * 0.5;
+                if ((lx * lx + ly * ly) > (halfW * halfW)) return;
+                
+                const servuntC = this.monsters.getLength();
+                dmg -= (dmg * servuntC / 10);
+
+                this.showDamageText(b, dmg, "#ffff66");
+                // 🔥 데미지 적용
+                b.hp -= dmg;
+                if (this.spawnHitFlash) this.spawnHitFlash(b.x, b.y);
+                this.onMonsterAggro(b);
+
+                hitSomething = true;
+            });
+        }
+        
 
         // 🔥 명중했으면 onHit() 실행 (카메라 흔들림, 스킬 중단 등)
         if (hitSomething && typeof onHit === "function") {

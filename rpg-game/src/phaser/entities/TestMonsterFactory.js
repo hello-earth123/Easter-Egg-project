@@ -5,7 +5,7 @@ import { CFG } from "../config/Config.js";
 export function makeMonsterStats(def, scene) {
   const level = Phaser.Math.Between(scene.minLevel, scene.maxLevel);
   const maxHp = Math.floor(def.baseHP * Math.pow(level, def.growthHP));
-  const atk = Math.floor(def.baseAtk * Math.pow(level, def.growthAtk));
+  const atk = Math.floor(def.baseAtk * Math.pow(def.growthAtk, level));
   const expRw = Math.floor(def.baseExp * Math.pow(level, def.growthExp));
   return { level, maxHp, atk, expReward: expRw };
 }

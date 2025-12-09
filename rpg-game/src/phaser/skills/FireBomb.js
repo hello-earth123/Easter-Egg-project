@@ -38,7 +38,7 @@ export class FireBomb extends FireSkillBase {
       if (!damageApplied && frame.index === 9) {
         damageApplied = true;
 
-        const dmg = this.getDamage();
+        let dmg = this.getDamage();
 
         scene.monsters.children.iterate(mon => {
           if (!mon || !mon.active) return;
@@ -54,6 +54,26 @@ export class FireBomb extends FireSkillBase {
           scene.spawnHitFlash(mon.x, mon.y);
           scene.onMonsterAggro(mon);
         });
+
+        if (scene.boss){
+          scene.boss.children.iterate(b => {
+            if (!b || !b.active) return;
+
+            const dx = b.x - x;
+            const dy = b.y - y;
+            if (dx * dx + dy * dy > radius * radius) return;
+
+            didHitMonster = true;
+
+            const servuntC = scene.monsters.getLength();
+            dmg -= (dmg * servuntC / 10);
+
+            scene.showDamageText(b, dmg, "#ffff66");
+            b.hp -= dmg;
+            scene.spawnHitFlash(b.x, b.y);
+            scene.onMonsterAggro(b);
+          });
+        }
 
         if (didHitMonster) {
           this.shakeCameraOnHit(scene);

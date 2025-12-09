@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 import { spawnMonsters } from "../entities/TestMonsterFactory.js";
 import { BossPatternBase } from "./BossPatternBase";
 
@@ -8,7 +9,8 @@ export class Summons extends BossPatternBase {
     // 예고 이펙트 추가
 
     scene.time.delayedCall(500, () => {
-        spawnMonsters(scene);
+      scene.monsters.clear(true, true);
+      spawnMonsters(scene);
     })
   }
 }
