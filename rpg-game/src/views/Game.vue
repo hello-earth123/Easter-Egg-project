@@ -138,6 +138,14 @@
         </div>
       </div>
       
+      <!-- 🔥 맵 이름 표시 -->
+      <div
+        v-if="showMapTitle"
+        class="map-title-banner"
+      >
+        {{ currentMapTitle }}
+      </div>
+
       <!-- 🔥 컷씬 대화 UI -->
       <DialogueUI ref="dialogue" />
 
@@ -614,6 +622,12 @@ export default {
       playerLevel: 100,
       skillPoints: 0, // 씬에서 들어오긴 하지만, 실제 UI는 playerLevel 기반 계산 사용
 
+
+      // 맵 표시
+      currentMapTitle: "",
+      showMapTitle: false,
+      mpaTitleTimer: null,
+
       // 스텟창 플레이어
       playerSpriteSheet: "/static/assets/player.png",
       playerFrameIndex: 0, // 무조건 0번 고정
@@ -1040,6 +1054,12 @@ export default {
         s.scene.isActive()
       );
       this.scene = main;
+      
+      // 맵 이름 띄우기
+      if (main.mapName && this.currentMapTitle !== main.mapName) {
+          this.currentMapTitle = main.mapName;
+          this.triggerMapTitle(); // 맵 이름 띄우기
+      }
 
       if (!main || !main.playerStats) return;
 
@@ -1206,6 +1226,18 @@ export default {
         this.gemUsage.luck,
       ];
       this.gemBarChart.update();
+    },
+
+    // 맵 이름 띄우기
+    triggerMapTitle() {
+      this.showMapTitle = true;
+
+      if (this.mapTitleTimer) clearTimeout(this.mapTitleTimer);
+
+      // 2.2초 후 자연스럽게 사라짐
+      this.mapTitleTimer = setTimeout(() => {
+        this.showMapTitle = false;
+      }, 2200);
     },
 
 
@@ -2215,6 +2247,37 @@ export default {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.85);
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ===================== 맵 이름 ===================== */
+.map-title-banner {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  padding: 8px 22px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #fff2cc;
+
+  font-family: "Press Start 2P", monospace; /* 픽셀 느낌 폰트 */
+  text-shadow: 3px 3px #000;
+
+  background: rgba(0,0,0,0.45);
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+
+  animation: mapTitleFade 2.2s ease-out forwards;
+  z-index: 99999;
+  pointer-events: none;
+}
+
+@keyframes mapTitleFade {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  15%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  85%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
 }
 
 /* ===================== 모달 공통 ===================== */
