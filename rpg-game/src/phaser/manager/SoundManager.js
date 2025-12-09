@@ -33,8 +33,14 @@ export default class SoundManager {
     // 현재 재생 중인 BGM
     this.currentBgm = null;
 
+    // BGM 페이드용 interval 핸들
+    this._bgmFadeInterval = null;
+
     // 마스터 볼륨은 phaser sound manager의 volume으로
     this.sound.volume = this.masterVolume;
+
+    // 기본 페이드 시간(ms)
+    this.fadeDuration = 700;
 
     // 필요하면 localStorage에서 불러오기도 가능
     this._loadFromStorage();
@@ -62,9 +68,12 @@ export default class SoundManager {
       const raw = localStorage.getItem("game_sound_settings");
       if (!raw) return;
       const data = JSON.parse(raw);
-      if (typeof data.master === "number") this.masterVolume = this._clampVolume(data.master);
-      if (typeof data.bgm === "number") this.bgmVolume = this._clampVolume(data.bgm);
-      if (typeof data.sfx === "number") this.sfxVolume = this._clampVolume(data.sfx);
+      if (typeof data.master === "number")
+        this.masterVolume = this._clampVolume(data.master);
+      if (typeof data.bgm === "number")
+        this.bgmVolume = this._clampVolume(data.bgm);
+      if (typeof data.sfx === "number")
+        this.sfxVolume = this._clampVolume(data.sfx);
       this.sound.volume = this.masterVolume;
     } catch (e) {
       // 실패해도 무시
@@ -103,39 +112,121 @@ export default class SoundManager {
   }
 
   /* =========================
-   *  BGM 관련
+   *  BGM 페이드 유틸
+   * ========================= */
+
+  /** 내부용: 이전 페이드 interval 정리 */
+  _clearFadeInterval() {
+    if (this._bgmFadeInterval) {
+      clearInterval(this._bgmFadeInterval);
+      this._bgmFadeInterval = null;
+    }
+  }
+
+  /** 🔥 BGM 페이드아웃 후 정지 */
+  fadeOutBgm(onComplete) {
+    if (!this.currentBgm) {
+      if (onComplete) onComplete();
+      return;
+    }
+
+    this._clearFadeInterval();
+
+    const bgm = this.currentBgm;
+    const duration = this.fadeDuration;
+    const stepMs = 40; // 25fps 느낌
+    const steps = Math.max(1, Math.floor(duration / stepMs));
+    let currentStep = 0;
+    const startVolume = bgm.volume; // 현재 볼륨 기준에서 서서히 줄임
+
+    this._bgmFadeInterval = setInterval(() => {
+      currentStep++;
+      const t = currentStep / steps; // 0 → 1
+      const v = startVolume * (1 - t); // 1 → 0
+      bgm.setVolume(Math.max(0, v));
+
+      if (currentStep >= steps) {
+        this._clearFadeInterval();
+        bgm.stop();
+        bgm.destroy();
+        if (this.currentBgm === bgm) {
+          this.currentBgm = null;
+        }
+        if (onComplete) onComplete();
+      }
+    }, stepMs);
+  }
+
+  /** 🔥 페이드인 BGM */
+  fadeInBgm(key, config = {}) {
+    this._clearFadeInterval();
+
+    const bgm = this.sound.add(key, {
+      loop: true,
+      volume: 0,
+      ...config,
+    });
+
+    this.currentBgm = bgm;
+    bgm.play();
+
+    const duration = this.fadeDuration;
+    const stepMs = 40;
+    const steps = Math.max(1, Math.floor(duration / stepMs));
+    let currentStep = 0;
+    const targetVolume = this.bgmVolume; // 슬라이더에서 설정한 BGM 볼륨까지 올림
+
+    this._bgmFadeInterval = setInterval(() => {
+      // 중간에 다른 BGM으로 바뀌었으면 멈춤
+      if (this.currentBgm !== bgm) {
+        this._clearFadeInterval();
+        return;
+      }
+
+      currentStep++;
+      const t = currentStep / steps; // 0 → 1
+      const v = targetVolume * t;
+      bgm.setVolume(v);
+
+      if (currentStep >= steps) {
+        this._clearFadeInterval();
+        bgm.setVolume(targetVolume);
+      }
+    }, stepMs);
+  }
+
+  /* =========================
+   *  BGM 관련 (외부에서 호출)
    * ========================= */
 
   /**
-   * BGM 재생 (이전 BGM은 자동 stop)
+   * BGM 재생 (이전 BGM은 자동 페이드 아웃)
    * @param {string} key - preload에서 등록한 오디오 키
    * @param {object} config
    */
   playBgm(key, config = {}) {
     if (!this.sound) return;
 
-    // 같은 곡이면 그냥 리턴해도 됨
+    // 같은 곡이면 다시 재생 X
     if (this.currentBgm && this.currentBgm.key === key) {
       return;
     }
 
+    const startNew = () => {
+      this.fadeInBgm(key, config);
+    };
+
     if (this.currentBgm) {
-      this.currentBgm.stop();
-      this.currentBgm.destroy();
-      this.currentBgm = null;
+      // 이전 BGM을 서서히 줄이고, 끝나면 새 BGM 페이드인
+      this.fadeOutBgm(startNew);
+    } else {
+      // 처음 재생이라면 바로 페이드인
+      startNew();
     }
-
-    const bgm = this.sound.add(key, {
-      loop: true,
-      volume: this.bgmVolume,
-      ...config,
-    });
-
-    bgm.play();
-    this.currentBgm = bgm;
   }
 
   stopBgm() {
+    this._clearFadeInterval();
     if (this.currentBgm) {
       this.currentBgm.stop();
       this.currentBgm.destroy();
@@ -263,6 +354,6 @@ export default class SoundManager {
 
   // 14. 플레이어 사망
   playDeath() {
-    this.playSfx("player_death")
+    this.playSfx("player_death");
   }
 }
