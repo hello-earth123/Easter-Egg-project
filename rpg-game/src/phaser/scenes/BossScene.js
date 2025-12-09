@@ -1729,6 +1729,13 @@ export default class BossScene extends Phaser.Scene {
 
         this.textBar = "적에게 피격!";
 
+        if (this.boss){
+                this.boss.children.iterate(m => {
+                    m.setVelocity(0, 0);
+                    m.body.immovable = true;
+                })
+            }
+
         // 사망 체크
         if (this.playerStats.hp <= 0) {
 
@@ -2154,6 +2161,31 @@ updateMonsterWander(monster, now) {
             // 이름 출력
             if (m.label) m.label.setPosition(m.x - w / 2, y - 14);
         });
+
+        if (this.boss){
+           this.boss.children.iterate((m) => {
+                if (!m) return;
+
+                const g = m.hpBar;
+                if (!g) return;
+                // 이전 프레임의 체력바를 지움
+                g.clear();
+
+                // 활동 중인 몬스터인 경우에만 아래 출력 - TODO: 몬스터 동작 함수 쪽으로 편입
+                if (!m.active) return;
+
+                // 체력바 출력
+                const w = 56,
+                    h = 6;
+                const x = m.x - w / 2,
+                    y = m.y - 34;
+                g.fillStyle(0x000000, 0.6).fillRect(x, y, w, h);
+                const pct = clamp01(m.hp / m.maxHp);
+                g.fillStyle(0xff3333, 1).fillRect(x + 1, y + 1, (w - 2) * pct, h - 2);
+                // 이름 출력
+                if (m.label) m.label.setPosition(m.x - w / 2, y - 14);
+            }); 
+        }
     }
 
     /** 몬스터 사망 */

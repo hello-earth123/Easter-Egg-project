@@ -7,7 +7,7 @@ import { Heap } from 'heap-js';
 export function makeMonsterStats(def, scene) {
   const level = Phaser.Math.Between(scene.minLevel, scene.maxLevel);
   const maxHp = Math.floor(def.baseHP * Math.pow(level, def.growthHP));
-  const atk = Math.floor(def.baseAtk * Math.pow(level, def.growthAtk));
+  const atk = Math.floor(def.baseAtk * Math.pow(def.growthAtk, level));
   const expRw = Math.floor(def.baseExp * Math.pow(level, def.growthExp));
   return { level, maxHp, atk, expReward: expRw };
 }
@@ -97,8 +97,8 @@ export function spawnBoss(scene, boss) {
 
         BossInstance.setCollideWorldBounds(true);
 
-        BossInstance.nextPattern.push(1);
-        BossInstance.nextPattern.push(999);
+        // BossInstance.nextPattern.push(1);
+        // BossInstance.nextPattern.push(999);
       });
     })
 }
@@ -129,7 +129,7 @@ export function ChooseNextSkill(scene){
 
     const pattern = BossInstance.nextPattern.pop();
 
-    // CastSkill(pattern, scene);
+    CastSkill(pattern, scene);
 
     // if monster.name == coffin && monster.hp == 0, this.spawnBoss(scene, 'vampire')
 }
