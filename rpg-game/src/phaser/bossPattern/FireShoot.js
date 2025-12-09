@@ -12,15 +12,15 @@ export class FireShoot extends BossPatternBase {
     const dir = getDir(caster);
 
     // 발사 시작 위치
-    const sx = caster.x + dir.x * 20;
-    const sy = caster.y + dir.y * 20;
+    const sx = caster.x;
+    const sy = caster.y;
 
     const baseAngle = Math.atan2(dir.y, dir.x);
 
     // 실 패턴 사용
     scene.time.delayedCall(500, () => {
-        for(let i=0; i<50; i++){
-          scene.time.delayedCall(i * 50, () => {
+        for(let i=0; i<100; i++){
+          scene.time.delayedCall(i * 30, () => {
             const b = scene.pattern.create(sx, sy, "fireball");
             b.setOrigin(0.5);
 
@@ -29,7 +29,7 @@ export class FireShoot extends BossPatternBase {
 
             b.play("fireball");
 
-            const angle = baseAngle + (i * 15);
+            const angle = baseAngle + (i * 13);
             const dx = Math.cos(angle);
             const dy = Math.sin(angle);
 
