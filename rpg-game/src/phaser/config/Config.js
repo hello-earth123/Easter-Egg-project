@@ -43,10 +43,18 @@ export const CFG = {
     costPerLevel: 0.1,
   },
 
+  // ============ BOSS PATTERN ============
   thunder: {
     scale: 2.0,
     baseDmg: 3000,
   },
+
+  fireshoot: {
+    scale: 3.0,
+    baseDmg: 500,
+    speed: 500,
+  },
+  // ======================================
 
   // ============================
   // 🔥 Fire 스킬 설정
