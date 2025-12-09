@@ -36,6 +36,8 @@ import Jail from "../scenes/super/Jail";
 import CenterEntrance from "../scenes/super/CenterEntrance";
 import Center from "../scenes/super/Center";
 
+import BossScene from "../scenes/BossScene";
+
 export const sceneMap = {
   // low =======================
   CastleWall,
@@ -79,7 +81,9 @@ export const sceneMap = {
   RitualRoom,
   Jail,
   CenterEntrance,
-  Center
+  Center,
+
+  BossScene
 };
 
 export let currentScene = null;

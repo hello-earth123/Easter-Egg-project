@@ -580,6 +580,7 @@ import { increaseStat, resetStat } from "../phaser/player/PlayerStats.js";
 import { saveGame } from "../phaser/manager/saveManager.js";
 import SoundManager from "../phaser/manager/SoundManager.js";
 import DialogueUI from "../phaser/ui/DialogueUI.vue";
+import BossScene from "../phaser/scenes/BossScene.js";
 
 /* Chart.js Radar import */
 import {
@@ -993,7 +994,8 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      scene: Object.values(sceneMap),
+      // scene: Object.values(sceneMap),
+      scene: [BossScene],
     };
 
     const game = new Phaser.Game(config);
