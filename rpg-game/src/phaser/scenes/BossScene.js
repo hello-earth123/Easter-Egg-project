@@ -1021,6 +1021,8 @@ export default class BossScene extends Phaser.Scene {
         createBossPattern(this);
 
         this.count = 0;
+        // === 보스 HP UI 생성 ===
+        this.initBossHpUI();
 
         // === 포탈 생성(애니메이션) ===
         this.portal = this.physics.add.sprite(1400, 600, "portal");
@@ -1128,6 +1130,7 @@ export default class BossScene extends Phaser.Scene {
 
             { cmd: "end" }
         ];
+
 
         // 씬 로딩 0.5초 후 자동 실행
         // this.time.delayedCall(500, () => {
@@ -1315,6 +1318,8 @@ export default class BossScene extends Phaser.Scene {
         }
 
 
+
+
         // if (this.count >= 300) {
         //     this.scene.start('TestScene3');
         // }
@@ -1338,6 +1343,8 @@ export default class BossScene extends Phaser.Scene {
                 this.interactText.setVisible(false);
             }
         }
+
+        this.updateBossHpUI();
     }
 
     handleMovement() {
@@ -2004,8 +2011,6 @@ export default class BossScene extends Phaser.Scene {
     }
 
 
-
-
     /** 도트 데미지 스킬 적용 */
     applyDot(monster, dot) {
         // 틱 수 설정
@@ -2023,6 +2028,128 @@ export default class BossScene extends Phaser.Scene {
             });
         }
     }
+
+    /** 보스 HP UI */
+    initBossHpUI() {
+        this.bossHpUI = {};
+
+        // === 배경판 (짙은 남색, 도트게임 감성) ===
+        this.bossHpUI.bg = this.add.rectangle(
+            this.cameras.main.width / 2,
+            26,
+            240,
+            18,
+            0x1a1c2c, // 도트 rpg 감성 남색
+            1
+        )
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(9999);
+
+        // === 테두리 (연한 회색 픽셀 느낌 라인) ===
+        this.bossHpUI.border = this.add.rectangle(
+            this.cameras.main.width / 2,
+            26,
+            244,
+            22,
+            0x000000,
+            0 // 색 없음 → stroke만 사용
+        )
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setStrokeStyle(2, 0x737373) // 픽셀 UI 라인 느낌
+        .setDepth(9999);
+
+        // === HP 바 (OLD RPG 레드) ===
+        this.bossHpUI.bar = this.add.rectangle(
+            this.cameras.main.width / 2 - 118,
+            26,
+            236,
+            10,
+            0xff3b30 // 레트로 레드
+        )
+        .setOrigin(0, 0.5)
+        .setScrollFactor(0)
+        .setDepth(10000);
+
+        // === 보스 이름 (작고 도트 느낌 폰트) ===
+        this.bossHpUI.nameText = this.add.text(
+            this.cameras.main.width / 2,
+            12,
+            "???",
+            {
+                fontFamily: "Courier, monospace", // 도트 느낌
+                fontSize: "14px",
+                color: "#ffffff",
+                stroke: "#000000",
+                strokeThickness: 3
+            }
+        )
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(10000);
+
+        // === HP 숫자 (HP바 바로 밑에 붙여 넣기) ===
+        this.bossHpUI.hpText = this.add.text(
+            this.cameras.main.width / 2,
+            38,
+            "0 / 0",
+            {
+                fontFamily: "Courier, monospace",
+                fontSize: "13px",
+                color: "#e8e8e8",
+                stroke: "#000000",
+                strokeThickness: 3
+            }
+        )
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(10000);
+
+        // 초기에는 숨겨놓기
+        this.toggleBossHpUI(false);
+    }
+
+    /** UI 숨김/표시 */
+    toggleBossHpUI(visible) {
+        const ui = this.bossHpUI;
+        ui.bg.setVisible(visible);
+        ui.border.setVisible(visible);
+        ui.bar.setVisible(visible);
+        ui.hpText.setVisible(visible);
+        ui.nameText.setVisible(visible);
+    }
+
+    /** 매 프레임 보스 HP UI 갱신 */
+    updateBossHpUI() {
+        if (!this.boss) {
+            this.toggleBossHpUI(false);
+            return;
+        }
+
+        const boss = this.boss.getFirstAlive();
+        if (!boss) {
+            this.toggleBossHpUI(false);
+            return;
+        }
+
+        // --- 표시 ---
+        this.toggleBossHpUI(true);
+
+        const hp = Math.max(0, boss.hp);
+        const maxHp = boss.maxHp || 1;
+
+        // HP bar 길이 갱신
+        const ratio = Phaser.Math.Clamp(hp / maxHp, 0, 1);
+        this.bossHpUI.bar.width = 236 * ratio;
+
+        // 이름
+        this.bossHpUI.nameText.setText(boss.displayName || boss.name || "BOSS");
+
+        // 숫자 (30 / 100)
+        this.bossHpUI.hpText.setText(`${hp} / ${maxHp}`);
+    }
+
 
     /** 어그로 생성 */
     onMonsterAggro(monster) {
@@ -2135,6 +2262,10 @@ updateMonsterWander(monster, now) {
     if (vx < -0.1) monster.flipX = false;
     else if (vx > 0.1) monster.flipX = true;
 }
+
+
+
+
 
     /** 몬스터 체력바, 이름 출력 */
     updateMonsterHud() {
