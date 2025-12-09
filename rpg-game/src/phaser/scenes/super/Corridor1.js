@@ -2221,7 +2221,7 @@ export default class Corridor1 extends Phaser.Scene {
 
         // ⭐ 포탈 → 목적지 씬 매핑 테이블
         const portalToScene = {
-            south: "Hall2",
+            south: "Hall1",
             north: "RitualRoom"
         };
 
