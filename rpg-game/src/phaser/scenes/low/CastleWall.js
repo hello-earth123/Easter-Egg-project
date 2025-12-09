@@ -62,11 +62,7 @@ export default class CastleWall extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            
         };
 
         this.minLevel = 1;

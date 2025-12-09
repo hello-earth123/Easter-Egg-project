@@ -129,7 +129,7 @@ export function ChooseNextSkill(scene){
 
     const pattern = BossInstance.nextPattern.pop();
 
-    CastSkill(pattern, scene);
+    // CastSkill(pattern, scene);
 
     // if monster.name == coffin && monster.hp == 0, this.spawnBoss(scene, 'vampire')
 }
