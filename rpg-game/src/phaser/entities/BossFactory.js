@@ -112,7 +112,7 @@ function CastSkill(skill, scene){
             break;
         case 1:
             BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
-            cooltime(scene, 1, 5);
+            cooltime(scene, 1, 50);
             break;
     }
 }
