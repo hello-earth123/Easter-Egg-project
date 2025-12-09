@@ -298,7 +298,7 @@ export default class CemeteryEntrance extends Phaser.Scene {
         
         // ==================== 사운드 ========================
         // BGM
-        this.load.audio("bgm_field", "/static/assets/sound/background/bgm_field.wav");
+        this.load.audio("bgm_cemetery", "/static/assets/sound/background/bgm_cemetery.wav");
 
         // 몬스터/플레이어 관련
         this.load.audio("monster_hit", "/static/assets/sound/effects/monster_hit.wav");
@@ -360,9 +360,10 @@ export default class CemeteryEntrance extends Phaser.Scene {
         this.footstepCooldown = 0;
         this.FOOTSTEP_INTERVAL = 315; // 발소리 사운드 간격 (ms)
         this.isMoving = false;        // 이동 여부 flag
-
+        this.mapName = "음산한 무덤가"; // 맵 이름
+        this.showMapName = true;      // ← 맵 도착 시 한 번 표시해야 함
         // 1. 씬 BGM
-        this.SoundManager.playBgm("bgm_field")
+        this.SoundManager.playBgm("bgm_cemetery")
 
         // ================== 씬 포탈 sprite ======================
         // 2. 포탈
