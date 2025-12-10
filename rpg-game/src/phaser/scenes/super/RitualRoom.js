@@ -155,6 +155,11 @@ export default class RitualRoom extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16,
         });
+        // colossus
+        this.load.spritesheet("colossus", "/static/assets/monsters/colossus.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
         // dwarf
         this.load.spritesheet("dwarf", "/static/assets/monsters/dwarf.png", {
             frameWidth: 16,
@@ -2244,7 +2249,7 @@ export default class RitualRoom extends Phaser.Scene {
         const portalToScene = {
             east:  "Corridor3",
             south: "Corridor1",
-            north: "Jail"
+            north: "Corridor2",
         };
 
         const nextScene = portalToScene[portalId];
