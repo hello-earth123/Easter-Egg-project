@@ -25,7 +25,7 @@ import CutscenePlayer from "../cutscene/CutscenePlayer.js";
 
 
 // testing
-import { spawnBoss, ChooseNextSkill } from "../entities/BossFactory.js";
+import { spawnBoss, ChooseNextSkill, nextPhase } from "../entities/BossFactory.js";
 import { preloadBossPattern } from "../preload/preloadBossPattern.js";
 import { createBossPattern } from "../preload/createBossPattern.js";
 
@@ -289,6 +289,8 @@ export default class BossScene extends Phaser.Scene {
         this.load.audio("dash", "/static/assets/sound/effects/dash.wav");
         this.load.audio("portal", "/static/assets/sound/effects/portal.wav");
         this.load.audio("player_death", "/static/assets/sound/effects/player_death.wav")
+
+        this.load.audio("hassle", "/static/assets/sound/effects/hassle.wav")
 
         // 아이템 관련
         this.load.audio("item_drop", "/static/assets/sound/effects/item_drop.wav");
@@ -888,6 +890,7 @@ export default class BossScene extends Phaser.Scene {
 
         // spawnMonsters(this);
         spawnBoss(this, ['coffin']);
+        this.phaseChange = false;
 
         this.isHassle = false;
 
@@ -1462,19 +1465,24 @@ export default class BossScene extends Phaser.Scene {
         const code = e.code;
         if (!this.lastArrowTap.hasOwnProperty(code)) return;
 
+        let hassle = 1;
+        if (this.isHassle){
+            hassle *= -1;
+        }
+
         // 연속으로 입력 받은 시간이 대쉬를 사용하기 위한 최소 시간 내라면, 대쉬 발동
         const last = this.lastArrowTap[code] || 0;
         this.lastArrowTap[code] = now;
         if (now - last <= CFG.dash.doubleTapWindowMs) {
             const dir =
                 code === "ArrowLeft"
-                    ? new Phaser.Math.Vector2(-1, 0)
+                    ? new Phaser.Math.Vector2(-hassle, 0)
                     : code === "ArrowRight"
-                        ? new Phaser.Math.Vector2(1, 0)
+                        ? new Phaser.Math.Vector2(hassle, 0)
                         : code === "ArrowUp"
-                            ? new Phaser.Math.Vector2(0, -1)
+                            ? new Phaser.Math.Vector2(0, -hassle)
                             : code === "ArrowDown"
-                                ? new Phaser.Math.Vector2(0, 1)
+                                ? new Phaser.Math.Vector2(0, hassle)
                                 : null;
             if (!dir) return;
             this.doDash(dir);
@@ -1567,7 +1575,7 @@ export default class BossScene extends Phaser.Scene {
         console.log(surventC, '1111111111111111');
 
         // 몬스터 체력 감소 및 피격 이펙트 출력
-        const dmg = bullet.damage - (bullet.damage * surventC / 10);
+        const dmg = Math.round(bullet.damage - (bullet.damage * surventC / 10));
         monster.hp -= dmg;
         this.spawnHitFlash(monster.x, monster.y);
 
@@ -2483,7 +2491,7 @@ updateMonsterWander(monster, now) {
                 if (dx * dx + dy * dy > radius * radius) return;
 
                 const servuntC = this.monsters.getLength();
-                dmg -= (dmg * servuntC / 10);
+                dmg -= Math.round(dmg * servuntC / 10);
                 b.hp -= dmg;
                 this.showDamageText(b, dmg, "#ffff66");
                 if (this.spawnHitFlash) this.spawnHitFlash(b.x, b.y);
@@ -2535,7 +2543,7 @@ updateMonsterWander(monster, now) {
 
                 const servuntC = this.monsters.getLength();
                 let dmg = dot.damage;
-                dmg -= (dmg * servuntC / 10);
+                dmg -= Math.round(dmg * servuntC / 10);
                 dot.damage = dmg;
 
                 this.applyDot(b, dot);
@@ -2658,7 +2666,7 @@ updateMonsterWander(monster, now) {
                 if ((lx * lx + ly * ly) > (halfW * halfW)) return;
                 
                 const servuntC = this.monsters.getLength();
-                dmg -= (dmg * servuntC / 10);
+                dmg -= Math.round(dmg * servuntC / 10);
 
                 this.showDamageText(b, dmg, "#ffff66");
                 // 🔥 데미지 적용

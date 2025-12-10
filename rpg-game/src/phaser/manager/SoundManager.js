@@ -356,4 +356,8 @@ export default class SoundManager {
   playDeath() {
     this.playSfx("player_death");
   }
+
+  playHassle() {
+    this.playSfx('hassle');
+  }
 }
