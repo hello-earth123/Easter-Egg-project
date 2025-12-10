@@ -30,7 +30,7 @@ export default {
       const ctx = this.ctx;
 
       const MINI_W = canvas.width = 160;
-      const MINI_H = canvas.height = 160;
+      const MINI_H = canvas.height = 120;
 
       const MAP_W = 1600;
       const MAP_H = 1216;
