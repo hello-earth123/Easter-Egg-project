@@ -101,7 +101,7 @@ export function spawnBoss(scene, boss) {
         // BossInstance.nextPattern.push(999);
         // BossInstance.nextPattern.push(1);
         // BossInstance.nextPattern.push(2);
-        BossInstance.nextPattern.push(3);
+        // BossInstance.nextPattern.push(3);
       });
     })
 }
@@ -111,7 +111,7 @@ function CastSkill(skill, scene){
         // 기본 공격 (추적 번개)
         case 999:
             BossInstance.patternSet['thunder'].tryCast(scene, BossInstance);
-            cooltime(scene, 999, 3);
+            cooltime(scene, 999, 2.5);
             break;
         case 1:
             BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
@@ -119,11 +119,11 @@ function CastSkill(skill, scene){
             break;
         case 2:
             BossInstance.patternSet['fireshoot'].tryCast(scene, BossInstance);
-            cooltime(scene, 2, 40);
+            cooltime(scene, 2, 30);
             break;
         case 3:
             BossInstance.patternSet['hassle'].tryCast(scene, BossInstance);
-            cooltime(scene, 3, 20);
+            cooltime(scene, 3, 40);
             break;
     }
 }
@@ -134,7 +134,7 @@ export function ChooseNextSkill(scene){
 
     BossInstance.isAttack = true;
 
-    scene.time.delayedCall(2500, () => {
+    scene.time.delayedCall(1400, () => {
         BossInstance.isAttack = false;
     })
 
@@ -149,4 +149,8 @@ function cooltime(scene, target, cool){
     scene.time.delayedCall(cool * 1000, () => {
         BossInstance.nextPattern.push(target);
     })
+}
+
+export function nextPhase(scene){
+    spawnBoss(scene, ['vampire']);
 }

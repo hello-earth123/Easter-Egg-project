@@ -66,7 +66,7 @@ export class FireBomb extends FireSkillBase {
             didHitMonster = true;
 
             const servuntC = scene.monsters.getLength();
-            dmg -= (dmg * servuntC / 10);
+            dmg -= Math.round(dmg * servuntC / 10);
 
             scene.showDamageText(b, dmg, "#ffff66");
             b.hp -= dmg;
