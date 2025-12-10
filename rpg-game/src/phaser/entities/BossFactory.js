@@ -92,22 +92,18 @@ export function spawnBoss(scene, boss) {
 
             isAttack: false,
             patternSet: createDefaultPatterns(),
-            nextPattern: new Heap((a, b) => a - b)
+            nextPattern: new Heap((a, b) => a - b),
+            isInit: false,
         });
 
         BossInstance.setCollideWorldBounds(true);
-
-        // 초기화용 함수 만들 것
-        // BossInstance.nextPattern.push(999);
-        // BossInstance.nextPattern.push(1);
-        // BossInstance.nextPattern.push(2);
-        // BossInstance.nextPattern.push(3);
       });
     })
 }
 
 function CastSkill(skill, scene){
-    switch(skill){
+    if (BossInstance.name == 'coffin'){
+        switch(skill){
         // 기본 공격 (추적 번개)
         case 999:
             BossInstance.patternSet['thunder'].tryCast(scene, BossInstance);
@@ -125,10 +121,26 @@ function CastSkill(skill, scene){
             BossInstance.patternSet['hassle'].tryCast(scene, BossInstance);
             cooltime(scene, 3, 40);
             break;
+        }
+    }
+    else{
+        return;
     }
 }
 
+function initPattern(scene){
+    cooltime(scene, 999, 1);
+    cooltime(scene, 1, 17);
+    cooltime(scene, 2, 10);
+    cooltime(scene, 3, 30);
+}
+
 export function ChooseNextSkill(scene){
+    if (!BossInstance.isInit){
+        BossInstance.isInit = true;
+        initPattern(scene);
+    }
+
     if (BossInstance.isAttack) return;
     if (!BossInstance.nextPattern) return;
 
@@ -141,16 +153,10 @@ export function ChooseNextSkill(scene){
     const pattern = BossInstance.nextPattern.pop();
 
     CastSkill(pattern, scene);
-
-    // if monster.name == coffin && monster.hp == 0, this.spawnBoss(scene, 'vampire')
 }
 
 function cooltime(scene, target, cool){
     scene.time.delayedCall(cool * 1000, () => {
         BossInstance.nextPattern.push(target);
     })
-}
-
-export function nextPhase(scene){
-    spawnBoss(scene, ['vampire']);
 }

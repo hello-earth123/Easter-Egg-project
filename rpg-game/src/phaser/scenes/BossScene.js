@@ -25,7 +25,7 @@ import CutscenePlayer from "../cutscene/CutscenePlayer.js";
 
 
 // testing
-import { spawnBoss, ChooseNextSkill, nextPhase } from "../entities/BossFactory.js";
+import { spawnBoss, ChooseNextSkill } from "../entities/BossFactory.js";
 import { preloadBossPattern } from "../preload/preloadBossPattern.js";
 import { createBossPattern } from "../preload/createBossPattern.js";
 
@@ -890,7 +890,6 @@ export default class BossScene extends Phaser.Scene {
 
         // spawnMonsters(this);
         spawnBoss(this, ['coffin']);
-        this.phaseChange = false;
 
         this.isHassle = false;
 
