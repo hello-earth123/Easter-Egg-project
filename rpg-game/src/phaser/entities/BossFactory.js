@@ -100,7 +100,8 @@ export function spawnBoss(scene, boss) {
         // 초기화용 함수 만들 것
         // BossInstance.nextPattern.push(999);
         // BossInstance.nextPattern.push(1);
-        BossInstance.nextPattern.push(2);
+        // BossInstance.nextPattern.push(2);
+        BossInstance.nextPattern.push(3);
       });
     })
 }
@@ -119,6 +120,10 @@ function CastSkill(skill, scene){
         case 2:
             BossInstance.patternSet['fireshoot'].tryCast(scene, BossInstance);
             cooltime(scene, 2, 40);
+            break;
+        case 3:
+            BossInstance.patternSet['hassle'].tryCast(scene, BossInstance);
+            cooltime(scene, 3, 20);
             break;
     }
 }

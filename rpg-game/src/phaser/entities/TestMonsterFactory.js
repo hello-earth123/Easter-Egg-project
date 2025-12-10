@@ -133,72 +133,93 @@ export function spawnMonsters(scene) {
     .then(data => {
       data.forEach((def) => {
         for (let i = 0; i < scene.monsterData[def.name]; i++) {
-          // scene에 몬스터 추가
-          const m = scene.monsters.create(
-            Phaser.Math.Between(200, CFG.world.width - 200),
-            Phaser.Math.Between(200, CFG.world.height - 200),
-            def.name
-          );
+          const sx = Phaser.Math.Between(200, CFG.world.width - 200);
+          const sy = Phaser.Math.Between(200, CFG.world.height - 200);
+          let creatTime = 0;
 
-          // 몬스터 스케일 적용 (sprite만 스케일)
-          const scale = MONSTER_SCALE[def.name] ?? 1.5;
-          m.setScale(scale);
+          if (scene.boss){
+            // 예고 이펙트
+            const radius = MONSTER_SCALE[def.name] * 1.3;
+            const g = scene.add.circle(sx, sy, 6, 0xa30000, 0.9);
+            g.setScale(1);
+            scene.tweens.add({
+              targets: g,
+              scale: radius,
+              alpha: 0.0,
+              duration: 600,
+              onComplete: () => g.destroy(),
+            });
+            creatTime = 700;
+          }
 
-          // Sprite의 실제 렌더링 크기 (scale 이미 반영됨)
-          const w = m.width;
-          const h = m.height;
+          scene.time.delayedCall(creatTime, () => {
+            // scene에 몬스터 추가
+            const m = scene.monsters.create(
+              sx,
+              sy,
+              def.name
+            );
 
-          // 몬스터별 히트박스 정보 가져오기
-          const hb = MONSTER_HITBOX[def.name] ?? { w:0.55, h:0.85, ox:0.225, oy:0.08 };
+            // 몬스터 스케일 적용 (sprite만 스케일)
+            const scale = MONSTER_SCALE[def.name] ?? 1.5;
+            m.setScale(scale);
 
-          // 최종 히트박스 크기
-          const hitW = w * hb.w;
-          const hitH = h * hb.h;
+            // Sprite의 실제 렌더링 크기 (scale 이미 반영됨)
+            const w = m.width;
+            const h = m.height;
 
-          // Body 적용 (sprite에서 벗어나지 않게)
-          m.body.setSize(hitW, hitH);
+            // 몬스터별 히트박스 정보 가져오기
+            const hb = MONSTER_HITBOX[def.name] ?? { w:0.55, h:0.85, ox:0.225, oy:0.08 };
 
-          // 중앙 정렬 offset 적용 (절대 out-of-range 되지 않음)
-          m.body.setOffset(
-              (w - hitW) * 0.5,  // 기존: w * hb.ox
-              (h - hitH) * 0.5   // 기존: h * hb.oy
-          );
+            // 최종 히트박스 크기
+            const hitW = w * hb.w;
+            const hitH = h * hb.h;
 
-          // m.setDisplaySize(64, 64);
+            // Body 적용 (sprite에서 벗어나지 않게)
+            m.body.setSize(hitW, hitH);
 
-          const stats = makeMonsterStats(def, scene);
-          Object.assign(m, {
-            name: def.name,
-            level: stats.level,
-            maxHp: stats.maxHp,
-            hp: stats.maxHp,
-            atk: stats.atk,
-            expReward: stats.expReward,
-            dropTable: def.drop,
-            isAggro: false,
-            isFrozen: false,
-            isKnockback: false,
-            knockbackVel: new Phaser.Math.Vector2(0, 0),
-            hpBar: scene.add.graphics(),
-            label: scene.add.text(0, 0, `Lv${stats.level} ${def.name}`, {
-              fontSize: "12px",
-              fill: "#fff",
-            }),
-            // 🔥 추가: 배회(wander)용 상태값들
-            wanderOriginX: m.x,
-            wanderOriginY: m.y,
-            // “한 칸에서 세 칸” 정도 – 타일 32px 기준으로 대략 32~96
-            wanderRange: Phaser.Math.Between(32, 96),
-            wanderSpeed: Phaser.Math.Between(25, 45),  // 배회 속도
-            wanderTargetX: null,
-            wanderTargetY: null,
-            wanderPauseUntil: 0,
-          });
+            // 중앙 정렬 offset 적용 (절대 out-of-range 되지 않음)
+            m.body.setOffset(
+                (w - hitW) * 0.5,  // 기존: w * hb.ox
+                (h - hitH) * 0.5   // 기존: h * hb.oy
+            );
 
-          // 움직일 수 있는 최대 범위 설정
-          m.setCollideWorldBounds(true);
-          // collider box type > circle
-          // m.body.setCircle(Math.max(m.width, m.height) / 2);
+            // m.setDisplaySize(64, 64);
+
+            const stats = makeMonsterStats(def, scene);
+            Object.assign(m, {
+              name: def.name,
+              level: stats.level,
+              maxHp: stats.maxHp,
+              hp: stats.maxHp,
+              atk: stats.atk,
+              expReward: stats.expReward,
+              dropTable: def.drop,
+              isAggro: false,
+              isFrozen: false,
+              isKnockback: false,
+              knockbackVel: new Phaser.Math.Vector2(0, 0),
+              hpBar: scene.add.graphics(),
+              label: scene.add.text(0, 0, `Lv${stats.level} ${def.name}`, {
+                fontSize: "12px",
+                fill: "#fff",
+              }),
+              // 🔥 추가: 배회(wander)용 상태값들
+              wanderOriginX: m.x,
+              wanderOriginY: m.y,
+              // “한 칸에서 세 칸” 정도 – 타일 32px 기준으로 대략 32~96
+              wanderRange: Phaser.Math.Between(32, 96),
+              wanderSpeed: Phaser.Math.Between(25, 45),  // 배회 속도
+              wanderTargetX: null,
+              wanderTargetY: null,
+              wanderPauseUntil: 0,
+            });
+
+            // 움직일 수 있는 최대 범위 설정
+            m.setCollideWorldBounds(true);
+            // collider box type > circle
+            // m.body.setCircle(Math.max(m.width, m.height) / 2);
+          })
         }
       });
     })

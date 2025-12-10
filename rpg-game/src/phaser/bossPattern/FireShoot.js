@@ -1,10 +1,11 @@
 import { BossPatternBase } from "./BossPatternBase";
 
 function getDir(caster) {
-        if (!caster || !caster.facing) {
-            return new Phaser.Math.Vector2(1, 0); // fallback (오른쪽)
-        }
-        return new Phaser.Math.Vector2(caster.facing.x, caster.facing.y).normalize();
+  if (!caster || !caster.facing) {
+    return new Phaser.Math.Vector2(1, 0); // fallback (오른쪽)
+  }
+  
+  return new Phaser.Math.Vector2(caster.facing.x, caster.facing.y).normalize();
 }
 
 export class FireShoot extends BossPatternBase {
@@ -15,10 +16,22 @@ export class FireShoot extends BossPatternBase {
     const sx = caster.x;
     const sy = caster.y;
 
+    // 예고 이펙트
+    const radius = 60;
+    const g = scene.add.circle(sx, sy, 6, 0xa30000, 0.9);
+    g.setScale(1);
+    scene.tweens.add({
+      targets: g,
+      scale: radius,
+      alpha: 0.0,
+      duration: 500,
+      onComplete: () => g.destroy(),
+    });
+
     const baseAngle = Math.atan2(dir.y, dir.x);
 
     // 실 패턴 사용
-    scene.time.delayedCall(500, () => {
+    scene.time.delayedCall(600, () => {
         for(let i=0; i<100; i++){
           scene.time.delayedCall(i * 30, () => {
             const b = scene.pattern.create(sx, sy, "fireball");

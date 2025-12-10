@@ -52,7 +52,7 @@ export const CFG = {
   fireshoot: {
     scale: 3.0,
     baseDmg: 500,
-    speed: 500,
+    speed: 400,
   },
   // ======================================
 
