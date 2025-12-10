@@ -3,8 +3,8 @@ import { calcNextExp } from "../config/Config.js";
 let playerInstance = null;
 
 // 🔹 플레이어 성장 곡선 (비선형: 지수 성장)
-const growthHpPerLevel = 1.20;   // 기존보다 10% 증가 → 중후반 체력 안정
-const growthMpPerLevel = 1.15;   // 기존보다 소폭 증가
+const growthHpPerLevel = 1.04;   // 기존보다 10% 증가 → 중후반 체력 안정
+const growthMpPerLevel = 1.05;   // 기존보다 소폭 증가
 
 // 🔹 공격력 자동 성장 (레벨업 기반)
 const growthDamagePerLevel = 5.0; // 레벨 1당 +5 (중후반 체감 상승)

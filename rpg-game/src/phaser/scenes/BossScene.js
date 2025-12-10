@@ -1349,11 +1349,20 @@ export default class BossScene extends Phaser.Scene {
         this.updateBossHpUI();
 
         if (this.game.vue?.updateMiniMap) {
+            // 몬스터
             const monsters = [];
             this.monsters.children.iterate(m => {
                 if (m && m.active) monsters.push({ x: m.x, y: m.y });
             });
 
+            // 보스 
+            this.boss.children.iterate(b => {
+                if (b && b.active) {
+                    monsters.push({ x: b.x, y: b.y });
+                }
+            });
+            
+            // 포탈
             const portals = [];
             if (this.portals) {
                 Object.values(this.portals).forEach(p => {
