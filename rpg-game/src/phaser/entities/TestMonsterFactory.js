@@ -16,11 +16,12 @@ export function spawnMonsters(scene) {
 
   // 🔥 몬스터 이름별 크기 매핑 테이블
   const MONSTER_SCALE = {
+    arrow_skeleton: 2.3,
       bat: 2.0,
       bird: 2.5,
       butterfly: 2.3,
       coffin: 3.0,
-      colossus: 6.0,
+      colossus: 4.0,
       dwarf: 3.0,
       eyeball: 4.0,
       eyebat: 3.3,
@@ -31,7 +32,9 @@ export function spawnMonsters(scene) {
       lich: 4.0,
       mask: 2.5,
       mimic: 2.7,
-      moai: 3.5,
+      moai_b: 3.5,
+      moai_s: 3.5,
+      moai_g: 3.5,
       mummy: 3.2,
       mushroom: 3.5,
       rabbit: 3.0,
@@ -44,6 +47,7 @@ export function spawnMonsters(scene) {
       snail: 2.7,
       snake: 3.3,
       squirrel: 2.2,
+      stingsnake: 3.5,
       vampire: 10.0,
       weapon: 3.5,
       wolf: 2.5,

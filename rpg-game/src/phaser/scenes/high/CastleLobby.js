@@ -362,6 +362,7 @@ export default class CastleLobby extends Phaser.Scene {
         this.isMoving = false;        // 이동 여부 flag
         this.mapName = "성 로비";      // 맵 이름
         this.showMapName = true;      // ← 맵 도착 시 한 번 표시해야 함
+        
         // 1. 씬 BGM
         this.SoundManager.playBgm("bgm_field")
 

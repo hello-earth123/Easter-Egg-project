@@ -1006,8 +1006,8 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      // scene: Object.values(sceneMap),
-      scene: [BossScene],
+      scene: Object.values(sceneMap),
+      // scene: [BossScene],
     };
 
     const game = new Phaser.Game(config);
