@@ -20,8 +20,8 @@ export function spawnBoss(scene, boss) {
 
   // 🔥 몬스터 이름별 크기 매핑 테이블
   const MONSTER_SCALE = {
-      coffin: 3.0,
-      vampire: 10.0,
+      coffin: 5.0,
+      vampire: 5.0,
   };
 
     // 몬스터 종류별 이동 애니메이션 key 매핑
@@ -70,8 +70,8 @@ export function spawnBoss(scene, boss) {
             expReward: stats.expReward,
             dropTable: def.drop,
 
-            isAggro: false,
-            isFrozen: true,
+            isAggro: true,
+            isFrozen: def.name === 'coffin',
             isKnockback: false,
             knockbackVel: new Phaser.Math.Vector2(0, 0),
             hpBar: scene.add.graphics(),

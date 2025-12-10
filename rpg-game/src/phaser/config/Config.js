@@ -56,7 +56,7 @@ export const CFG = {
   },
 
   batswarm: {
-    scale: 3.0,
+    scale: 1.5,
     baseDmg: 4000,
     speed: 500,
   },
