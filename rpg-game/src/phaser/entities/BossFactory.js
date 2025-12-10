@@ -48,6 +48,14 @@ export function spawnBoss(scene, boss) {
         const scale = MONSTER_SCALE[def.name] ?? 1.5;
         BossInstance.setScale(scale);
 
+        // =============================================
+        // 1페이즈 보스는 움직이지 않지만 애니메이션은 계속 재생
+        const walkKey = scene.monsterWalkAnim[def.name];
+        if (walkKey && scene.anims.exists(walkKey)) {
+            BossInstance.play(walkKey, true);
+        }
+        // =============================================
+
         const w = BossInstance.width;
         const h = BossInstance.height;
         const hb = MONSTER_HITBOX[def.name] ?? {w:0.55, h:0.85, ox:0.225, oy:0.08};
@@ -136,22 +144,30 @@ function initPattern(scene){
 }
 
 export function ChooseNextSkill(scene){
+
+    // [1] 보스가 아직 생성되지 않았으면 아무것도 하지 말기
+    if (!BossInstance) return;
+
+    // [2] 보스는 존재하지만 아직 초기화 전
     if (!BossInstance.isInit){
         BossInstance.isInit = true;
         initPattern(scene);
+        return; // 초기화 직후에는 공격하지 않는다
     }
 
+    // [3] 공격 중이면 대기
     if (BossInstance.isAttack) return;
-    if (!BossInstance.nextPattern) return;
+
+    // [4] 패턴 큐가 비어 있으면 대기
+    if (!BossInstance.nextPattern || BossInstance.nextPattern.size() === 0) return;
 
     BossInstance.isAttack = true;
 
     scene.time.delayedCall(1400, () => {
         BossInstance.isAttack = false;
-    })
+    });
 
     const pattern = BossInstance.nextPattern.pop();
-
     CastSkill(pattern, scene);
 }
 

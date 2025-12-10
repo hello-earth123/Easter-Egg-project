@@ -14,6 +14,7 @@ import { spawnMonsters } from "../../entities/TestMonsterFactory.js";
 import { FloatingText } from "../../effects/FloatingText.js";
 import { preloadFireSkillAssets } from "../../preload/preloadFireSkills.js";
 import { createFireSkillAnims } from "../../preload/createFireSkillAnims.js";
+// import TestScene3 from "./TestScene3.js";
 import { setCurrentScene } from "../../manager/sceneRegistry.js";
 import SoundManager from "../../manager/SoundManager.js";
 import { saveGame } from "../../manager/saveManager.js"; 
@@ -21,6 +22,11 @@ import { loadGame } from "../../manager/saveManager.js";
 
 // 컷씬
 import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
+
+// testing
+import { spawnBoss, ChooseNextSkill } from "../../entities/BossFactory.js";
+import { preloadBossPattern } from "../../preload/preloadBossPattern.js";
+import { createBossPattern } from "../../preload/createBossPattern.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
@@ -33,10 +39,10 @@ export default class Center extends Phaser.Scene {
         }
 
         const portalSpawnPoints = {
-            east: { x: 70, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
-            // south: { x: 800, y: 200 },
-            west: { x: 1530, y: 600 },
-            // north: { x: 800, y: 910},
+            east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
+            south: { x: 700, y: 1000 },
+            west: { x: 1400, y: 600 },
+            north: { x: 700, y: 200},
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
@@ -62,15 +68,16 @@ export default class Center extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            // lich: 3,
+            // reaper: 4,
+            arrow_skeleton: 2,
+            butterfly: 2,
+            colossus: 2,
+            skeleton: 2,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 50;
+        this.maxLevel = 50;
 
         this.count = 0;
 
@@ -86,31 +93,6 @@ export default class Center extends Phaser.Scene {
 
         this.itemList = ['hpPotion', 'mpPotion', 'damageGemLow', 'damageGemMid', 'damageGemHigh', 'damageGemSuper', 'cooldownGemLow', 'cooldownGemMid', 'cooldownGemHigh', 'cooldownGemSuper', 'manaCostGemLow', 'manaCostGemMid', 'manaCostGemHigh', 'manaCostGemSuper', 'defenseGemLow', 'defenseGemMid', 'defenseGemHigh', 'defenseGemSuper', 'luckGemLow', 'luckGemMid', 'luckGemHigh', 'luckGemSuper'];
         this.skills;
-
-        this.itemShow = {
-        hpPotion: 'HP 포션',
-        mpPotion: 'MP 포션',
-        damageGemLow: '하급 보석 (데미지)',
-        damageGemMid: '중급 보석 (데미지)',
-        damageGemHigh: '상급 보석 (데미지)',
-        damageGemSuper: '특급 보석 (데미지)',
-        cooldownGemLow: '하급 보석 (쿨타임)',
-        cooldownGemMid: '중급 보석 (쿨타임)',
-        cooldownGemHigh: '상급 보석 (쿨타임)',
-        cooldownGemSuper: '특급 보석 (쿨타임)',
-        manaCostGemLow: '하급 보석 (마나 소모)',
-        manaCostGemMid: '중급 보석 (마나 소모)',
-        manaCostGemHigh: '상급 보석 (마나 소모)',
-        manaCostGemSuper: '특급 보석 (마나 소모)',
-        defenseGemLow: '하급 보석 (방어력)',
-        defenseGemMid: '중급 보석 (방어력)',
-        defenseGemHigh: '상급 보석 (방어력)',
-        defenseGemSuper: '특급 보석 (방어력)',
-        luckGemLow: '하급 보석 (행운)',
-        luckGemMid: '중급 보석 (행운)',
-        luckGemHigh: '상급 보석 (행운)',
-        luckGemSuper: '특급 보석 (행운)',
-        }
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -122,26 +104,14 @@ export default class Center extends Phaser.Scene {
             frameWidth: 102.1428,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
             frameHeight: 120,  // 프레임 높이(실제 png 높이에 맞추기)
         });
-
         // 플레이어 PNG 로드
         this.load.spritesheet("playerSheet", "/static/assets/player.png", {
             frameWidth: 36,
             frameHeight: 24,
         });
-
         // 몬스터 PNG 로드
         // arrow_skeleton
         this.load.spritesheet("arrow_skeleton", "/static/assets/monsters/arrow_skeleton.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // bat
-        this.load.spritesheet("bat", "/static/assets/monsters/bat.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // bird
-        this.load.spritesheet("bird", "/static/assets/monsters/bird.png", {
             frameWidth: 16,
             frameHeight: 16,
         });
@@ -155,146 +125,23 @@ export default class Center extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16,
         });
-        // dwarf
-        this.load.spritesheet("dwarf", "/static/assets/monsters/dwarf.png", {
+        // colossus
+        this.load.spritesheet("colossus", "/static/assets/monsters/colossus.png", {
             frameWidth: 16,
             frameHeight: 16,
         });
-        // eyeball
-        this.load.spritesheet("eyeball", "/static/assets/monsters/eyeball.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // eyebat
-        this.load.spritesheet("eyebat", "/static/assets/monsters/eyebat.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // fire_skull1
-        this.load.spritesheet("fire_skull1", "/static/assets/monsters/fire_skull1.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // fire_skull2
-        this.load.spritesheet("fire_skull2", "/static/assets/monsters/fire_skull2.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // ghost
-        this.load.spritesheet("ghost", "/static/assets/monsters/ghost.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // lich
-        this.load.spritesheet("lich", "/static/assets/monsters/lich.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mask
-        this.load.spritesheet("mask", "/static/assets/monsters/mask.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mimic
-        this.load.spritesheet("mimic", "/static/assets/monsters/mimic.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // moai-b
-        this.load.spritesheet("moai-b", "/static/assets/monsters/moai-b.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // moai-s
-        this.load.spritesheet("moai-s", "/static/assets/monsters/moai-s.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // moai-g
-        this.load.spritesheet("moai-g", "/static/assets/monsters/moai-g.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mummy
-        this.load.spritesheet("mummy", "/static/assets/monsters/mummy.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mushroom
-        this.load.spritesheet("mushroom", "/static/assets/monsters/mushroom.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // rabbit
-        this.load.spritesheet("rabbit", "/static/assets/monsters/rabbit.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // reaper
-        this.load.spritesheet("reaper", "/static/assets/monsters/reaper.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        //scorpion
-        this.load.spritesheet("scorpion", "/static/assets/monsters/scorpion.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
+
         // skeleton
         this.load.spritesheet("skeleton", "/static/assets/monsters/skeleton.png", {
             frameWidth: 16,
             frameHeight: 16,
         });
-        // skull_b
-        this.load.spritesheet("skull_b", "/static/assets/monsters/skull_b.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // skull_w
-        this.load.spritesheet("skull_w", "/static/assets/monsters/skull_w.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });   
-        // slime
-        this.load.spritesheet("slime", "/static/assets/monsters/slime.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // snail
-        this.load.spritesheet("snail", "/static/assets/monsters/snail.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });       
-        // snake
-        this.load.spritesheet("snake", "/static/assets/monsters/snake.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });   
-        // squirrel
-        this.load.spritesheet("squirrel", "/static/assets/monsters/squirrel.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // stingsnake
-        this.load.spritesheet("stingsnake", "/static/assets/monsters/stingsnake.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });       
+   
         // vampire
         this.load.spritesheet("vampire", "/static/assets/monsters/vampire.png", {
             frameWidth: 16,
             frameHeight: 16,
-        });
-        // weapon
-        this.load.spritesheet("weapon", "/static/assets/monsters/weapon.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // wolf
-        this.load.spritesheet("wolf", "/static/assets/monsters/wolf.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });   
+        }); 
         
         // ==================== 사운드 ========================
         // BGM
@@ -308,6 +155,8 @@ export default class Center extends Phaser.Scene {
         this.load.audio("dash", "/static/assets/sound/effects/dash.wav");
         this.load.audio("portal", "/static/assets/sound/effects/portal.wav");
         this.load.audio("player_death", "/static/assets/sound/effects/player_death.wav")
+
+        this.load.audio("hassle", "/static/assets/sound/effects/hassle.wav")
 
         // 아이템 관련
         this.load.audio("item_drop", "/static/assets/sound/effects/item_drop.wav");
@@ -342,12 +191,21 @@ export default class Center extends Phaser.Scene {
         // 사망 시 나오는 gameover 이미지
         this.load.image("gameover", "/static/assets/gameover.png");
 
-        // item png load 하기
+        this.load.image("bullet", "/static/assets/bullet.png");
+        this.load.image("item", "/static/assets/item.png");
+        // this.load.image("shockwave", "/static/assets/effect_shockwave.png");
+
         for (const key of this.itemList) {
             this.load.image(key, `static/assets/${key}.png`)
         }
-        
+
+        for (const key of Object.keys(this.monsterData)) {
+            // assets 경로는 key에 맞게 문자열 생성
+            this.load.image(key, `/static/assets/${key}.png`);
+        }
+
         preloadFireSkillAssets(this);
+        preloadBossPattern(this);
     }
 
     // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
@@ -358,27 +216,23 @@ export default class Center extends Phaser.Scene {
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;
-        this.FOOTSTEP_INTERVAL = 315; // 발소리 사운드 간격 (ms)
+        this.FOOTSTEP_INTERVAL = 315; // 발소리 간격 (ms)
         this.isMoving = false;        // 이동 여부 flag
         this.mapName = "성 중앙";      // 맵 이름
         this.showMapName = true;      // ← 맵 도착 시 한 번 표시해야 함
+
         // 1. 씬 BGM
         this.SoundManager.playBgm("bgm_center")
-
-        // ================== 씬 포탈 sprite ======================
-        // 2. 포탈
+        // ==================================================
+        // 포탈
         this.anims.create({
             key: "portal-anim",
             frames: this.anims.generateFrameNumbers("portal", { start: 0, end: 6 }),
             frameRate: 12,
             repeat: -1
         });
-        // ========================================================
 
-
-
-        // =================== 플레이어 sprite =====================
-        // 3. 플레이어 이동 모션
+        // 플레이어 이동
         this.anims.create({
             key: "player_walk",
             frames: this.anims.generateFrameNumbers("playerSheet", {
@@ -389,7 +243,7 @@ export default class Center extends Phaser.Scene {
             repeat: -1,
         });
 
-        // 4. 플레이어 피격 모션
+        // 플레이어 피격
         this.anims.create({
             key: "player_hit",
             frames: this.anims.generateFrameNumbers("playerSheet", {
@@ -400,7 +254,7 @@ export default class Center extends Phaser.Scene {
             repeat: 0
         });
 
-        // 5. 플레이어 사망 모션
+        // 플레이어 사망
         this.anims.create({
             key: "player_death",
             frames: this.anims.generateFrameNumbers("playerSheet", {
@@ -411,53 +265,7 @@ export default class Center extends Phaser.Scene {
             repeat: 0
         });
 
-        // 6. 플레이어 스킬 모션 sprite
-        // 1) fireball / firebomb / incendiary / napalm
-        this.anims.create({
-            key: "player_cast_small",
-            frames: this.anims.generateFrameNumbers("playerSheet", { start: 18, end: 21 }),
-            frameRate: 12,
-            repeat: 0
-        });
-
-        // 2) buff skill
-        this.anims.create({
-            key: "player_buff",
-            frames: this.anims.generateFrameNumbers("playerSheet", { start: 24, end: 27 }),
-            frameRate: 10,
-            repeat: 0
-        });
-
-        // 3) meteor S, M, L / deathhand / flameA,B,C
-        this.anims.create({
-            key: "player_cast_big",
-            frames: this.anims.generateFrameNumbers("playerSheet", { start: 42, end: 47 }),
-            frameRate: 10,
-            repeat: 0
-        });
-
-        // 스킬 애니메이션 매핑
-        this.skillMotionType = {
-            fireball: "small",
-            firebomb: "small",
-            napalm: "small",
-            incendiary: "small",
-
-            buff: "buff",
-
-            meteor_S: "big",
-            meteor_M: "big",
-            meteor_L: "big",
-            deathhand: "big",
-            flameA: "big",
-            flameB: "big",
-            flameC: "big",
-        };
-        // ========================================================
-
-
-
-        // ============== 몬스터 sprite ===================
+ 
         // arrow_skeleton
         this.anims.create({
             key: "arrow_skeleton_walk",
@@ -465,20 +273,7 @@ export default class Center extends Phaser.Scene {
             frameRate: 8,
             repeat: -1,
         });
-        // bat
-        this.anims.create({
-            key: "bat_walk",
-            frames: this.anims.generateFrameNumbers("bat", { start: 0, end: 2 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // bird
-        this.anims.create({
-            key: "bird_walk",
-            frames: this.anims.generateFrameNumbers("bird", { start: 0, end: 7 }),
-            frameRate: 8,
-            repeat: -1,
-        });      
+  
         // butterfly
         this.anims.create({
             key: "butterfly_walk",
@@ -500,125 +295,7 @@ export default class Center extends Phaser.Scene {
             frameRate: 8,
             repeat: -1,
         });
-        // dwarf
-        this.anims.create({
-            key: "dwarf_walk",
-            frames: this.anims.generateFrameNumbers("dwarf", { start: 0, end: 7 }),
-            frameRate: 8,
-            repeat: -1,
-        });  
-        // eyeball
-        this.anims.create({
-            key: "eyeball_walk",
-            frames: this.anims.generateFrameNumbers("eyeball", { start: 0, end: 14 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // eyebat
-        this.anims.create({
-            key: "eyebat_walk",
-            frames: this.anims.generateFrameNumbers("eyebat", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // fire_skull1
-        this.anims.create({
-            key: "fire_skull1_walk",
-            frames: this.anims.generateFrameNumbers("fire_skull1", { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1,
-        });       
-        // fire_skull2
-        this.anims.create({
-            key: "fire_skull2_walk",
-            frames: this.anims.generateFrameNumbers("fire_skull2", { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // ghost
-        this.anims.create({
-            key: "ghost_walk",
-            frames: this.anims.generateFrameNumbers("ghost", { start: 0, end: 7 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // lich
-        this.anims.create({
-            key: "lich_walk",
-            frames: this.anims.generateFrameNumbers("lich", { start: 0, end: 7 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // mask
-        this.anims.create({
-            key: "mask_walk",
-            frames: this.anims.generateFrameNumbers("mask", { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // mimic
-        this.anims.create({
-            key: "mimic_walk",
-            frames: this.anims.generateFrameNumbers("mimic", { start: 0, end: 9 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // moai-b
-        this.anims.create({
-            key: "moai-b_walk",
-            frames: this.anims.generateFrameNumbers("moai-b", { start: 0, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // moai-s
-        this.anims.create({
-            key: "moai-s_walk",
-            frames: this.anims.generateFrameNumbers("moai-s", { start: 0, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // moai-g
-        this.anims.create({
-            key: "moai-g_walk",
-            frames: this.anims.generateFrameNumbers("moai-g", { start: 0, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // mummy
-        this.anims.create({
-            key: "mummy_walk",
-            frames: this.anims.generateFrameNumbers("mummy", { start: 0, end: 9 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // mushroom
-        this.anims.create({
-            key: "mushroom_walk",
-            frames: this.anims.generateFrameNumbers("mushroom", { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // rabbit
-        this.anims.create({
-            key: "rabbit_walk",
-            frames: this.anims.generateFrameNumbers("rabbit", { start: 0, end: 6 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // reaper
-        this.anims.create({
-            key: "reaper_walk",
-            frames: this.anims.generateFrameNumbers("reaper", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // scorpion
-        this.anims.create({
-            key: "scorpion_walk",
-            frames: this.anims.generateFrameNumbers("scorpion", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        });
+   
         // skeleton
         this.anims.create({
             key: "skeleton_walk",
@@ -626,55 +303,7 @@ export default class Center extends Phaser.Scene {
             frameRate: 8,
             repeat: -1,
         });  
-        // skull_b
-        this.anims.create({
-            key: "skull_b_walk",
-            frames: this.anims.generateFrameNumbers("skull_b", { start: 0, end: 12 }),
-            frameRate: 8,
-            repeat: -1,
-        });  
-        // skull_w
-        this.anims.create({
-            key: "skull_w_walk",
-            frames: this.anims.generateFrameNumbers("skull_w", { start: 0, end: 12 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // slime
-        this.anims.create({
-            key: "slime_walk",
-            frames: this.anims.generateFrameNumbers("slime", { start: 0, end: 15 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // snail
-        this.anims.create({
-            key: "snail_walk",
-            frames: this.anims.generateFrameNumbers("snail", { start: 0, end: 11 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // snake
-        this.anims.create({
-            key: "snake_walk",
-            frames: this.anims.generateFrameNumbers("snake", { start: 0, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // squirrel
-        this.anims.create({
-            key: "squirrel_walk",
-            frames: this.anims.generateFrameNumbers("squirrel", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // stingsnake
-        this.anims.create({
-            key: "stingsnake_walk",
-            frames: this.anims.generateFrameNumbers("stingsnake", { start: 0, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        });
+     
         // vampire
         this.anims.create({
             key: "vampire_walk",
@@ -682,36 +311,70 @@ export default class Center extends Phaser.Scene {
             frameRate: 8,
             repeat: -1,
         });
-        // weapon
+       
+        // =========================
+        // === 스킬 모션 애니메이션 ===
+        // fireball / firebomb / incendiary / napalm
         this.anims.create({
-            key: "weapon_walk",
-            frames: this.anims.generateFrameNumbers("weapon", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // wolf
+            key: "player_cast_small",
+            frames: this.anims.generateFrameNumbers("playerSheet", { start: 18, end: 21 }),
+            frameRate: 12,
+            repeat: 0
+        });
+
+        // buff skill
         this.anims.create({
-            key: "wolf_walk",
-            frames: this.anims.generateFrameNumbers("wolf", { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // ========================================================
+            key: "player_buff",
+            frames: this.anims.generateFrameNumbers("playerSheet", { start: 24, end: 27 }),
+            frameRate: 10,
+            repeat: 0
+        });
 
+        // meteor S, M, L / deathhand / flameA,B,C
+        this.anims.create({
+            key: "player_cast_big",
+            frames: this.anims.generateFrameNumbers("playerSheet", { start: 42, end: 47 }),
+            frameRate: 10,
+            repeat: 0
+        });
 
+        // incendiary 전용 — 홀드 유지 프레임 반복(20~21)
+        this.anims.create({
+            key: "player_incendiary_loop",
+            frames: this.anims.generateFrameNumbers("playerSheet", { start: 20, end: 21 }),
+            frameRate: 6,
+            repeat: -1
+        });
 
-        // ======================= UI =============================
+       
+        // 스킬 애니메이션 매핑
+        this.skillMotionType = {
+            fireball: "small",
+            firebomb: "small",
+            napalm: "small",
+            incendiary: "small",      // 시작 애니메이션
+            // incendiary_hold: "incendiary-hold",
+
+            buff: "buff",
+
+            meteor_S: "big",
+            meteor_M: "big",
+            meteor_L: "big",
+            deathhand: "big",
+            flameA: "big",
+            flameB: "big",
+            flameC: "big",
+        };
+
         this.uiState = {
-            inventory: false,   // 인벤토리 창
-            skill: false,       // 스킬 창
-            stat: false,        // 스탯 창
-            menu: false,        // 메뉴 창
-            sound: false,       // 사운드 창
+            inventory: false,
+            skill: false,
+            stat: false,
+            menu: false,
+            sound: false,   // ⭐ 추가
 
         };
 
-
-        // ===================== 맵 및 카메라 =======================
         // 맵 크기 설정 (물리적 공간 범위 설정)
         this.physics.world.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
@@ -723,15 +386,12 @@ export default class Center extends Phaser.Scene {
         const tile = this.make.tilemap({key: 'map2Tile'});
         const collisionObjects = tile.getObjectLayer("collider");
 
+        
 
         // 맵 이미지를 맵 크기에 맞춰 변경
         map.displayWidth = CFG.world.width;
         map.displayHeight = CFG.world.height;
-        // ===================== 맵 및 카메라 =======================
 
-
-
-        // ====================== 플레이어 ==========================
         // Player(gameObject) 생성 및 rigid body 추가
         this.player = this.physics.add.sprite(this.spawnX, this.spawnY, "playerSheet");
         this.player.setCollideWorldBounds(true);
@@ -762,11 +422,8 @@ export default class Center extends Phaser.Scene {
             (ph - hitH) * 0.5
         );
 
-        // 캐스팅 플래그 (홀딩 스킬 여부 판별 때문)
+        // 🔥 추가: 캐스팅 플래그
         this.player.isCasting = false;
-
-        // 컷씬 때 움직이지 못하게 하기
-        this.cutsceneLock = false;
 
         // 넉백 변수
         this.player.isKnockback = false;
@@ -780,21 +437,6 @@ export default class Center extends Phaser.Scene {
             v0: 0,
         };
 
-        // 시간 경과에 따른 함수 추가  (플레이어 mp 자동 회복:  1초에 6씩 회복)
-        this.time.addEvent({
-            delay: 1000,
-            loop: true,
-            callback: () => {
-                if (this.playerStats.mp < this.playerStats.maxMp) {
-                    this.playerStats.mp = Math.min(
-                        this.playerStats.maxMp,
-                        this.playerStats.mp + 6
-                    );
-                }
-            },
-        });
-
-        // 플레이어 데이터 불러오기 (스탯, 인벤토리, 슬롯)
         this.isPlayerLoad = false;
         initPlayer(3).then(player => {
             this.playerStats = player;
@@ -807,14 +449,41 @@ export default class Center extends Phaser.Scene {
             this.isPlayerLoad = true;
         })
 
-        // 카메라가 Player(gameObject)를 추적하도록 설정 (카메라 시점 고정)
+        // 카메라가 Player(gameObject)를 추적하도록 설정
         this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
 
         this.monsters = this.physics.add.group();
         this.bullets = this.physics.add.group();
         this.items = this.physics.add.group();
+        this.boss = this.physics.add.group();
 
-        spawnMonsters(this);
+        // spawnMonsters(this);
+        spawnBoss(this, ['coffin']);
+
+        this.isHassle = false;
+
+        this.pattern = this.physics.add.group();
+        this.physics.add.overlap(
+            this.player,
+            this.pattern,
+            this.onPlayerHitByPattern,
+            null,
+            this
+        );
+        this.physics.add.collider(
+            this.player,
+            this.boss,
+            this.onPlayerHitByMonster,
+            null,
+            this
+        );
+        this.physics.add.overlap(
+            this.bullets,
+            this.boss,
+            this.onBulletHitB,
+            null,
+            this
+        );
 
         // 충돌 이벤트 정의
         this.physics.add.collider(this.monsters, this.monsters);
@@ -826,15 +495,6 @@ export default class Center extends Phaser.Scene {
             this
         );
         // 겹침 이벤트 정의
-        // 플레이어가 아이템과 충돌한 경우 (아이템을 먹은 경우)
-        this.physics.add.overlap(
-            this.player,
-            this.items,
-            this.onPickupItem,
-            null,
-            this
-        );
-        // 몬스터가 맞은 경우 (fireball의 경우) =========================== > 이 경우는 플레이어 아니고 몬스터임
         this.physics.add.overlap(
             this.bullets,
             this.monsters,
@@ -842,9 +502,14 @@ export default class Center extends Phaser.Scene {
             null,
             this
         );
+        this.physics.add.overlap(
+            this.player,
+            this.items,
+            this.onPickupItem,
+            null,
+            this
+        );
 
-
-        // 충돌 보정
         if (collisionObjects && collisionObjects.objects) {
             collisionObjects.objects.forEach(obj => {
                 const x = obj.x + obj.width / 2;
@@ -859,23 +524,19 @@ export default class Center extends Phaser.Scene {
                 this.physics.add.collider(this.player, collider);
                 this.physics.add.collider(this.items, collider);
                 this.physics.add.collider(this.bullets, collider);
+                this.physics.add.collider(this.boss, collider);
             });
         }
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
-        // =========================================================
 
-
-
-
-        // ======================= 단축키 ===========================
         // 입력 가능한 키에 대한 객체 생성
-        this.keys = this.input.keyboard.addKeys("Q,W,E,R");  
-        const pageUp = this.input.keyboard.addKey(           
+        this.keys = this.input.keyboard.addKeys("Q,W,E,R");
+        const pageUp = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.PAGE_UP
         );
-        const pageDown = this.input.keyboard.addKey(        
+        const pageDown = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN
         );
 
@@ -885,13 +546,24 @@ export default class Center extends Phaser.Scene {
         // 모든 키의 입력이 이벤트 객체(e)로써 연결된 함수로 전달
         this.input.keyboard.on("keydown", (e) => this.handleArrowDoubleTap(e));
 
+        // 시간 경과에 따른 함수 추가
+        this.time.addEvent({
+            delay: 1000,
+            loop: true,
+            callback: () => {
+                if (this.playerStats.mp < this.playerStats.maxMp) {
+                    this.playerStats.mp = Math.min(
+                        this.playerStats.maxMp,
+                        this.playerStats.mp + 2
+                    );
+                }
+            },
+        });
+
+
         this.skills = createDefaultSkills(this);
-        // ==========================================================
 
-
-
-
-        // ================ 시스템 메세지 창 (로그창) ==================
+        // 시스템 메세지 창
         this.textBar = "게임 시작!";
 
         // 이펙트 출력 함수 바인딩
@@ -903,15 +575,18 @@ export default class Center extends Phaser.Scene {
 
         console.log(6)
         createFireSkillAnims(this);
+        createBossPattern(this);
 
         this.count = 0;
+        // === 보스 HP UI 생성 ===
+        this.initBossHpUI();
 
         // === 포탈 생성(애니메이션) ===
 
         // 포탈 4개 생성
         this.portals = {
             // east:  this.physics.add.sprite(1530, 600, "portal"),
-            west:  this.physics.add.sprite(70, 600, "portal"),
+            // west:  this.physics.add.sprite(70, 600, "portal"),
             // south: this.physics.add.sprite(800, 910, "portal"),
             // north: this.physics.add.sprite(800, 100, "portal")
         };
@@ -927,7 +602,6 @@ export default class Center extends Phaser.Scene {
 
         }
         // ======================================================================
-
 
 
         // ==================== 포탈 상호작용 ==========================
@@ -962,21 +636,6 @@ export default class Center extends Phaser.Scene {
         this.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         // ======================================================================
 
-
-
-        // =================== 컷씬, 대화창 =======================================
-        // Vue Dialogue UI 가져오기
-        this.dialogueUI = this.game.vue.$refs.dialogue;
-
-        // SPACE 입력 받을 때 Vue로 전달
-        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.keySpace.on("down", () => {
-            if (this.dialogueActive) {
-                this.dialogueUI.skip();
-            }
-        });
-
-        this.cutscene = new CutscenePlayer(this);
      
         // 게임 시작 자동 컷씬 스크립트
         const introScript = [
@@ -1019,22 +678,15 @@ export default class Center extends Phaser.Scene {
 
             // { cmd: "wait", time: 300 },
 
+            // // 🔥 복선
             // { cmd: "say", text: "프라가라흐: '후후… 그래. 나를 완전히 해방시켜준다면…'" },
             // { cmd: "say", text: "프라가라흐: '이 세계도… 너도… 모든 것이 바뀔 것이다.'" },
 
             // { cmd: "end" }
         ];
 
-        // 씬 로딩 0.5초 후 자동 실행
-        this.time.delayedCall(500, () => {
-            this.cutscene.play(introScript);
-        });
     }
-    // ===========================================================================
 
-
-
-    // ======================= 스킬, 아이템 슬롯 (단축키) ===========================
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
     setSkillSlots(slots) {
         this.slotData.skillSlots = (slots || [])
@@ -1042,17 +694,15 @@ export default class Center extends Phaser.Scene {
             .map((s) => (s ? s.name : null));
     }
 
+
     /** itemSlots에 최대 2개의 아이템을 추가 */
     setItemSlots(itemSlots) {
         this.slotData.itemSlots = (itemSlots || [])
             .slice(0, 2)
             .map((i) => (i ? i : null));
     }
-    // ===========================================================================
 
-
-
-    // ============================ 스킬 레벨업 ====================================
+    /** skill upgrade */
     upgradeSkillByName(skillName) {
         const skill = this.skills[skillName];
 
@@ -1072,17 +722,11 @@ export default class Center extends Phaser.Scene {
 
         return true;
     }
-    // ===========================================================================
 
-
-
-    // ============================= 스킬 사용 =====================================
     useSkill(slotIdx) {
-        // 슬롯에 스킬 없으면 return
         const name = this.slotData.skillSlots[slotIdx];
         if (!name) return;
 
-        // 스킬 없으면 return
         const skill = this.skills[name];
         if (!skill) return;
 
@@ -1091,7 +735,7 @@ export default class Center extends Phaser.Scene {
         const prevLastCastAt = skill.lastCastAt;
         const prevActive = skill.active;
 
-        //  실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
+        // 🔥 실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
         skill.tryCast(this, this.player);
 
         // --- 진짜로 "시전이 된 건지" 판별 ---
@@ -1113,10 +757,10 @@ export default class Center extends Phaser.Scene {
         // ❌ 쿨타임, 마나부족, 기타 조건 실패 → 아무 모션도 내보내지 말고 종료
         if (!castSuccess) return;
 
-        // 스킬 캐스팅 사운드 (스킬에 성공했을 경우에만 시전) -> (윗 줄(1080줄)에서 넘어왔다면 확실히 casting된 것으로 판단)
+        // 스킬 캐스팅 사운드
         this.SoundManager.playSkillCast(name);
 
-        // 여기까지 왔으면 "실제로 스킬이 발동된 것"만 남음
+        // 🔥 여기까지 왔으면 "실제로 스킬이 발동된 것"만 남음
         const motionType = this.skillMotionType[name];
         if (motionType) {
             this.playPlayerSkillMotion(motionType, skill.isHoldSkill === true);
@@ -1129,7 +773,7 @@ export default class Center extends Phaser.Scene {
     }
 
 
-    // ============================= 아이템 사용 =====================================
+    /** use item */
     useItemShortcut(idx) {
         const slot = this.slotData.itemSlots[idx];
 
@@ -1147,53 +791,36 @@ export default class Center extends Phaser.Scene {
         // 아이템 사용 사운드
         this.SoundManager.playItemUse();
     }
-    // =============================================================================
 
-
-
-    
-    // update() : 유니티의 update()와 동일 (프레임 단위 호출)
+    // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
     update(time, delta) {
-        // 컷씬 중에는 모든 조작 차단 + 몬스터도 멈춤
+        // 컷씬 중에는 모든 조작 차단
         if (this.cutsceneLock) {
-
-            // 플레이어 정지
-            if (this.player?.body) {
-                this.player.setVelocity(0, 0);
-                this.player.body.setAcceleration(0, 0);
-                this.player.body.moves = false;
-                if (this.player.anims) this.player.anims.stop();
-            }
-
-            // 몬스터 정지
-            this.updateMonsters(this.time.now);
-
+            this.player.setVelocity(0);
             return;
         }
 
-        // 컷씬 종료 → 이동 허용
-        if (this.player?.body) this.player.body.moves = true;
-        this.monsters.children.iterate(m => {
-            if (m?.body) m.body.moves = true;
-        });
-
-
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
-        if (this.player?.isDead) return;// 플레이어 죽으면 return
+        if (this.player?.isDead) return;
         
         const now = this.time.now;
 
         // 발소리 사운드 쿨타임
         this.footstepCooldown -= delta;
 
+        // TODO: 넉백 확인 >> 피격 함수로 이전
         this.handlePlayerKnockback();
+        // TODO: 시간에 따른 대쉬 감속/정지 >> coroutine으로 대쉬 함수에 편입 가능한지 확인
         this.handleDash(now);
         this.handleMovement();
         this.updateMonsters(now);
+        // TODO: 몬스터 사망 및 아이템 드롭 >> 몬스터 피격 함수로 이전
         this.checkMonstersDeath();
         this.updateMonsterHud();
 
-        // 이동 중일 때 일정 간격으로 발소리 재생
+        ChooseNextSkill(this);
+
+        // 🔥 이동 중일 때 일정 간격으로 발소리 재생
         if (this.isMoving && this.footstepCooldown <= 0) {
             this.SoundManager.playFootstep();
             this.footstepCooldown = this.FOOTSTEP_INTERVAL;
@@ -1206,7 +833,7 @@ export default class Center extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(this.keys.R)) this.useSkill(3);
 
         //---------------------------------------------------------------
-        // Hold(키다운) 스킬 처리 — incendiary 전용
+        // 🔥 Hold(키다운) 스킬 처리 — incendiary 전용
         //---------------------------------------------------------------
         const slotKeys = ["Q", "W", "E", "R"];
 
@@ -1222,18 +849,18 @@ export default class Center extends Phaser.Scene {
             // 이 스킬이 키다운 스킬인지 확인
             if (!skill.isHoldSkill) continue;
 
-            // 키를 누르고 있는 동안 지속 발사
+            // 🔥 키를 누르고 있는 동안 지속 발사
             if (phaserKey.isDown) {
                 if (!skill.active) {
                     skill.tryCast(this, this.player);
                 }
             }
 
-            //  키에서 손 떼면 종료
+            // 🔥 키에서 손 떼면 종료
             if (Phaser.Input.Keyboard.JustUp(phaserKey)) {
                 if (skill.stop) skill.stop();
 
-                //  hold 스킬 끝났으니 캐스팅 플래그 및 애니 정리
+                // 🔥 hold 스킬 끝났으니 캐스팅 플래그 및 애니 정리
                 this.player.isCasting = false;
                 this.player.anims.stop();
                 this.player.setFrame(0);
@@ -1242,30 +869,42 @@ export default class Center extends Phaser.Scene {
 
 
         // === 포탈 상호작용 체크 ===
-        if (this.canInteract && this.currentPortal) {
+        if (this.canInteract) {
 
+            // F 누르면 이동
             if (Phaser.Input.Keyboard.JustDown(this.keyF)) {
-                this.moveToNextScene(this.currentPortal.portalId);
+                this.moveToNextScene();
             }
 
+            // 포탈에서 벗어나면 상호작용 불가 처리
             const dist = Phaser.Math.Distance.Between(
                 this.player.x, this.player.y,
-                this.currentPortal.x, this.currentPortal.y
+                this.portal.x, this.portal.y
             );
 
-            if (dist > 150) {
+            if (dist > 160) {  // 포탈 범위 밖
                 this.canInteract = false;
-                this.currentPortal = null;
                 this.interactText.setVisible(false);
             }
         }
 
+        this.updateBossHpUI();
+
         if (this.game.vue?.updateMiniMap) {
+            // 몬스터
             const monsters = [];
             this.monsters.children.iterate(m => {
                 if (m && m.active) monsters.push({ x: m.x, y: m.y });
             });
 
+            // 보스 
+            this.boss.children.iterate(b => {
+                if (b && b.active) {
+                    monsters.push({ x: b.x, y: b.y });
+                }
+            });
+            
+            // 포탈
             const portals = [];
             if (this.portals) {
                 Object.values(this.portals).forEach(p => {
@@ -1282,7 +921,6 @@ export default class Center extends Phaser.Scene {
         }
     }
 
-    // 플레이어 이동 벡터 관리 
     handleMovement() {
         if (this.activeHoldSkill) {
             this.player.setVelocity(0, 0);
@@ -1295,54 +933,61 @@ export default class Center extends Phaser.Scene {
 
         let moving = false;
 
+        let hassle = 1;
+        let flip = true;
+        if (this.isHassle){
+            hassle *= -1;
+            flip = !flip;
+        }
+
         // 좌
         if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-CFG.moveSpeed);
-            this.player.flipX = true;
-            this.player.facing.set(-1, 0);
+            this.player.setVelocityX(CFG.moveSpeed * -hassle);
+            this.player.flipX = flip;
+            this.player.facing.set(-hassle, 0);
             moving = true;
         }
 
         // 우
         if (this.cursors.right.isDown) {
-            this.player.setVelocityX(CFG.moveSpeed);
-            this.player.flipX = false;
-            this.player.facing.set(1, 0);
+            this.player.setVelocityX(CFG.moveSpeed * hassle);
+            this.player.flipX = !flip;
+            this.player.facing.set(hassle, 0);
             moving = true;
         }
 
         // 하
         if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-CFG.moveSpeed);
-            this.player.facing.set(0, -1);
+            this.player.setVelocityY(CFG.moveSpeed * -hassle);
+            this.player.facing.set(0, -hassle);
             moving = true;
         }
 
         // 상
         if (this.cursors.down.isDown) {
-            this.player.setVelocityY(CFG.moveSpeed);
-            this.player.facing.set(0, 1);
+            this.player.setVelocityY(CFG.moveSpeed * hassle);
+            this.player.facing.set(0, hassle);
             moving = true;
         }
 
-        // 이동 여부 플래그 갱신
+        // 🔥 이동 여부 플래그 갱신
         this.isMoving = moving;
 
         if (moving) {
-            // 스킬 캐스팅 중이면 walk 애니로 덮어쓰지 않음
+            // 캐스팅 중이면 walk 애니로 덮어쓰지 않음
             if (!this.player.isCasting) {
                 if (!this.player.anims.isPlaying || this.player.anims.currentAnim.key !== "player_walk") {
                     this.player.play("player_walk", true);
                 }
             }
         } else {
-            // 스킬 캐스팅 중이면 애니 stop 하지 않음
+            // 캐스팅 중이면 애니 stop 하지 않음
             if (!this.player.isCasting) {
                 this.player.anims.stop();
                 this.player.setFrame(0);  // 기본 프레임 유지
                 
             }
-            // 멈춘 순간 쿨타임 리셋 → 다시 움직이면 바로 발소리 나게
+            // 🔥 멈춘 순간 쿨타임 리셋 → 다시 움직이면 바로 소리 나게
             this.footstepCooldown = 0;
         }
     }
@@ -1359,19 +1004,24 @@ export default class Center extends Phaser.Scene {
         const code = e.code;
         if (!this.lastArrowTap.hasOwnProperty(code)) return;
 
+        let hassle = 1;
+        if (this.isHassle){
+            hassle *= -1;
+        }
+
         // 연속으로 입력 받은 시간이 대쉬를 사용하기 위한 최소 시간 내라면, 대쉬 발동
         const last = this.lastArrowTap[code] || 0;
         this.lastArrowTap[code] = now;
         if (now - last <= CFG.dash.doubleTapWindowMs) {
             const dir =
                 code === "ArrowLeft"
-                    ? new Phaser.Math.Vector2(-1, 0)
+                    ? new Phaser.Math.Vector2(-hassle, 0)
                     : code === "ArrowRight"
-                        ? new Phaser.Math.Vector2(1, 0)
+                        ? new Phaser.Math.Vector2(hassle, 0)
                         : code === "ArrowUp"
-                            ? new Phaser.Math.Vector2(0, -1)
+                            ? new Phaser.Math.Vector2(0, -hassle)
                             : code === "ArrowDown"
-                                ? new Phaser.Math.Vector2(0, 1)
+                                ? new Phaser.Math.Vector2(0, hassle)
                                 : null;
             if (!dir) return;
             this.doDash(dir);
@@ -1419,7 +1069,7 @@ export default class Center extends Phaser.Scene {
         this.player.setVelocity(d.dir.x * speed, d.dir.y * speed);
     }
 
-    /** 데미지 출력 (영수증) */
+    /** 데미지 출력 */
     showDamageText(target, damage, color = "#ffff66") {
         if (!target || !target.x || !target.y) return;
 
@@ -1454,7 +1104,43 @@ export default class Center extends Phaser.Scene {
         }
     }
 
-    /** 몬스터 피격 구현 (fireball bullet) */
+    onBulletHitB = (bullet, monster) => {
+        if (!bullet || !bullet.active || !monster || !monster.active) return;
+
+        // 중복 히트/재귀 방지를 위해 먼저 비활성화
+        if (bullet.body) bullet.body.enable = false;
+
+        const surventC = this.monsters.getLength();
+        console.log(surventC, '1111111111111111');
+
+        // 몬스터 체력 감소 및 피격 이펙트 출력
+        const dmg = Math.round(bullet.damage - (bullet.damage * surventC / 10));
+        monster.hp -= dmg;
+        this.spawnHitFlash(monster.x, monster.y);
+
+        this.showDamageText(monster, dmg, "#ffff66");
+        // 몬스터 피격 sound
+        this.SoundManager.playMonsterHit();
+
+        // 몬스터 어그로
+        this.onMonsterAggro(monster);
+
+        // Defensive Code of onHit function
+        try {
+            // 공격의 onHit 함수 실행
+            if (typeof bullet.onHit === "function") bullet.onHit(monster);  // 왜 monster? scene 아니고?
+        } catch (err) {
+            // onHit 함수 실행 중 오류가 발생해도 게임 정지 대신 오류 메세지만 출력
+            console.error("[onHit error]", err);
+        }
+
+        // 도트 데미지
+        if (bullet.dot) this.applyDot(monster, bullet.dot);
+
+        bullet.destroy();
+    };
+
+    /** 몬스터 피격 구현 */
     onBulletHit = (bullet, monster) => {
         if (!bullet || !bullet.active || !monster || !monster.active) return;
 
@@ -1466,14 +1152,31 @@ export default class Center extends Phaser.Scene {
         monster.hp -= dmg;
         this.spawnHitFlash(monster.x, monster.y);
 
-        // 영수증 출력
+        // 데미지 출력
+        // (크리티컬 판정 로직이 있는 경우에)
+        // if (isCritical) {
+        //   this.showDamageText(monster, damage, "#ffff66"); // 노란색
+        // } else {
+        //   this.showDamageText(monster, damage, "#ffffff");
+        // }
         this.showDamageText(monster, dmg, "#ffff66");
-        
         // 몬스터 피격 sound
         this.SoundManager.playMonsterHit();
 
         // 몬스터 어그로
         this.onMonsterAggro(monster);
+
+        // Defensive Code of onHit function
+        try {
+            // 공격의 onHit 함수 실행
+            if (typeof bullet.onHit === "function") bullet.onHit(monster);  // 왜 monster? scene 아니고?
+        } catch (err) {
+            // onHit 함수 실행 중 오류가 발생해도 게임 정지 대신 오류 메세지만 출력
+            console.error("[onHit error]", err);
+        }
+
+        // 도트 데미지
+        if (bullet.dot) this.applyDot(monster, bullet.dot);
 
         bullet.destroy();
     };
@@ -1491,10 +1194,74 @@ export default class Center extends Phaser.Scene {
         itemSprite.destroy();
         // 아이템 획득 사운드
         this.SoundManager.playItemPickup();
-        this.textBar = `${this.itemShow[def.name]} 획득`;
+        this.textBar = `${def.name} 획득`;
     };
 
-    /* 플레이어 피격 */
+    onPlayerHitByPattern = (player, pattern) => {
+            if (!player || !pattern) return;
+    
+            if (this.activeHoldSkill) {
+                const s = this.skills[this.activeHoldSkill];
+                if (s && s.stop) s.stop();
+                this.activeHoldSkill = null;
+            }
+
+            if (!player._lastHitAt) player._lastHitAt = 0; // ?? 0일 때 0으로 초기화를 진행
+
+        const now = this.time.now;
+
+        // 피격 무적 시간이 지나지 않았을 경우, 피격 무시
+        if (now - player._lastHitAt < CFG.playerKB.invulMs) return;
+            
+            const dmg = pattern.damage;
+            this.playerStats.hp -= pattern.damage;
+            this.SoundManager.playMonsterAttack();
+            this.showDamageText(player, dmg, "#ff3333");
+            this.player.play("player_hit", true);
+            player._lastHitAt = now;
+    
+            this.cameras.main.shake(
+                CFG.playerKB.shake.duration,
+                CFG.playerKB.shake.intensity
+            );
+            player.setTint(0xff6666);
+            this.time.delayedCall(CFG.playerKB.invulMs, () => {
+                if (player) player.clearTint();
+            });
+    
+            this.textBar = "적에게 피격!";
+    
+            // 사망 체크
+            if (this.playerStats.hp <= 0) {
+    
+                //  1) 플레이어 physics 충돌 완전 비활성화
+                player.body.enable = false;
+    
+                //  2) 반동을 전혀 주지 않도록 속도 제거
+                player.setVelocity(0, 0);
+    
+                // 몬스터들이 플레이어에 의해 밀리지 않도록 충돌 반응 차단
+                this.monsters.children.iterate(m => {
+                    if (!m || !m.body) return;
+    
+                    m.setVelocity(0, 0);   // 즉시 멈춤
+                    m.body.immovable = true;  // 반발력 제거
+                });
+    
+                //  4) 사망 루틴 실행
+                this.onPlayerDeath();
+                return;
+            }
+            
+            // === Incendiary(hold 스킬) 강제 중지 이벤트 ===
+            this.events.emit("playerHit", {
+                x: pattern.x,
+                y: pattern.y,
+                knockback: CFG.playerKB.power
+            });
+        }
+
+    /** 플레이어 피격 - TODO */
     onPlayerHitByMonster = (player, monster) => {
         if (!player || !monster) return;
 
@@ -1505,6 +1272,7 @@ export default class Center extends Phaser.Scene {
             this.activeHoldSkill = null;
         }
         
+        // TODO: 존재 이유 확인
         if (!player._lastHitAt) player._lastHitAt = 0; // ?? 0일 때 0으로 초기화를 진행
 
         const now = this.time.now;
@@ -1514,7 +1282,6 @@ export default class Center extends Phaser.Scene {
 
         const dmg = monster.atk - (monster.atk * (this.playerStats.defense + this.playerStats.defenseGem) / 100);
         this.playerStats.hp -= dmg
-
         // 플레이어 피격 sound
         this.SoundManager.playMonsterAttack();
 
@@ -1548,16 +1315,23 @@ export default class Center extends Phaser.Scene {
 
         this.textBar = "적에게 피격!";
 
+        if (this.boss){
+                this.boss.children.iterate(m => {
+                    m.setVelocity(0, 0);
+                    m.body.immovable = true;
+                })
+            }
+
         // 사망 체크
         if (this.playerStats.hp <= 0) {
 
-            //  1) 플레이어 physics 충돌 완전 비활성화
+            // 🔥 1) 플레이어 physics 충돌 완전 비활성화
             player.body.enable = false;
 
-            //  2) 반동을 전혀 주지 않도록 속도 제거
+            // 🔥 2) 반동을 전혀 주지 않도록 속도 제거
             player.setVelocity(0, 0);
 
-            // 몬스터들이 플레이어에 의해 밀리지 않도록 충돌 반응 차단
+            // 🔥 몬스터들이 플레이어에 의해 밀리지 않도록 충돌 반응 차단
             this.monsters.children.iterate(m => {
                 if (!m || !m.body) return;
 
@@ -1565,7 +1339,7 @@ export default class Center extends Phaser.Scene {
                 m.body.immovable = true;  // 반발력 제거
             });
 
-            //  4) 사망 루틴 실행
+            // 🔥 4) 사망 루틴 실행
             this.onPlayerDeath();
             return;
         }
@@ -1678,7 +1452,7 @@ export default class Center extends Phaser.Scene {
         // 사망 애니가 끝났을 때
         this.player.once("animationcomplete-player_death", () => {
 
-            // GAME OVER 화면이 켜진 상태로 0.4초 유지
+            // GAME OVER 화면이 켜진 상태로 0.5초 유지
             this.time.delayedCall(4000, () => {
                 // 🔥 마지막 저장 지점에서 부활 처리
                 this.respawnFromLastSave();
@@ -1816,8 +1590,146 @@ export default class Center extends Phaser.Scene {
     }
 
 
+    /** 도트 데미지 스킬 적용 */
+    applyDot(monster, dot) {
+        // 틱 수 설정
+        const ticks = Math.max(1, Math.floor(dot.duration / dot.interval));
 
-    // ============================= 몬스터 어그로, 배회, 피격 등등 ===============================
+        for (let i = 1; i <= ticks; i++) {
+            // 설정한 interval에 따라 지연 동작
+            this.time.delayedCall(dot.interval * i, () => {
+                if (!monster || !monster.active) return;
+
+                monster.hp -= dot.damage;
+                this.showDamageText(monster, dot.damage, "#ffff66");
+                this.spawnHitFlash(monster.x, monster.y);
+                this.onMonsterAggro(monster);
+            });
+        }
+    }
+
+    /** 보스 HP UI */
+    initBossHpUI() {
+        this.bossHpUI = {};
+
+        // === 배경판 (짙은 남색, 도트게임 감성) ===
+        this.bossHpUI.bg = this.add.rectangle(
+            this.cameras.main.width / 2,
+            26,
+            240,
+            18,
+            0x1a1c2c, // 도트 rpg 감성 남색
+            1
+        )
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(9999);
+
+        // === 테두리 (연한 회색 픽셀 느낌 라인) ===
+        this.bossHpUI.border = this.add.rectangle(
+            this.cameras.main.width / 2,
+            26,
+            244,
+            22,
+            0x000000,
+            0 // 색 없음 → stroke만 사용
+        )
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setStrokeStyle(2, 0x737373) // 픽셀 UI 라인 느낌
+        .setDepth(9999);
+
+        // === HP 바 (OLD RPG 레드) ===
+        this.bossHpUI.bar = this.add.rectangle(
+            this.cameras.main.width / 2 - 118,
+            26,
+            236,
+            10,
+            0xff3b30 // 레트로 레드
+        )
+        .setOrigin(0, 0.5)
+        .setScrollFactor(0)
+        .setDepth(10000);
+
+        // === 보스 이름 (작고 도트 느낌 폰트) ===
+        this.bossHpUI.nameText = this.add.text(
+            this.cameras.main.width / 2,
+            12,
+            "???",
+            {
+                fontFamily: "Courier, monospace", // 도트 느낌
+                fontSize: "14px",
+                color: "#ffffff",
+                stroke: "#000000",
+                strokeThickness: 3
+            }
+        )
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(10000);
+
+        // === HP 숫자 (HP바 바로 밑에 붙여 넣기) ===
+        this.bossHpUI.hpText = this.add.text(
+            this.cameras.main.width / 2,
+            38,
+            "0 / 0",
+            {
+                fontFamily: "Courier, monospace",
+                fontSize: "13px",
+                color: "#e8e8e8",
+                stroke: "#000000",
+                strokeThickness: 3
+            }
+        )
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(10000);
+
+        // 초기에는 숨겨놓기
+        this.toggleBossHpUI(false);
+    }
+
+    /** UI 숨김/표시 */
+    toggleBossHpUI(visible) {
+        const ui = this.bossHpUI;
+        ui.bg.setVisible(visible);
+        ui.border.setVisible(visible);
+        ui.bar.setVisible(visible);
+        ui.hpText.setVisible(visible);
+        ui.nameText.setVisible(visible);
+    }
+
+    /** 매 프레임 보스 HP UI 갱신 */
+    updateBossHpUI() {
+        if (!this.boss) {
+            this.toggleBossHpUI(false);
+            return;
+        }
+
+        const boss = this.boss.getFirstAlive();
+        if (!boss) {
+            this.toggleBossHpUI(false);
+            return;
+        }
+
+        // --- 표시 ---
+        this.toggleBossHpUI(true);
+
+        const hp = Math.max(0, boss.hp);
+        const maxHp = boss.maxHp || 1;
+
+        // HP bar 길이 갱신
+        const ratio = Phaser.Math.Clamp(hp / maxHp, 0, 1);
+        this.bossHpUI.bar.width = 236 * ratio;
+
+        // 이름
+        this.bossHpUI.nameText.setText(boss.displayName || boss.name || "BOSS");
+
+        // 숫자 (30 / 100)
+        this.bossHpUI.hpText.setText(`${hp} / ${maxHp}`);
+    }
+
+
     /** 어그로 생성 */
     onMonsterAggro(monster) {
         monster.isAggro = true;
@@ -1825,20 +1737,6 @@ export default class Center extends Phaser.Scene {
 
     /** 몬스터 동작 */
     updateMonsters(now) {
-        // 컷씬/대화 중이면 모든 몬스터 정지
-        if (this.cutsceneLock) {
-            this.monsters.children.iterate((m) => {
-                if (!m || !m.active || !m.body) return;
-
-                // 이동 관련 모든 물리 속성 초기화
-                m.body.setVelocity(0, 0);
-                m.body.setAcceleration(0, 0);
-                m.body.setDrag(1000, 1000);   // 급정지 효과
-                m.body.moves = false;         // 이동 자체 비활성화
-            });
-            return;
-        }
-
         // 몬스터 그룹 순회
         this.monsters.children.iterate((m) => {
             if (!m || !m.active) return;
@@ -1854,7 +1752,13 @@ export default class Center extends Phaser.Scene {
                 return;
             }
 
-            // 2) 어그로 상태면 플레이어 추격 (기존 로직 유지)
+            // 2) 얼음(빙결) 상태면 멈춤
+            if (m.isFrozen) {
+                m.setVelocity(0);
+                return;
+            }
+
+            // 3) 어그로 상태면 플레이어 추격 (기존 로직 유지)
             if (m.isAggro) {
                 this.physics.moveToObject(m, this.player, 95);
 
@@ -1866,7 +1770,7 @@ export default class Center extends Phaser.Scene {
                 return;
             }
 
-            // 3) 그 외에는 “짧게 왔다갔다” 배회
+            // 4) 그 외에는 “짧게 왔다갔다” 배회
             this.updateMonsterWander(m, now);
         });
     }
@@ -1926,17 +1830,21 @@ export default class Center extends Phaser.Scene {
             return;
         }
 
-        // 속도 상향 (테스트용)
+        // 🔥 속도 상향 (테스트용)
         const speed = monster.wanderSpeed || 80;  
         const vx = (dx / dist) * speed;
         const vy = (dy / dist) * speed;
 
         monster.setVelocity(vx, vy);
 
-        // 확실한 sprite flip 처리
+        // 🔥 확실한 flip 처리
         if (vx < -0.1) monster.flipX = false;
         else if (vx > 0.1) monster.flipX = true;
     }
+
+
+
+
 
     /** 몬스터 체력바, 이름 출력 */
     updateMonsterHud() {
@@ -1949,7 +1857,7 @@ export default class Center extends Phaser.Scene {
             // 이전 프레임의 체력바를 지움
             g.clear();
 
-            // 활동 중인 몬스터인 경우에만 아래 출력
+            // 활동 중인 몬스터인 경우에만 아래 출력 - TODO: 몬스터 동작 함수 쪽으로 편입
             if (!m.active) return;
 
             // 체력바 출력
@@ -1963,6 +1871,31 @@ export default class Center extends Phaser.Scene {
             // 이름 출력
             if (m.label) m.label.setPosition(m.x - w / 2, y - 14);
         });
+
+        if (this.boss){
+           this.boss.children.iterate((m) => {
+                if (!m) return;
+
+                const g = m.hpBar;
+                if (!g) return;
+                // 이전 프레임의 체력바를 지움
+                g.clear();
+
+                // 활동 중인 몬스터인 경우에만 아래 출력 - TODO: 몬스터 동작 함수 쪽으로 편입
+                if (!m.active) return;
+
+                // 체력바 출력
+                const w = 56,
+                    h = 6;
+                const x = m.x - w / 2,
+                    y = m.y - 34;
+                g.fillStyle(0x000000, 0.6).fillRect(x, y, w, h);
+                const pct = clamp01(m.hp / m.maxHp);
+                g.fillStyle(0xff3333, 1).fillRect(x + 1, y + 1, (w - 2) * pct, h - 2);
+                // 이름 출력
+                if (m.label) m.label.setPosition(m.x - w / 2, y - 14);
+            }); 
+        }
     }
 
     /** 몬스터 사망 */
@@ -1971,7 +1904,7 @@ export default class Center extends Phaser.Scene {
             if (!m || !m.active) return;
             if (m.hp > 0) return;
             
-            // 몬스터 사망 사운드
+            // 🔥 몬스터 사망 사운드
             this.SoundManager.playMonsterDeath();
             // 플레이어 이전 레벨
             const prevLevel = this.playerStats.level;
@@ -2006,12 +1939,11 @@ export default class Center extends Phaser.Scene {
             // 죽는 애니메이션 추가 및 해당 애니메이션 종료 시점에 drop 함수 호출이 가능한지 확인
             m.destroy();
             this.count += 1
+            // this.time.delayedCall(400, () => {
+            //     if (m && m.destroy) m.destroy();
+            // });
         });
     }
-    // ===========================================================================
-
-
-
 
     // 스킬 시전 시 애니메이션 실행
     playPlayerSkillMotion(type, isHold = false) {
@@ -2055,68 +1987,65 @@ export default class Center extends Phaser.Scene {
         }
     }
 
-
-
-    // ========================= 스킬 피격 방식 메커니즘 ==========================
-    /** 도트 데미지 스킬 적용 */
-    applyDot(monster, dot) {
-        // 틱 수 설정
-        const ticks = Math.max(1, Math.floor(dot.duration / dot.interval));
-
-        for (let i = 1; i <= ticks; i++) {
-            // 설정한 interval에 따라 지연 동작
-            this.time.delayedCall(dot.interval * i, () => {
-                if (!monster || !monster.active) return;
-
-                monster.hp -= dot.damage;
-                this.showDamageText(monster, dot.damage, "#ffff66");
-                this.spawnHitFlash(monster.x, monster.y);
-                this.onMonsterAggro(monster);
-            });
-        }
-    }
-
     /**
      * 즉발 원형 광역 데미지
      * FireBomb, Meteor, Deathhand 등이 사용
      */
-    damageArea({ x, y, radius, dmg, collectTargets = false, onHit }) {
-        if (!this.monsters) return [];
+    damageArea({ x, y, radius, dmg, onHit }) {
+        if (!this.monsters || !this.boss) return;
 
-        const hitList = [];
+        let hitSomething = false;
 
-        this.monsters.children.iterate((monster) => {
-            if (!monster || !monster.active) return;
+        if (this.monsters){
+            this.monsters.children.iterate((monster) => {
+                if (!monster || !monster.active) return;
 
-            const dx = monster.x - x;
-            const dy = monster.y - y;
-            if (dx * dx + dy * dy > radius * radius) return;
+                const dx = monster.x - x;
+                const dy = monster.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
 
-            // 즉발 피해
-            monster.hp -= dmg;
-            this.showDamageText(monster, dmg, "#ffff66");
-            if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
-            if (typeof this.onMonsterAggro === "function") {
-                this.onMonsterAggro(monster);
-            }
+                monster.hp -= dmg;
+                this.showDamageText(monster, dmg, "#ffff66");
+                if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
+                if (typeof this.onMonsterAggro === "function") {
+                    this.onMonsterAggro(monster);
+                }
 
-            if (collectTargets) hitList.push(monster);
-        });
+                hitSomething = true;
+            });
+        }
+        if (this.boss){
+            this.boss.children.iterate((b) => {
+                if (!b || !b.active) return;
 
-        if (hitList.length > 0 && typeof onHit === "function") {
-            onHit();
+                const dx = b.x - x;
+                const dy = b.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
+
+                const servuntC = this.monsters.getLength();
+                dmg -= Math.round(dmg * servuntC / 10);
+                b.hp -= dmg;
+                this.showDamageText(b, dmg, "#ffff66");
+                if (this.spawnHitFlash) this.spawnHitFlash(b.x, b.y);
+                if (typeof this.onMonsterAggro === "function") {
+                    this.onMonsterAggro(b);
+                }
+
+                hitSomething = true;
+            });
         }
 
-        return hitList;
+        if (hitSomething && typeof onHit === "function") {
+            onHit();
+        }
     }
-
 
     /**
      * 한 번에 장판 안의 몬스터들에게 DoT(지속 피해) 부여
      * FlameA / FlameB / FlameC 에서 사용
      */
     applyDotArea({ x, y, radius, tickDmg, duration, interval = 400 }) {
-        if (!this.monsters) return;
+        if (!this.monsters || !this.boss) return;
 
         const dot = {
             duration,
@@ -2124,15 +2053,34 @@ export default class Center extends Phaser.Scene {
             damage: tickDmg,
         };
 
-        this.monsters.children.iterate((monster) => {
-            if (!monster || !monster.active) return;
+        if (this.monsters){
+            this.monsters.children.iterate((monster) => {
+                if (!monster || !monster.active) return;
 
-            const dx = monster.x - x;
-            const dy = monster.y - y;
-            if (dx * dx + dy * dy > radius * radius) return;
+                const dx = monster.x - x;
+                const dy = monster.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
 
-            this.applyDot(monster, dot);
-        });
+                this.applyDot(monster, dot);
+            });
+        }
+        
+        if(this.boss){
+            this.boss.children.iterate((b) => {
+                if (!b || !b.active) return;
+
+                const dx = b.x - x;
+                const dy = b.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
+
+                const servuntC = this.monsters.getLength();
+                let dmg = dot.damage;
+                dmg -= Math.round(dmg * servuntC / 10);
+                dot.damage = dmg;
+
+                this.applyDot(b, dot);
+            });
+        }
     }
 
     /**
@@ -2196,38 +2144,72 @@ export default class Center extends Phaser.Scene {
      * length = 전방 거리(px)
      */
     damageRectangle({ originX, originY, dir, width, height, length, dmg, onHit }) {
-        if (!this.monsters) return;
+        if (!this.monsters || !this.boss) return;
 
         const nx = dir.x;
         const ny = dir.y;
 
         let hitSomething = false;
 
-        this.monsters.children.iterate((monster) => {
-            if (!monster || !monster.active) return;
+        if (this.monsters){
+            this.monsters.children.iterate((monster) => {
+                if (!monster || !monster.active) return;
 
-            const vx = monster.x - originX;
-            const vy = monster.y - originY;
+                const vx = monster.x - originX;
+                const vy = monster.y - originY;
 
-            const t = vx * nx + vy * ny;
-            if (t < 0 || t > length) return;
+                const t = vx * nx + vy * ny;
+                if (t < 0 || t > length) return;
 
-            const px = nx * t;
-            const py = ny * t;
-            const lx = vx - px;
-            const ly = vy - py;
+                const px = nx * t;
+                const py = ny * t;
+                const lx = vx - px;
+                const ly = vy - py;
 
-            const halfW = width * 0.5;
-            if ((lx * lx + ly * ly) > (halfW * halfW)) return;
+                const halfW = width * 0.5;
+                if ((lx * lx + ly * ly) > (halfW * halfW)) return;
 
-            this.showDamageText(monster, dmg, "#ffff66");
-            // 🔥 데미지 적용
-            monster.hp -= dmg;
-            if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
-            this.onMonsterAggro(monster);
+                this.showDamageText(monster, dmg, "#ffff66");
+                // 🔥 데미지 적용
+                monster.hp -= dmg;
+                if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
+                this.onMonsterAggro(monster);
 
-            hitSomething = true;
-        });
+                hitSomething = true;
+            });
+        }
+
+        if (this.boss){
+            this.boss.children.iterate((b) => {
+                if (!b || !b.active) return;
+
+                const vx = b.x - originX;
+                const vy = b.y - originY;
+
+                const t = vx * nx + vy * ny;
+                if (t < 0 || t > length) return;
+
+                const px = nx * t;
+                const py = ny * t;
+                const lx = vx - px;
+                const ly = vy - py;
+
+                const halfW = width * 0.5;
+                if ((lx * lx + ly * ly) > (halfW * halfW)) return;
+                
+                const servuntC = this.monsters.getLength();
+                dmg -= Math.round(dmg * servuntC / 10);
+
+                this.showDamageText(b, dmg, "#ffff66");
+                // 🔥 데미지 적용
+                b.hp -= dmg;
+                if (this.spawnHitFlash) this.spawnHitFlash(b.x, b.y);
+                this.onMonsterAggro(b);
+
+                hitSomething = true;
+            });
+        }
+        
 
         // 🔥 명중했으면 onHit() 실행 (카메라 흔들림, 스킬 중단 등)
         if (hitSomething && typeof onHit === "function") {
@@ -2236,45 +2218,28 @@ export default class Center extends Phaser.Scene {
     }
 
 
+
     /** F 키로 다음 Scene 이동 (데이터 유지됨) */
-    moveToNextScene(portalId) {
+    moveToNextScene() {
+        // 🔥 포탈 사운드 재생
         this.SoundManager.playPortal();
 
-        // ⭐ 포탈 → 목적지 씬 매핑 테이블
-        const portalToScene = {
-            west:  "CenterEntrance",
-
-        };
-
-        const nextScene = portalToScene[portalId];
-        if (!nextScene) {
-            console.warn("Unknown portalId:", portalId);
-            return;
-        }
-
-        // 필요 시 해당 씬을 미리 add() (존재하지 않을 경우)
-        if (!this.scene.get(nextScene)) {
-            this.scene.add(nextScene, window[nextScene]); 
-            // 🔥 주의: TestScene2, TestScene3 같은 씬들은 전역에 등록되어 있어야 함
-        }
-
-        const p = this.currentPortal;
+        if(!this.scene.get('TestScene3')) this.scene.add('TestScene3', TestScene3);
 
         this.cameras.main.fadeOut(300, 0, 0, 0);
 
         this.time.delayedCall(300, () => {
-            this.scene.start(nextScene, {
+            this.scene.start("TestScene3", {
                 playerStats: this.playerStats,
                 inventoryData: this.inventoryData,
                 slotData: this.slotData,
-                fromPortal: portalId,
-                spawnX: p.x,
-                spawnY: p.y + 60
+                fromPortal: "east",
+                spawnX: this.portal.x,
+                spawnY: this.portal.y + 60
             });
         });
     }
 
-    // 저장중...
     collectPlayerData() {
         return {
             stats: this.playerStats,
@@ -2284,7 +2249,6 @@ export default class Center extends Phaser.Scene {
         };
     }
 
-    // 게임 저장 완료
     saveGame() {
         const data = this.collectPlayerData();
 
