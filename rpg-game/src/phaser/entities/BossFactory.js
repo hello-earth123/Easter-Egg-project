@@ -20,8 +20,8 @@ export function spawnBoss(scene, boss) {
 
   // 🔥 몬스터 이름별 크기 매핑 테이블
   const MONSTER_SCALE = {
-      coffin: 3.0,
-      vampire: 10.0,
+      coffin: 5.0,
+      vampire: 5.0,
   };
 
     // 몬스터 종류별 이동 애니메이션 key 매핑
@@ -78,8 +78,8 @@ export function spawnBoss(scene, boss) {
             expReward: stats.expReward,
             dropTable: def.drop,
 
-            isAggro: false,
-            isFrozen: true,
+            isAggro: true,
+            isFrozen: def.name === 'coffin',
             isKnockback: false,
             knockbackVel: new Phaser.Math.Vector2(0, 0),
             hpBar: scene.add.graphics(),
@@ -112,35 +112,50 @@ export function spawnBoss(scene, boss) {
 function CastSkill(skill, scene){
     if (BossInstance.name == 'coffin'){
         switch(skill){
-        // 기본 공격 (추적 번개)
-        case 999:
-            BossInstance.patternSet['thunder'].tryCast(scene, BossInstance);
-            cooltime(scene, 999, 2.5);
-            break;
-        case 1:
-            BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
-            cooltime(scene, 1, 50);
-            break;
-        case 2:
-            BossInstance.patternSet['fireshoot'].tryCast(scene, BossInstance);
-            cooltime(scene, 2, 30);
-            break;
-        case 3:
-            BossInstance.patternSet['hassle'].tryCast(scene, BossInstance);
-            cooltime(scene, 3, 40);
-            break;
+            // 기본 공격 (추적 번개)
+            case 999:
+                BossInstance.patternSet['thunder'].tryCast(scene, BossInstance);
+                cooltime(scene, 999, 2.5);
+                break;
+            case 1:
+                BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
+                cooltime(scene, 1, 50);
+                break;
+            case 2:
+                BossInstance.patternSet['fireshoot'].tryCast(scene, BossInstance);
+                cooltime(scene, 2, 30);
+                break;
+            case 3:
+                BossInstance.patternSet['hassle'].tryCast(scene, BossInstance);
+                cooltime(scene, 3, 40);
+                break;
         }
     }
-    else{
-        return;
+    else if (BossInstance.name == 'vampire'){
+        switch(skill){
+            case 999:
+                BossInstance.patternSet['batswarm'].tryCast(scene, BossInstance);
+                cooltime(scene, 999, 2.5);
+                break;
+            case 1:
+                BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
+                cooltime(scene, 1, 65);
+                break;
+        }
     }
 }
 
 function initPattern(scene){
-    cooltime(scene, 999, 1);
-    cooltime(scene, 1, 17);
-    cooltime(scene, 2, 10);
-    cooltime(scene, 3, 30);
+    if (BossInstance.name == 'coffin'){
+        cooltime(scene, 999, 1);    // 기본 공격
+        // cooltime(scene, 1, 17);     // 잡몹 소환
+        cooltime(scene, 2, 10);     // 탄막 슈팅
+        // cooltime(scene, 3, 30);     // 혼란
+    }
+    else if (BossInstance.name == 'vampire'){
+        cooltime(scene, 999, 1);    // 기본 공격
+        // cooltime(scene, 1, 23);     // 잡몹 소환
+    }
 }
 
 export function ChooseNextSkill(scene){

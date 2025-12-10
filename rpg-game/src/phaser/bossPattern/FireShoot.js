@@ -34,19 +34,20 @@ export class FireShoot extends BossPatternBase {
     scene.time.delayedCall(600, () => {
         for(let i=0; i<100; i++){
           scene.time.delayedCall(i * 30, () => {
-            const b = scene.pattern.create(sx, sy, "fireball");
+            const b = scene.pattern.create(sx, sy, "fireshoot");
             b.setOrigin(0.5);
 
             const scale = this.base.scale ?? 1.0;
             b.setScale(scale);
 
-            b.play("fireball");
+            b.play("fireshoot");
 
             const angle = baseAngle + (i * 13);
             const dx = Math.cos(angle);
             const dy = Math.sin(angle);
 
-            b.rotation = angle;
+            b.rotation = (i * 13) + 180;
+            // b.rotation = angle;
             
             const speed = this.base.speed ?? 500;
             b.setVelocity(dx * speed, dy * speed);

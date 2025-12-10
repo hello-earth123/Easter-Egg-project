@@ -2,6 +2,8 @@ export function preloadBossPattern(scene) {
 
     const bossPattern = [
         {key: 'thunder', file: 'thunder.png', w: 64, h: 64},
+        {key: 'fireshoot', file: 'fireshoot.png', w: 64, h: 64},
+        {key: 'batswarm', file: 'batswarm.png', w: 16, h: 16},
     ];
 
     for (const b of bossPattern) {
