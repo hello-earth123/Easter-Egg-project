@@ -889,6 +889,8 @@ export default class BossScene extends Phaser.Scene {
         // spawnMonsters(this);
         spawnBoss(this, ['coffin']);
 
+        this.isHassle = false;
+
         this.pattern = this.physics.add.group();
         this.physics.add.overlap(
             this.player,
@@ -1359,33 +1361,40 @@ export default class BossScene extends Phaser.Scene {
 
         let moving = false;
 
+        let hassle = 1;
+        let flip = true;
+        if (this.isHassle){
+            hassle *= -1;
+            flip = !flip;
+        }
+
         // 좌
         if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-CFG.moveSpeed);
-            this.player.flipX = true;
-            this.player.facing.set(-1, 0);
+            this.player.setVelocityX(CFG.moveSpeed * -hassle);
+            this.player.flipX = flip;
+            this.player.facing.set(-hassle, 0);
             moving = true;
         }
 
         // 우
         if (this.cursors.right.isDown) {
-            this.player.setVelocityX(CFG.moveSpeed);
-            this.player.flipX = false;
-            this.player.facing.set(1, 0);
+            this.player.setVelocityX(CFG.moveSpeed * hassle);
+            this.player.flipX = !flip;
+            this.player.facing.set(hassle, 0);
             moving = true;
         }
 
         // 하
         if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-CFG.moveSpeed);
-            this.player.facing.set(0, -1);
+            this.player.setVelocityY(CFG.moveSpeed * -hassle);
+            this.player.facing.set(0, -hassle);
             moving = true;
         }
 
         // 상
         if (this.cursors.down.isDown) {
-            this.player.setVelocityY(CFG.moveSpeed);
-            this.player.facing.set(0, 1);
+            this.player.setVelocityY(CFG.moveSpeed * hassle);
+            this.player.facing.set(0, hassle);
             moving = true;
         }
 

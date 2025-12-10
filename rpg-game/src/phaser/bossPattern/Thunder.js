@@ -7,18 +7,18 @@ export class Thunder extends BossPatternBase {
 
     // 예고 이펙트
     const radius = 9;
-    const g = scene.add.circle(sx, sy, 6, 0x88e0ff, 0.9);
+    const g = scene.add.circle(sx, sy, 6, 0xa30000, 0.9);
     g.setScale(1);
     scene.tweens.add({
       targets: g,
       scale: radius,
       alpha: 0.0,
-      duration: 240,
+      duration: 500,
       onComplete: () => g.destroy(),
     });
 
     // 실 패턴 사용
-    scene.time.delayedCall(500, () => {
+    scene.time.delayedCall(600, () => {
         const b = scene.pattern.create(sx, sy, "thunder");
         b.setOrigin(0.5);
 
