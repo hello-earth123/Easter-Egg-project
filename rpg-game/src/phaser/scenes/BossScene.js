@@ -889,7 +889,7 @@ export default class BossScene extends Phaser.Scene {
         this.boss = this.physics.add.group();
 
         // spawnMonsters(this);
-        spawnBoss(this, ['coffin']);
+        spawnBoss(this, ['vampire']);
 
         this.isHassle = false;
 

@@ -50,9 +50,15 @@ export const CFG = {
   },
 
   fireshoot: {
-    scale: 3.0,
+    scale: 0.8,
     baseDmg: 500,
     speed: 400,
+  },
+
+  batswarm: {
+    scale: 3.0,
+    baseDmg: 4000,
+    speed: 500,
   },
   // ======================================
 
