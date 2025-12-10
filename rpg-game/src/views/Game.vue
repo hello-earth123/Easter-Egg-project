@@ -138,6 +138,14 @@
         </div>
       </div>
       
+      <!-- 🔥 미니맵 HUD -->
+      <MiniMap 
+        :mapName="currentMapTitle"
+        :player="miniMapPlayer"
+        :monsters="miniMapMonsters"
+        :portals="miniMapPortals"
+      />
+      
       <!-- 🔥 맵 이름 표시 -->
       <div
         v-if="showMapTitle"
@@ -575,6 +583,7 @@
 <script>
 import Phaser from "phaser";
 import { sceneMap } from "../phaser/manager/sceneRegistry.js";
+import MiniMap from "../phaser/ui/MiniMap.vue";
 import { initSlot } from "../phaser/manager/slotManager.js";
 import { increaseStat, resetStat } from "../phaser/player/PlayerStats.js";
 import { saveGame } from "../phaser/manager/saveManager.js";
@@ -608,7 +617,7 @@ Chart.register(
 export default {
 
   // 컷씬 UI
-  components: { DialogueUI },
+  components: { DialogueUI, MiniMap },
 
   data() {
     return {
@@ -623,10 +632,13 @@ export default {
       skillPoints: 0, // 씬에서 들어오긴 하지만, 실제 UI는 playerLevel 기반 계산 사용
 
 
-      // 맵 표시
+      // 맵 이름, 미니맵 표시
       currentMapTitle: "",
       showMapTitle: false,
       mpaTitleTimer: null,
+      miniMapPlayer: null,
+      miniMapMonsters: [],
+      miniMapPortals: [],
 
       // 스텟창 플레이어
       playerSpriteSheet: "/static/assets/player.png",
@@ -994,8 +1006,8 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      // scene: Object.values(sceneMap),
-      scene: [BossScene],
+      scene: Object.values(sceneMap),
+      // scene: [BossScene],
     };
 
     const game = new Phaser.Game(config);
@@ -1240,6 +1252,17 @@ export default {
       }, 2200);
     },
 
+    // 미니맵 띄우기
+    updateMiniMap(payload) {
+      this.miniMapPlayer = payload.player || null;
+      this.miniMapMonsters = payload.monsters || [];
+      this.miniMapPortals = payload.portals || [];
+
+      // 맵 이름 연동
+      if (payload.mapName && this.currentMapTitle !== payload.mapName) {
+        this.currentMapTitle = payload.mapName;
+      }
+    },
 
     /* ===================
        무기 스탯 및 레이더 차트
