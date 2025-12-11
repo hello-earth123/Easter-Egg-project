@@ -119,14 +119,17 @@ function CastSkill(skill, scene){
                 BossInstance.patternSet['thunder'].tryCast(scene, BossInstance);
                 cooltime(scene, 999, 2.5);
                 break;
+            // 잡몹 소환 (마리당 10% 데미지 감소)
             case 1:
                 BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
-                cooltime(scene, 1, 50);
+                cooltime(scene, 1, 10);
                 break;
+            // 탄막 슈팅
             case 2:
                 BossInstance.patternSet['fireshoot'].tryCast(scene, BossInstance);
                 cooltime(scene, 2, 30);
                 break;
+            // 혼란
             case 3:
                 BossInstance.patternSet['hassle'].tryCast(scene, BossInstance);
                 cooltime(scene, 3, 40);
@@ -135,10 +138,16 @@ function CastSkill(skill, scene){
     }
     else if (BossInstance.name == 'vampire'){
         switch(skill){
+            // 기본 공격 (박쥐 무리)
             case 999:
                 BossInstance.patternSet['batswarm'].tryCast(scene, BossInstance);
                 cooltime(scene, 999, 2.5);
                 break;
+            // 특수 기믹
+            case 0:
+                BossInstance.patternSet['avatar'].tryCast(scene, BossInstance);
+                break;
+            // 잡몹 소환 (마리당 10% 데미지 감소)
             case 1:
                 BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
                 cooltime(scene, 1, 65);
@@ -150,7 +159,7 @@ function CastSkill(skill, scene){
 function initPattern(scene){
     if (BossInstance.name == 'coffin'){
         cooltime(scene, 999, 1);    // 기본 공격
-        cooltime(scene, 1, 17);     // 잡몹 소환
+        cooltime(scene, 1, 1);     // 잡몹 소환
         cooltime(scene, 2, 10);     // 탄막 슈팅
         cooltime(scene, 3, 30);     // 혼란
     }
@@ -188,7 +197,7 @@ export function ChooseNextSkill(scene){
     CastSkill(pattern, scene);
 }
 
-function cooltime(scene, target, cool){
+export function cooltime(scene, target, cool){
     scene.time.delayedCall(cool * 1000, () => {
         BossInstance.nextPattern.push(target);
     })
