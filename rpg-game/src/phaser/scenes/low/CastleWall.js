@@ -52,6 +52,10 @@ export default class CastleWall extends Phaser.Scene {
     constructor() {
         super({ key: "CastleWall" });
 
+        this.mapKey = "CastleWall";
+
+        this.mapName = "성벽 앞";      // 맵 이름
+
         this.textBar = "";
         this.lastArrowTap = {
             ArrowRight: 0,
@@ -355,14 +359,12 @@ export default class CastleWall extends Phaser.Scene {
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
-        console.log("colossus texture:", this.textures.get("colossus"));
 
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;
         this.FOOTSTEP_INTERVAL = 315; // 발소리 사운드 간격 (ms)
         this.isMoving = false;        // 이동 여부 flag
-        this.mapName = "성벽 앞";      // 맵 이름
         this.showMapName = true;      // ← 맵 도착 시 한 번 표시해야 함
 
         // 1. 씬 BGM

@@ -51,6 +51,11 @@ export default class Road1 extends Phaser.Scene {
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
         super({ key: "Road1" });
+        
+        this.mapKey = "Road1";
+
+        this.mapName = "도로1";        // 맵 이름
+
 
         this.textBar = "";
         this.lastArrowTap = {
@@ -365,7 +370,6 @@ export default class Road1 extends Phaser.Scene {
         this.footstepCooldown = 0;
         this.FOOTSTEP_INTERVAL = 315; // 발소리 사운드 간격 (ms)
         this.isMoving = false;        // 이동 여부 flag
-        this.mapName = "도로1";        // 맵 이름
         this.showMapName = true;      // ← 맵 도착 시 한 번 표시해야 함
         // 1. 씬 BGM
         this.SoundManager.playBgm("bgm_road")
