@@ -138,7 +138,7 @@ export function spawnMonsters(scene) {
         for (let i = 0; i < scene.monsterData[def.name]; i++) {
           const sx = Phaser.Math.Between(200, CFG.world.width - 200);
           const sy = Phaser.Math.Between(200, CFG.world.height - 200);
-          let creatTime = 0;
+          let createTime = 0;
 
           if (scene.boss){
             // 예고 이펙트
@@ -152,10 +152,10 @@ export function spawnMonsters(scene) {
               duration: 600,
               onComplete: () => g.destroy(),
             });
-            creatTime = 700;
+            createTime = 700;
           }
 
-          scene.time.delayedCall(creatTime, () => {
+          scene.time.delayedCall(createTime, () => {
             // scene에 몬스터 추가
             const m = scene.monsters.create(
               sx,

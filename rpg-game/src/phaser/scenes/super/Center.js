@@ -372,6 +372,7 @@ export default class Center extends Phaser.Scene {
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
+        console.log("Frame count:", this.textures.get('colossus').frameTotal);
         
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
@@ -2129,6 +2130,32 @@ export default class Center extends Phaser.Scene {
             // 4) 그 외에는 “짧게 왔다갔다” 배회
             this.updateMonsterWander(m, now);
         });
+
+        if (this.boss){
+            this.boss.children.iterate((m) => {
+                if (!m || !m.active) return;
+                // 2) 얼음(빙결) 상태면 멈춤
+                if (m.isFrozen) {
+                    m.setVelocity(0);
+                    return;
+                }
+
+                // 3) 어그로 상태면 플레이어 추격 (기존 로직 유지)
+                if (m.isAggro) {
+                    this.physics.moveToObject(m, this.player, 95);
+
+                    // 🔥 추격 방향에 따라 좌우 반전
+                    const vx = m.body?.velocity?.x ?? 0;
+                    if (vx < 0) m.flipX = false;
+                    else if (vx > 0) m.flipX = true;
+
+                    return;
+                }
+
+                // 4) 그 외에는 “짧게 왔다갔다” 배회
+                this.updateMonsterWander(m, now);
+            });
+        }
     }
 
     /** 배회 타겟 좌표 새로 지정 */

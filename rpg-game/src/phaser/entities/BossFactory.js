@@ -43,7 +43,7 @@ export function spawnBoss(scene, boss) {
     .then(res => res.json())
     .then(data => {
       data.forEach((def) => {
-        BossInstance = scene.boss.create(200, 608, def.name);
+        BossInstance = scene.boss.create(1400, 608, def.name);
 
         const scale = MONSTER_SCALE[def.name] ?? 1.5;
         BossInstance.setScale(scale);
