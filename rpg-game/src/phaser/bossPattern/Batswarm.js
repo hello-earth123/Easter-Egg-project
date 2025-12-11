@@ -39,7 +39,7 @@ export class Batswarm extends BossPatternBase {
 
                     b.damage = this.getDamage();
 
-                    scene.time.delayedCall(800, () => {
+                    scene.time.delayedCall(2000, () => {
                         if (b && b.active) b.destroy();
                     });
                 }

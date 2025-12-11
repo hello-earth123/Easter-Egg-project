@@ -43,7 +43,7 @@ export function spawnBoss(scene, boss) {
     .then(res => res.json())
     .then(data => {
       data.forEach((def) => {
-        BossInstance = scene.boss.create(200, 608, def.name);
+        BossInstance = scene.boss.create(1400, 608, def.name);
 
         const scale = MONSTER_SCALE[def.name] ?? 1.5;
         BossInstance.setScale(scale);
@@ -148,9 +148,9 @@ function CastSkill(skill, scene){
 function initPattern(scene){
     if (BossInstance.name == 'coffin'){
         cooltime(scene, 999, 1);    // 기본 공격
-        // cooltime(scene, 1, 17);     // 잡몹 소환
+        cooltime(scene, 1, 17);     // 잡몹 소환
         cooltime(scene, 2, 10);     // 탄막 슈팅
-        // cooltime(scene, 3, 30);     // 혼란
+        cooltime(scene, 3, 30);     // 혼란
     }
     else if (BossInstance.name == 'vampire'){
         cooltime(scene, 999, 1);    // 기본 공격
