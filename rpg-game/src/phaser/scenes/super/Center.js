@@ -14,6 +14,7 @@ import { spawnMonsters } from "../../entities/TestMonsterFactory.js";
 import { FloatingText } from "../../effects/FloatingText.js";
 import { preloadFireSkillAssets } from "../../preload/preloadFireSkills.js";
 import { createFireSkillAnims } from "../../preload/createFireSkillAnims.js";
+
 // import TestScene3 from "./TestScene3.js";
 import { setCurrentScene } from "../../manager/sceneRegistry.js";
 import SoundManager from "../../manager/SoundManager.js";
@@ -93,6 +94,31 @@ export default class Center extends Phaser.Scene {
 
         this.itemList = ['hpPotion', 'mpPotion', 'damageGemLow', 'damageGemMid', 'damageGemHigh', 'damageGemSuper', 'cooldownGemLow', 'cooldownGemMid', 'cooldownGemHigh', 'cooldownGemSuper', 'manaCostGemLow', 'manaCostGemMid', 'manaCostGemHigh', 'manaCostGemSuper', 'defenseGemLow', 'defenseGemMid', 'defenseGemHigh', 'defenseGemSuper', 'luckGemLow', 'luckGemMid', 'luckGemHigh', 'luckGemSuper'];
         this.skills;
+
+        this.itemShow = {
+        hpPotion: 'HP 포션',
+        mpPotion: 'MP 포션',
+        damageGemLow: '하급 보석 (데미지)',
+        damageGemMid: '중급 보석 (데미지)',
+        damageGemHigh: '상급 보석 (데미지)',
+        damageGemSuper: '특급 보석 (데미지)',
+        cooldownGemLow: '하급 보석 (쿨타임)',
+        cooldownGemMid: '중급 보석 (쿨타임)',
+        cooldownGemHigh: '상급 보석 (쿨타임)',
+        cooldownGemSuper: '특급 보석 (쿨타임)',
+        manaCostGemLow: '하급 보석 (마나 소모)',
+        manaCostGemMid: '중급 보석 (마나 소모)',
+        manaCostGemHigh: '상급 보석 (마나 소모)',
+        manaCostGemSuper: '특급 보석 (마나 소모)',
+        defenseGemLow: '하급 보석 (방어력)',
+        defenseGemMid: '중급 보석 (방어력)',
+        defenseGemHigh: '상급 보석 (방어력)',
+        defenseGemSuper: '특급 보석 (방어력)',
+        luckGemLow: '하급 보석 (행운)',
+        luckGemMid: '중급 보석 (행운)',
+        luckGemHigh: '상급 보석 (행운)',
+        luckGemSuper: '특급 보석 (행운)',
+        }
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -111,7 +137,18 @@ export default class Center extends Phaser.Scene {
         });
         // 몬스터 PNG 로드
         // arrow_skeleton
+        // arrow_skeleton
         this.load.spritesheet("arrow_skeleton", "/static/assets/monsters/arrow_skeleton.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // bat
+        this.load.spritesheet("bat", "/static/assets/monsters/bat.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // bird
+        this.load.spritesheet("bird", "/static/assets/monsters/bird.png", {
             frameWidth: 16,
             frameHeight: 16,
         });
@@ -119,8 +156,8 @@ export default class Center extends Phaser.Scene {
         this.load.spritesheet("butterfly", "/static/assets/monsters/butterfly.png", {
             frameWidth: 16,
             frameHeight: 16,
-        // coffin
         });
+        // coffin
         this.load.spritesheet("coffin", "/static/assets/monsters/coffin.png", {
             frameWidth: 16,
             frameHeight: 16,
@@ -130,18 +167,146 @@ export default class Center extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16,
         });
-
+        // dwarf
+        this.load.spritesheet("dwarf", "/static/assets/monsters/dwarf.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // eyeball
+        this.load.spritesheet("eyeball", "/static/assets/monsters/eyeball.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // eyebat
+        this.load.spritesheet("eyebat", "/static/assets/monsters/eyebat.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // fire_skull1
+        this.load.spritesheet("fire_skull1", "/static/assets/monsters/fire_skull1.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // fire_skull2
+        this.load.spritesheet("fire_skull2", "/static/assets/monsters/fire_skull2.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // ghost
+        this.load.spritesheet("ghost", "/static/assets/monsters/ghost.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // lich
+        this.load.spritesheet("lich", "/static/assets/monsters/lich.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // mask
+        this.load.spritesheet("mask", "/static/assets/monsters/mask.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // mimic
+        this.load.spritesheet("mimic", "/static/assets/monsters/mimic.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // moai-b
+        this.load.spritesheet("moai-b", "/static/assets/monsters/moai-b.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // moai-s
+        this.load.spritesheet("moai-s", "/static/assets/monsters/moai-s.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // moai-g
+        this.load.spritesheet("moai-g", "/static/assets/monsters/moai-g.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // mummy
+        this.load.spritesheet("mummy", "/static/assets/monsters/mummy.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // mushroom
+        this.load.spritesheet("mushroom", "/static/assets/monsters/mushroom.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // rabbit
+        this.load.spritesheet("rabbit", "/static/assets/monsters/rabbit.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // reaper
+        this.load.spritesheet("reaper", "/static/assets/monsters/reaper.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        //scorpion
+        this.load.spritesheet("scorpion", "/static/assets/monsters/scorpion.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
         // skeleton
         this.load.spritesheet("skeleton", "/static/assets/monsters/skeleton.png", {
             frameWidth: 16,
             frameHeight: 16,
         });
-   
+        // skull_b
+        this.load.spritesheet("skull_b", "/static/assets/monsters/skull_b.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // skull_w
+        this.load.spritesheet("skull_w", "/static/assets/monsters/skull_w.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });   
+        // slime
+        this.load.spritesheet("slime", "/static/assets/monsters/slime.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // snail
+        this.load.spritesheet("snail", "/static/assets/monsters/snail.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });       
+        // snake
+        this.load.spritesheet("snake", "/static/assets/monsters/snake.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });   
+        // squirrel
+        this.load.spritesheet("squirrel", "/static/assets/monsters/squirrel.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // stingsnake
+        this.load.spritesheet("stingsnake", "/static/assets/monsters/stingsnake.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });       
         // vampire
         this.load.spritesheet("vampire", "/static/assets/monsters/vampire.png", {
             frameWidth: 16,
             frameHeight: 16,
-        }); 
+        });
+        // weapon
+        this.load.spritesheet("weapon", "/static/assets/monsters/weapon.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        // wolf
+        this.load.spritesheet("wolf", "/static/assets/monsters/wolf.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });   
         
         // ==================== 사운드 ========================
         // BGM
@@ -197,11 +362,6 @@ export default class Center extends Phaser.Scene {
 
         for (const key of this.itemList) {
             this.load.image(key, `static/assets/${key}.png`)
-        }
-
-        for (const key of Object.keys(this.monsterData)) {
-            // assets 경로는 key에 맞게 문자열 생성
-            this.load.image(key, `/static/assets/${key}.png`);
         }
 
         preloadFireSkillAssets(this);
@@ -266,54 +426,8 @@ export default class Center extends Phaser.Scene {
             repeat: 0
         });
 
- 
-        // arrow_skeleton
-        this.anims.create({
-            key: "arrow_skeleton_walk",
-            frames: this.anims.generateFrameNumbers("arrow_skeleton", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-  
-        // butterfly
-        this.anims.create({
-            key: "butterfly_walk",
-            frames: this.anims.generateFrameNumbers("butterfly", { start: 0, end: 2 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // coffin
-        this.anims.create({
-            key: "coffin_walk",
-            frames: this.anims.generateFrameNumbers("coffin", { start: 0, end: 10 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // colossus
-        this.anims.create({
-            key: "colossus_walk",
-            frames: this.anims.generateFrameNumbers("colossus", { start: 0, end: 6 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-   
-        // skeleton
-        this.anims.create({
-            key: "skeleton_walk",
-            frames: this.anims.generateFrameNumbers("skeleton", { start: 0, end: 8 }),
-            frameRate: 8,
-            repeat: -1,
-        });  
-     
-        // vampire
-        this.anims.create({
-            key: "vampire_walk",
-            frames: this.anims.generateFrameNumbers("vampire", { start: 0, end: 11 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-       
-        // =========================
+
+                // =========================
         // === 스킬 모션 애니메이션 ===
         // fireball / firebomb / incendiary / napalm
         this.anims.create({
@@ -366,6 +480,248 @@ export default class Center extends Phaser.Scene {
             flameB: "big",
             flameC: "big",
         };
+
+
+        // arrow_skeleton
+        this.anims.create({
+            key: "arrow_skeleton_walk",
+            frames: this.anims.generateFrameNumbers("arrow_skeleton", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // bat
+        this.anims.create({
+            key: "bat_walk",
+            frames: this.anims.generateFrameNumbers("bat", { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // bird
+        this.anims.create({
+            key: "bird_walk",
+            frames: this.anims.generateFrameNumbers("bird", { start: 0, end: 7 }),
+            frameRate: 8,
+            repeat: -1,
+        });      
+        // butterfly
+        this.anims.create({
+            key: "butterfly_walk",
+            frames: this.anims.generateFrameNumbers("butterfly", { start: 0, end: 2 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // coffin
+        this.anims.create({
+            key: "coffin_walk",
+            frames: this.anims.generateFrameNumbers("coffin", { start: 0, end: 10 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // colossus
+        this.anims.create({
+            key: "colossus_walk",
+            frames: this.anims.generateFrameNumbers("colossus", { start: 0, end: 6 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // dwarf
+        this.anims.create({
+            key: "dwarf_walk",
+            frames: this.anims.generateFrameNumbers("dwarf", { start: 0, end: 7 }),
+            frameRate: 8,
+            repeat: -1,
+        });  
+        // eyeball
+        this.anims.create({
+            key: "eyeball_walk",
+            frames: this.anims.generateFrameNumbers("eyeball", { start: 0, end: 14 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // eyebat
+        this.anims.create({
+            key: "eyebat_walk",
+            frames: this.anims.generateFrameNumbers("eyebat", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // fire_skull1
+        this.anims.create({
+            key: "fire_skull1_walk",
+            frames: this.anims.generateFrameNumbers("fire_skull1", { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1,
+        });       
+        // fire_skull2
+        this.anims.create({
+            key: "fire_skull2_walk",
+            frames: this.anims.generateFrameNumbers("fire_skull2", { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // ghost
+        this.anims.create({
+            key: "ghost_walk",
+            frames: this.anims.generateFrameNumbers("ghost", { start: 0, end: 7 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // lich
+        this.anims.create({
+            key: "lich_walk",
+            frames: this.anims.generateFrameNumbers("lich", { start: 0, end: 7 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // mask
+        this.anims.create({
+            key: "mask_walk",
+            frames: this.anims.generateFrameNumbers("mask", { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // mimic
+        this.anims.create({
+            key: "mimic_walk",
+            frames: this.anims.generateFrameNumbers("mimic", { start: 0, end: 9 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // moai-b
+        this.anims.create({
+            key: "moai-b_walk",
+            frames: this.anims.generateFrameNumbers("moai-b", { start: 0, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // moai-s
+        this.anims.create({
+            key: "moai-s_walk",
+            frames: this.anims.generateFrameNumbers("moai-s", { start: 0, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // moai-g
+        this.anims.create({
+            key: "moai-g_walk",
+            frames: this.anims.generateFrameNumbers("moai-g", { start: 0, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // mummy
+        this.anims.create({
+            key: "mummy_walk",
+            frames: this.anims.generateFrameNumbers("mummy", { start: 0, end: 9 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // mushroom
+        this.anims.create({
+            key: "mushroom_walk",
+            frames: this.anims.generateFrameNumbers("mushroom", { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // rabbit
+        this.anims.create({
+            key: "rabbit_walk",
+            frames: this.anims.generateFrameNumbers("rabbit", { start: 0, end: 6 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // reaper
+        this.anims.create({
+            key: "reaper_walk",
+            frames: this.anims.generateFrameNumbers("reaper", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // scorpion
+        this.anims.create({
+            key: "scorpion_walk",
+            frames: this.anims.generateFrameNumbers("scorpion", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // skeleton
+        this.anims.create({
+            key: "skeleton_walk",
+            frames: this.anims.generateFrameNumbers("skeleton", { start: 0, end: 8 }),
+            frameRate: 8,
+            repeat: -1,
+        });  
+        // skull_b
+        this.anims.create({
+            key: "skull_b_walk",
+            frames: this.anims.generateFrameNumbers("skull_b", { start: 0, end: 12 }),
+            frameRate: 8,
+            repeat: -1,
+        });  
+        // skull_w
+        this.anims.create({
+            key: "skull_w_walk",
+            frames: this.anims.generateFrameNumbers("skull_w", { start: 0, end: 12 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // slime
+        this.anims.create({
+            key: "slime_walk",
+            frames: this.anims.generateFrameNumbers("slime", { start: 0, end: 15 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // snail
+        this.anims.create({
+            key: "snail_walk",
+            frames: this.anims.generateFrameNumbers("snail", { start: 0, end: 11 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // snake
+        this.anims.create({
+            key: "snake_walk",
+            frames: this.anims.generateFrameNumbers("snake", { start: 0, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // squirrel
+        this.anims.create({
+            key: "squirrel_walk",
+            frames: this.anims.generateFrameNumbers("squirrel", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // stingsnake
+        this.anims.create({
+            key: "stingsnake_walk",
+            frames: this.anims.generateFrameNumbers("stingsnake", { start: 0, end: 4 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // vampire
+        this.anims.create({
+            key: "vampire_walk",
+            frames: this.anims.generateFrameNumbers("vampire", { start: 0, end: 11 }),
+            frameRate: 8,
+            repeat: -1,
+        });
+        // weapon
+        this.anims.create({
+            key: "weapon_walk",
+            frames: this.anims.generateFrameNumbers("weapon", { start: 0, end: 5 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+        // wolf
+        this.anims.create({
+            key: "wolf_walk",
+            frames: this.anims.generateFrameNumbers("wolf", { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1,
+        }); 
+       
+
 
         this.uiState = {
             inventory: false,
@@ -1827,7 +2183,7 @@ export default class Center extends Phaser.Scene {
     updateMonsterWander(monster, now) {
         if (!monster) return;
 
-        // 🔥 몬스터별 walk 애니메이션 선택
+        // 몬스터별 walk 애니메이션 선택
         const animKey = this.monsterWalkAnim[monster.name];
         if (animKey) {
             if (!monster.anims.isPlaying || monster.anims.currentAnim.key !== animKey) {

@@ -151,6 +151,11 @@ export default class CastleWall extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16,
         });
+        // colossus
+        this.load.spritesheet("colossus", "/static/assets/monsters/colossus.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
         // dwarf
         this.load.spritesheet("dwarf", "/static/assets/monsters/dwarf.png", {
             frameWidth: 16,
@@ -350,7 +355,8 @@ export default class CastleWall extends Phaser.Scene {
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
-        
+        console.log("colossus texture:", this.textures.get("colossus"));
+
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;

@@ -90,7 +90,6 @@ export function spawnMonsters(scene) {
       vampire: "vampire_walk",
       weapon: "weapon_walk",
       wolf: "wolf_walk",
-      hidden: "hidden_walk",
   };
 
   const MONSTER_HITBOX = {

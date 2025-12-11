@@ -154,6 +154,11 @@ export default class MortuaryRoomSouth extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16,
         });
+        // colossus
+        this.load.spritesheet("colossus", "/static/assets/monsters/colossus.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
         // dwarf
         this.load.spritesheet("dwarf", "/static/assets/monsters/dwarf.png", {
             frameWidth: 16,
