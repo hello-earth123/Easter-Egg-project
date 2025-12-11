@@ -25,7 +25,7 @@ import { loadGame } from "../../manager/saveManager.js";
 import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
 
 // testing
-import { spawnBoss, ChooseNextSkill } from "../../entities/BossFactory.js";
+import { spawnBoss, ChooseNextSkill, cooltime } from "../../entities/BossFactory.js";
 import { preloadBossPattern } from "../../preload/preloadBossPattern.js";
 import { createBossPattern } from "../../preload/createBossPattern.js";
 
@@ -883,9 +883,13 @@ export default class Center extends Phaser.Scene {
             });
         }
         this.physics.add.collider(this.monsters, this.wallGroup);
+        this.physics.add.overlap(this.monsters, this.wallGroup, (monster, wall) => {
+            // 동작 안되는 중 (image 없는 collider의 크기가 1 * 1로 설정됨)
+            this.physics.world.separate(monster.body, wall.body);
+        })
         this.physics.add.collider(this.player, this.wallGroup);
         this.physics.add.collider(this.items, this.wallGroup);
-        this.physics.add.collider(this.bullets, this.wallGroup, (bullet, target) => {
+        this.physics.add.collider(this.bullets, this.wallGroup, (bullet, wall) => {
             bullet.destroy();
         });
         this.physics.add.collider(this.boss, this.wallGroup);
@@ -1180,9 +1184,16 @@ export default class Center extends Phaser.Scene {
 
         const boss = this.boss.getFirstAlive();
         ChooseNextSkill(this);
+        
+        // 특수 기믹 발동
         if (boss && !boss.doAvatar && boss.hp <= boss.maxHp * 0.3){
             console.log('12315213441');
-            // avatar 기믹 추가
+            boss.doAvatar = true;
+            cooltime(this, 0, 1);
+        }
+        // 특수 기믹 재사용 가능
+        if (boss && boss.doAvatar && boss.hp > boss.maxHp * 0.3){
+            boss.doAvatar = false;
         }
 
         // 🔥 이동 중일 때 일정 간격으로 발소리 재생

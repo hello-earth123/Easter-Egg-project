@@ -4,6 +4,7 @@ import { Summons } from "./summons.js";
 import { FireShoot } from "./FireShoot.js";
 import { Hassle } from "./Hassle.js";
 import { Batswarm } from "./Batswarm.js";
+import { Avatar } from "./Avatar.js";
 
 export function createDefaultPatterns() {
     return {
@@ -11,6 +12,8 @@ export function createDefaultPatterns() {
         summons: new Summons('summons'),
         fireshoot: new FireShoot('fireshoot', CFG.fireshoot),
         hassle: new Hassle('hassle'),
+
         batswarm: new Batswarm('batswarm', CFG.batswarm),
+        avatar: new Avatar('avatar'),
     };
 }
