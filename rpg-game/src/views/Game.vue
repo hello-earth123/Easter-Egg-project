@@ -635,7 +635,7 @@ export default {
       // 맵 이름, 미니맵 표시
       currentMapTitle: "",
       showMapTitle: false,
-      mpaTitleTimer: null,
+      mapTitleTimer: null,
       miniMapPlayer: null,
       miniMapMonsters: [],
       miniMapPortals: [],
@@ -1066,16 +1066,17 @@ export default {
 
     // Vue ← Phaser 동기화
     this.pollTimer = setInterval(() => {
-      const main = Object.values(game.scene.keys).find((s) =>
-        s.scene.isActive()
-      );
+      const main = game.scene.getScenes(true)[0];
+
       this.scene = main;
       
       // 맵 이름 띄우기
       if (main.mapName && this.currentMapTitle !== main.mapName) {
-          this.currentMapTitle = main.mapName;
-          this.triggerMapTitle(); // 맵 이름 띄우기
+        this.currentMapTitle = main.mapName;
+        this.triggerMapTitle();
       }
+
+
 
       if (!main || !main.playerStats) return;
 
@@ -1254,6 +1255,13 @@ export default {
       this.mapTitleTimer = setTimeout(() => {
         this.showMapTitle = false;
       }, 2200);
+    },
+
+    setMapTitle(name) {
+      // console.log("[Vue] 맵 이름 갱신됨:", name);
+
+      this.currentMapTitle = name;
+      this.triggerMapTitle();   // 배너 표시
     },
 
     // 미니맵 띄우기
@@ -2023,7 +2031,7 @@ export default {
   height: 700px;
   background: #000;
   position: relative;
-  overflow: hidden;
+
 }
 
 /* ===================== 오버레이 HUD 공통 ===================== */

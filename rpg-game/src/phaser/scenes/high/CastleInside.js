@@ -364,6 +364,9 @@ export default class CastleInside extends Phaser.Scene {
     create() {
         setCurrentScene(this);
         
+        if (this.game.vue?.setMapTitle) {
+            this.game.vue.setMapTitle(this.mapName);
+        }
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;
