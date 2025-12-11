@@ -359,7 +359,6 @@ export default class CastleWall extends Phaser.Scene {
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
-        console.log("colossus texture:", this.textures.get("colossus"));
 
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
