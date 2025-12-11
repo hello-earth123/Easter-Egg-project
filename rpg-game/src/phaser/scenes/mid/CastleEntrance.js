@@ -364,7 +364,9 @@ export default class CastleEntrance extends Phaser.Scene {
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
-        
+        if (this.game.vue?.setMapTitle) {
+            this.game.vue.setMapTitle(this.mapName);
+        }
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;
@@ -1036,6 +1038,8 @@ export default class CastleEntrance extends Phaser.Scene {
         this.time.delayedCall(500, () => {
             this.cutscene.play(introScript);
         });
+
+        // === 이 씬이 활성 씬임을 Vue에게 강제로 통보 ===
     }
     // ===========================================================================
 

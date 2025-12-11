@@ -363,7 +363,9 @@ export default class Corridor3 extends Phaser.Scene {
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
-        
+        if (this.game.vue?.setMapTitle) {
+            this.game.vue.setMapTitle(this.mapName);
+        }        
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;
