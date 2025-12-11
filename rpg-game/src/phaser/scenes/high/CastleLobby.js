@@ -52,6 +52,10 @@ export default class CastleLobby extends Phaser.Scene {
     constructor() {
         super({ key: "CastleLobby" });
 
+        this.mapKey = "CastleLobby";
+
+        this.mapName = "성 로비";      // 맵 이름
+
         this.textBar = "";
         this.lastArrowTap = {
             ArrowRight: 0,
@@ -365,7 +369,6 @@ export default class CastleLobby extends Phaser.Scene {
         this.footstepCooldown = 0;
         this.FOOTSTEP_INTERVAL = 315; // 발소리 사운드 간격 (ms)
         this.isMoving = false;        // 이동 여부 flag
-        this.mapName = "성 로비";      // 맵 이름
         this.showMapName = true;      // ← 맵 도착 시 한 번 표시해야 함
         
         // 1. 씬 BGM

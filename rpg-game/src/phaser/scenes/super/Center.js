@@ -59,6 +59,10 @@ export default class Center extends Phaser.Scene {
     constructor() {
         super({ key: "Center" });
 
+        this.mapKey = "Center";
+
+        this.mapName = "성 중앙";      // 맵 이름
+
         this.textBar = "";
         this.lastArrowTap = {
             ArrowRight: 0,
@@ -379,7 +383,6 @@ export default class Center extends Phaser.Scene {
         this.footstepCooldown = 0;
         this.FOOTSTEP_INTERVAL = 315; // 발소리 간격 (ms)
         this.isMoving = false;        // 이동 여부 flag
-        this.mapName = "성 중앙";      // 맵 이름
         this.showMapName = true;      // ← 맵 도착 시 한 번 표시해야 함
 
         // 1. 씬 BGM

@@ -14,7 +14,7 @@ function collectPlayerData(skillState) {
 export function saveGame(skillState) {
     const data = collectPlayerData(skillState);
     const scene = getCurrentScene();
-
+    
     fetch("http://127.0.0.1:8000/api/save_game/3/", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
