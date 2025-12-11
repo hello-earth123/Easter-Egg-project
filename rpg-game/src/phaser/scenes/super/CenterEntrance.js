@@ -359,6 +359,7 @@ export default class CenterEntrance extends Phaser.Scene {
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
+        console.log("CREATE:", this.sys.settings.key);
         
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();

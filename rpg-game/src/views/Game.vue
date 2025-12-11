@@ -1006,12 +1006,16 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
-      scene: Object.values(sceneMap),
+      // scene: Object.values(sceneMap),
       // scene: [BossScene],
     };
 
     const game = new Phaser.Game(config);
+    window.game = game;
     this.game = game;
+    Object.entries(sceneMap).forEach(([key, scene]) => {
+      game.scene.add(key, scene, false);
+    });
     game.scene.start(lastScene);
 
     // 🔥 Vue 인스턴스를 Phaser game에 연결

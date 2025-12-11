@@ -867,23 +867,25 @@ export default class Center extends Phaser.Scene {
             this
         );
 
+        this.wallGroup = this.physics.add.staticGroup();
         if (collisionObjects && collisionObjects.objects) {
             collisionObjects.objects.forEach(obj => {
                 const x = obj.x + obj.width / 2;
                 const y = obj.y + obj.height / 2; // Tiled y 기준 보정
 
-                const collider = this.add.rectangle(x, y, obj.width, obj.height)
-                    .setOrigin(0.5, 0.5);
-
-                // Arcade Physics body 추가
-                this.physics.add.existing(collider, true); // true = static body
-                this.physics.add.collider(this.monsters, collider);
-                this.physics.add.collider(this.player, collider);
-                this.physics.add.collider(this.items, collider);
-                this.physics.add.collider(this.bullets, collider);
-                this.physics.add.collider(this.boss, collider);
+                const collider = this.wallGroup.create(x, y)
+                    .setSize(obj.width, obj.height)
+                    .setOrigin(0.5, 0.5)
+                    .setVisible(false);
             });
         }
+        this.physics.add.collider(this.monsters, this.wallGroup);
+        this.physics.add.collider(this.player, this.wallGroup);
+        this.physics.add.collider(this.items, this.wallGroup);
+        this.physics.add.collider(this.bullets, this.wallGroup, (bullet, target) => {
+            bullet.destroy();
+        });
+        this.physics.add.collider(this.boss, this.wallGroup);
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -1134,8 +1136,6 @@ export default class Center extends Phaser.Scene {
     useItemShortcut(idx) {
         const slot = this.slotData.itemSlots[idx];
 
-        console.log(slot)
-
         // slot이 빈 경우, 시스템 메세지 출력 및 미동작
         if (!slot) return (this.textBar = "단축키에 아이템 없음");
 
@@ -1175,7 +1175,12 @@ export default class Center extends Phaser.Scene {
         this.checkMonstersDeath();
         this.updateMonsterHud();
 
+        const boss = this.boss.getFirstAlive();
         ChooseNextSkill(this);
+        if (boss && !boss.doAvatar && boss.hp <= boss.maxHp * 0.3){
+            console.log('12315213441');
+            // avatar 기믹 추가
+        }
 
         // 🔥 이동 중일 때 일정 간격으로 발소리 재생
         if (this.isMoving && this.footstepCooldown <= 0) {

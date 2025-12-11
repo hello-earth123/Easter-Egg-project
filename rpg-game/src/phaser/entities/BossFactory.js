@@ -102,6 +102,8 @@ export function spawnBoss(scene, boss) {
             patternSet: createDefaultPatterns(),
             nextPattern: new Heap((a, b) => a - b),
             isInit: false,
+
+            doAvatar: false,
         });
 
         BossInstance.setCollideWorldBounds(true);

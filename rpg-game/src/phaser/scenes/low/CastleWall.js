@@ -50,7 +50,7 @@ export default class CastleWall extends Phaser.Scene {
 
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
-        super({ key: "CastleWall" });
+        super({ key: "CastleWall", active: false });
 
         this.textBar = "";
         this.lastArrowTap = {
@@ -355,7 +355,7 @@ export default class CastleWall extends Phaser.Scene {
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
-        console.log("colossus texture:", this.textures.get("colossus"));
+        console.log("CREATE:", this.sys.settings.key);
 
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
