@@ -80,7 +80,7 @@ export const CFG = {
     scale: 3.0,            // 작은 탄
     vfx: "trail_fast",     // 빠르게 움직이는 발사체
 
-    description: "마법에 조예가 있다면 누구나 쓸 수 있는 기초 마법이다. 전방으로 작은 불덩이를 쏘아낸다.",
+    description: "마법에 조예가 있다면 누구나 쓸 수 있는 기초 마법이다.\n 전방으로 작은 불덩이를 쏘아낸다.",
 
   },
 
@@ -99,7 +99,7 @@ export const CFG = {
     scale: 1.3,
     vfx: "buff_aura",
 
-    description: "마나의 축복이 있으리라. 짧은 시간 체력과 마나의 상한선이 증가한다.",
+    description: "마나의 축복이 있으리라.\n 짧은 시간 체력과 마나의 상한선이 증가한다.",
   },
 
   // Flame A (1타)
@@ -121,7 +121,7 @@ export const CFG = {
     scale: 1.5,
     vfx: "flame_pulse",
 
-    description: "지열을 한 곳에 모아 뿜어내는 마법이다. 전방에 불기둥을 소환하며 일정 시간 화상 데미지를 입힌다."
+    description: "지열을 한 곳에 모아 뿜어내는 마법이다.\n 전방에 불기둥을 소환하며 일정 시간 화상 데미지를 입힌다."
   },
 
   // Flame B (1타 + 전방 한 칸 추가)
@@ -143,7 +143,7 @@ export const CFG = {
     scale: 1.8,
     vfx: "flame_pulse",
 
-    description: "지열에 더해, 자신의 마나로 더 넓은 영역에 열기를 뿜어낸다. 전방에 크고 강력한 불기둥을 2개 소환하며 일정 시간 화상 데미지를 입힌다."
+    description: "지열에 더해, 자신의 마나로 더 넓은 영역에 열기를 뿜어낸다.\n 전방에 크고 강력한 불기둥을 2개 소환하며 일정 시간 화상 데미지를 입힌다."
   },
 
   // Flame C (십자 5방)
@@ -166,7 +166,7 @@ export const CFG = {
     scale: 1.3,
     vfx: "flame_pulse",
 
-    description: "방대한 마나를 사용하여 작은 열기만으로도 큰 효과를 불러일으키는 상급 마법이다. 전방에 매우 크고 강력한 불기둥을 4개 소환하며 일정 시간 화상 데미지를 입힌다."
+    description: "방대한 마나를 사용하여 작은 열기만으로도 큰 효과를 불러일으키는 상급 마법이다.\n 전방에 매우 크고 강력한 불기둥을 4개 소환하며 일정 시간 화상 데미지를 입힌다."
   },
 
   // Firebomb
@@ -185,7 +185,7 @@ export const CFG = {
     scale: 1.8,
     vfx: "explosion_big",
 
-    description: "예술은 폭발이다! 전방에 극한으로 압축한 불꽃을 생성하여 폭발시킨다.",
+    description: "예술은 폭발이다!\n 전방에 극한으로 압축한 불꽃을 생성하여 폭발시킨다.",
   },
 
   // Incendiary (화염 방사기)
@@ -210,7 +210,7 @@ export const CFG = {
     scale: 2.0,
     vfx: "cone_flame",
 
-    description: "Need a light? 화염을 전방으로 발사한다. 사용 중에 움직일 수 없다.",
+    description: "Need a light?\n 화염을 전방으로 발사한다. 사용 중에 움직일 수 없다.",
   },
 
   // Meteor S
@@ -233,7 +233,7 @@ export const CFG = {
     scale: 2.0,
     vfx: "meteor_small",
 
-    description: "이 마법을 개발한 사람은 호브라는 괴물이 되었다는 소문이 있다. 2개의 불덩이를 소환하여 전방 범위에 낙하시킨다."
+    description: "이 마법을 개발한 사람은 호브라는 괴물이 되었다는 소문이 있다.\n 2개의 불덩이를 소환하여 전방 범위에 낙하시킨다."
   },
 
   // Meteor M
@@ -255,7 +255,7 @@ export const CFG = {
     scale: 2.0,
     vfx: "meteor_medium",
 
-    description: "이 마법을 개발한 사람은 호브라는 괴물이 되었다는 소문이 있다. 3개의 불덩이를 소환하여 전방 범위에 낙하시킨다."
+    description: "이 마법을 개발한 사람은 호브라는 괴물이 되었다는 소문이 있다.\n 3개의 불덩이를 소환하여 전방 범위에 낙하시킨다."
 
   },
 
@@ -278,7 +278,7 @@ export const CFG = {
     scale: 2.5,
     vfx: "meteor_large",
 
-    description: "이 마법을 개발한 사람은 호브라는 괴물이 되었다는 소문이 있다. 6개의 불덩이를 소환하여 전방 범위에 낙하시킨다."
+    description: "이 마법을 개발한 사람은 호브라는 괴물이 되었다는 소문이 있다.\n 6개의 불덩이를 소환하여 전방 범위에 낙하시킨다."
   },
 
   // Napalm (장판)
@@ -301,7 +301,7 @@ export const CFG = {
     scale: 1.8,            // 폭발 + 장판 기본 스케일
     vfx: "napalm_burst",
 
-    description: "정제하지 않은 마나를 퍼트려 주위 환경을 자신에게 유리하게 바꾸는 초고위 마법이다. 시전자를 중심으로 끊임 없이 불타오르는 지대를 형성한다."
+    description: "정제하지 않은 마나를 퍼트려 주위 환경을 자신에게 유리하게 바꾸는 초고위 마법이다.\n 시전자를 중심으로 끊임 없이 불타오르는 지대를 형성한다."
   },
 
   // Death Hand
@@ -321,7 +321,7 @@ export const CFG = {
     scale: 2.2,
     vfx: "deathhand_impact",
 
-    description: "재능만으로는 닿을 수 없는, 다른 차원의 불꽃을 사용하는 미지의 마법이다. 거대한 불의 손으로 적을 뒤덮는다."
+    description: "재능만으로는 닿을 수 없는, 다른 차원의 불꽃을 사용하는 미지의 마법이다.\n 거대한 불의 손으로 적을 뒤덮는다."
   },
 
   // 몬스터 설정

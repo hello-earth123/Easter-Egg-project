@@ -2443,6 +2443,7 @@ export default {
   margin-bottom: 14px;
   color: #f8e3b4;
   text-shadow: 1px 1px 0 #000;
+  white-space: pre-line;
 }
 
 /* 정보 라벨 + 값 그리드 */
