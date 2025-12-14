@@ -7,9 +7,10 @@ export class Avatar extends BossPatternBase {
         const delta = [[200, 608], [1400, 608], [800, 152], [800, 1064]];
         const real = Phaser.Math.Between(0, 4);
         
-        caster.x = delta[real][0];
-        caster.y = delta[real][1];
-        caster.isFrozen = true;
+        // 본체는 임시 정지 (active false)
+        // caster.x = delta[real][0];
+        // caster.y = delta[real][1];
+        // caster.isFrozen = true;
 
         // 복제 3곳
         // 복제 공격 시, cater.hp += (caster.maxHp * 0.2); caster.isAttack = false; 패턴 종료;
