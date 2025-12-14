@@ -119,8 +119,8 @@ export default class Corridor3 extends Phaser.Scene {
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
-        this.load.image("map2", "/static/assets/test.png");
-        this.load.tilemapTiledJSON('map2Tile', '/static/assets/test.json');
+        this.load.image("Corridor3", "/static/assets/map/Corridor3.png");
+        this.load.tilemapTiledJSON('Corridor3Tile', '/static/assets/map/Corridor3.json');
         // 포탈 PNG 로드
         this.load.spritesheet("portal", "/static/assets/portal.png", {
             frameWidth: 102.1428,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
@@ -729,8 +729,8 @@ export default class Corridor3 extends Phaser.Scene {
         // 카메라의 범위는 게임의 비율과 줌 수준으로 결정
         this.cameras.main.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
-        const map = this.add.image(0, 0, "map2").setOrigin(0);
-        const tile = this.make.tilemap({key: 'map2Tile'});
+        const map = this.add.image(0, 0, "Corridor3").setOrigin(0);
+        const tile = this.make.tilemap({key: 'Corridor3Tile'});
         const collisionObjects = tile.getObjectLayer("collider");
 
 

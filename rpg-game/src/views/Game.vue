@@ -979,15 +979,15 @@ export default {
     const skillRes = await fetch(`http://127.0.0.1:8000/api/skill/3/`);
     const skillData = await skillRes.json();
     this.skillState = skillData.skillLev;
-    const count = Object.keys(this.skillState).length;
+    const count = this.skillNodes.length;
 
     for (let index = 0; index < count; index++) {
       let node = this.skillNodes[index];
 
       if (
+        this.skillState[node.id] &&
         this.skillState[node.id] > 0 &&
-        node.branchGroup &&
-        !this.branchChosen[node.branchGroup]
+        node.branchGroup
       ) {
         this.branchChosen[node.branchGroup] = node.id;
       }
@@ -1035,7 +1035,7 @@ export default {
     window.addEventListener("resize", this.onWindowResize);
 
     /* ----------------------------------------------------------------- */
-    initSlot(1).then((slotData) => {
+    initSlot(3).then((slotData) => {
       const skillSlotData = slotData.skillSlots;
       const rawSlots = skillSlotData || [null, null, null, null];
 

@@ -74,6 +74,8 @@ def slotConnect(request, userId):
 
     serializer = SlotSerializer(slot)
 
+    print(serializer.data)
+
     return Response(serializer.data)
 
 

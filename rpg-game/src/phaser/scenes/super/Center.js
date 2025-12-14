@@ -127,8 +127,8 @@ export default class Center extends Phaser.Scene {
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
-        this.load.image("map2", "/static/assets/test.png");
-        this.load.tilemapTiledJSON('map2Tile', '/static/assets/test.json');
+        this.load.image("center", "/static/assets/center.png");
+        this.load.tilemapTiledJSON('centerTile', '/static/assets/center.json');
         // 포탈 PNG 로드
         this.load.spritesheet("portal", "/static/assets/portal.png", {
             frameWidth: 102.1428,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
@@ -743,11 +743,10 @@ export default class Center extends Phaser.Scene {
         // 카메라의 범위는 게임의 비율과 줌 수준으로 결정
         this.cameras.main.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
-        const map = this.add.image(0, 0, "map2").setOrigin(0);
-        const tile = this.make.tilemap({key: 'map2Tile'});
+        const map = this.add.image(0, 0, "center").setOrigin(0);
+        const tile = this.make.tilemap({key: 'centerTile'});
         const collisionObjects = tile.getObjectLayer("collider");
-
-        
+        const collisionObjects2 = tile.getObjectLayer("collider2");
 
         // 맵 이미지를 맵 크기에 맞춰 변경
         map.displayWidth = CFG.world.width;
@@ -894,6 +893,27 @@ export default class Center extends Phaser.Scene {
             bullet.destroy();
         });
         this.physics.add.collider(this.boss, this.wallGroup);
+
+        this.wallGroup2 = this.physics.add.staticGroup();
+        if (collisionObjects2 && collisionObjects2.objects) {
+            collisionObjects2.objects.forEach(obj => {
+                const x = obj.x + obj.width / 2;
+                const y = obj.y + obj.height / 2; // Tiled y 기준 보정
+
+                const collider = this.wallGroup2.create(x, y)
+                    .setSize(obj.width, obj.height)
+                    .setOrigin(0.5, 0.5)
+                    .setVisible(false);
+            });
+        }
+        this.physics.add.collider(this.monsters, this.wallGroup2);
+        this.physics.add.overlap(this.monsters, this.wallGroup2, (monster, wall) => {
+            // 동작 안되는 중 (image 없는 collider의 크기가 1 * 1로 설정됨)
+            this.physics.world.separate(monster.body, wall.body);
+        })
+        this.physics.add.collider(this.player, this.wallGroup2);
+        this.physics.add.collider(this.items, this.wallGroup2);
+        this.physics.add.collider(this.boss, this.wallGroup2);
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
