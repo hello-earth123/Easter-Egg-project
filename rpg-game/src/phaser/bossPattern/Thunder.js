@@ -29,8 +29,9 @@ export class Thunder extends BossPatternBase {
         b.damage = this.getDamage();
 
         scene.time.delayedCall(300, () => {
-        if (b && b.active) b.destroy();
+          if (b && b.active) b.destroy();
         });
+        caster.isAttack = false;
     })
   }
 }

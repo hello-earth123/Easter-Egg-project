@@ -22,6 +22,9 @@ import { loadGame } from "../../manager/saveManager.js";
 // 컷씬
 import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
 
+import { preloadBossPattern } from "../../preload/preloadBossPattern.js";
+import { createBossPattern } from "../../preload/createBossPattern.js";
+
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
 export default class CenterEntrance extends Phaser.Scene {
@@ -357,11 +360,14 @@ export default class CenterEntrance extends Phaser.Scene {
         }
         
         preloadFireSkillAssets(this);
+        preloadBossPattern(this);
     }
 
     // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
+        createBossPattern(this);
+        this.activate = false;
         setCurrentScene(this);
         if (this.game.vue?.setMapTitle) {
             this.game.vue.setMapTitle(this.mapName);
@@ -1164,6 +1170,21 @@ export default class CenterEntrance extends Phaser.Scene {
     
     // update() : 유니티의 update()와 동일 (프레임 단위 호출)
     update(time, delta) {
+        
+        this.time.delayedCall(3000, () => {
+            if (!this.activate){
+                this.activate = true;
+                let test = this.add.sprite(this.player.x, this.player.y, 'void');
+                test.setScale(2);
+                test.play('void');
+                this.time.delayedCall(2000, () => {
+                    test.destroy();
+                    this.activate = false;
+                })
+            }
+            
+            
+        })
         // 컷씬 중에는 모든 조작 차단 + 몬스터도 멈춤
         if (this.cutsceneLock) {
 

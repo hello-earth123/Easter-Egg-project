@@ -5,6 +5,7 @@ import { FireShoot } from "./FireShoot.js";
 import { Hassle } from "./Hassle.js";
 import { Batswarm } from "./Batswarm.js";
 import { Avatar } from "./Avatar.js";
+import { WindAoe } from "./WindAoe.js";
 
 export function createDefaultPatterns() {
     return {
@@ -15,5 +16,6 @@ export function createDefaultPatterns() {
 
         batswarm: new Batswarm('batswarm', CFG.batswarm),
         avatar: new Avatar('avatar'),
+        windAoe: new WindAoe('windAoe', CFG.windAoe),
     };
 }

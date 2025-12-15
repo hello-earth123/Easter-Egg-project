@@ -59,6 +59,7 @@ export class FireShoot extends BossPatternBase {
             });
           })
         }
+        caster.isAttack = false;
     })
   }
 }

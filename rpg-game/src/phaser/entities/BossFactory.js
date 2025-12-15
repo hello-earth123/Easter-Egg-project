@@ -112,6 +112,7 @@ export function spawnBoss(scene, boss) {
 }
 
 function CastSkill(skill, scene){
+    // 1 phase
     if (BossInstance.name == 'coffin'){
         switch(skill){
             // 기본 공격 (추적 번개)
@@ -136,6 +137,7 @@ function CastSkill(skill, scene){
                 break;
         }
     }
+    // 2 phase
     else if (BossInstance.name == 'vampire'){
         switch(skill){
             // 기본 공격 (박쥐 무리)
@@ -152,6 +154,10 @@ function CastSkill(skill, scene){
                 BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
                 cooltime(scene, 1, 65);
                 break;
+            case 2:
+                BossInstance.patternSet['windAoe'].tryCast(scene, BossInstance);
+                cooltime(scene, 2, 30);
+                break;
         }
     }
 }
@@ -159,12 +165,13 @@ function CastSkill(skill, scene){
 function initPattern(scene){
     if (BossInstance.name == 'coffin'){
         cooltime(scene, 999, 1);    // 기본 공격
-        cooltime(scene, 1, 1);     // 잡몹 소환
+        cooltime(scene, 1, 5);     // 잡몹 소환
         cooltime(scene, 2, 10);     // 탄막 슈팅
         cooltime(scene, 3, 30);     // 혼란
     }
     else if (BossInstance.name == 'vampire'){
-        cooltime(scene, 999, 1);    // 기본 공격
+        // cooltime(scene, 999, 1);    // 기본 공격
+        cooltime(scene, 2, 1);     // 바람 장판 15
         // cooltime(scene, 1, 23);     // 잡몹 소환
     }
 }
@@ -189,9 +196,10 @@ export function ChooseNextSkill(scene){
 
     BossInstance.isAttack = true;
 
-    scene.time.delayedCall(1400, () => {
-        BossInstance.isAttack = false;
-    });
+    // 각 스킬에서 switch (스킬 사용 주기 증가)
+    // scene.time.delayedCall(1400, () => {
+    //     BossInstance.isAttack = false;
+    // });
 
     const pattern = BossInstance.nextPattern.pop();
     CastSkill(pattern, scene);
