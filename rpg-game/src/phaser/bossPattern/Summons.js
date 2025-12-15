@@ -18,6 +18,7 @@ export class Summons extends BossPatternBase {
         m.destroy();
       })
       spawnMonsters(scene);
+      caster.isAttack = false;
     })
   }
 }

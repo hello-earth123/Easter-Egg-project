@@ -2,10 +2,8 @@ import { BossPatternBase } from "./BossPatternBase";
 
 export class Avatar extends BossPatternBase {
     cast(scene, caster) {
-        caster.isAttack = true;
-
         const delta = [[200, 608], [1400, 608], [800, 152], [800, 1064]];
-        const real = Phaser.Math.Between(0, 4);
+        const real = Phaser.Math.Between(0, 3);
         
         // 본체는 임시 정지 (active false)
         // caster.x = delta[real][0];

@@ -127,8 +127,8 @@ export default class Center extends Phaser.Scene {
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
-        this.load.image("center", "/static/assets/center.png");
-        this.load.tilemapTiledJSON('centerTile', '/static/assets/center.json');
+        this.load.image("center", "/static/assets/map/center.png");
+        this.load.tilemapTiledJSON('centerTile', '/static/assets/map/center.json');
         // 포탈 PNG 로드
         this.load.spritesheet("portal", "/static/assets/portal.png", {
             frameWidth: 102.1428,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
@@ -818,7 +818,7 @@ export default class Center extends Phaser.Scene {
         this.boss = this.physics.add.group();
 
         // spawnMonsters(this);
-        spawnBoss(this, ['coffin']);
+        spawnBoss(this, ['vampire']);
 
         this.isHassle = false;
 

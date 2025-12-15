@@ -1,8 +1,11 @@
 export function createBossPattern(scene) {
   const frames = {
+    path: 3,
     thunder: 5,
     fireshoot: 5,
     batswarm: 2,
+    windAoe: 5,
+    void: 5,
   };
 
   Object.entries(frames).forEach(([key, max]) => {
