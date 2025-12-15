@@ -170,8 +170,8 @@ function initPattern(scene){
         cooltime(scene, 3, 30);     // 혼란
     }
     else if (BossInstance.name == 'vampire'){
-        // cooltime(scene, 999, 1);    // 기본 공격
-        cooltime(scene, 2, 1);     // 바람 장판 15
+        cooltime(scene, 999, 1);    // 기본 공격
+        cooltime(scene, 2, 15);     // 바람 장판 15
         // cooltime(scene, 1, 23);     // 잡몹 소환
     }
 }
