@@ -148,8 +148,6 @@ export class WindAoe extends BossPatternBase {
     }
 
     cast(scene, caster) {
-        caster.isFrozen = true;
-
         const patternType = Phaser.Math.Between(0, 1);
         scene.time.delayedCall(600, () => {
             switch (patternType){

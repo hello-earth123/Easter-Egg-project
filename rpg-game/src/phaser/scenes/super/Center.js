@@ -20,6 +20,7 @@ import { setCurrentScene } from "../../manager/sceneRegistry.js";
 import SoundManager from "../../manager/SoundManager.js";
 import { saveGame } from "../../manager/saveManager.js"; 
 import { loadGame } from "../../manager/saveManager.js";
+import { preloadMonsterAnims } from "../../preload/preloadMonsterAnims.js";
 
 // 컷씬
 import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
@@ -139,178 +140,6 @@ export default class Center extends Phaser.Scene {
             frameWidth: 36,
             frameHeight: 24,
         });
-        // 몬스터 PNG 로드
-        // arrow_skeleton
-        // arrow_skeleton
-        this.load.spritesheet("arrow_skeleton", "/static/assets/monsters/arrow_skeleton.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // bat
-        this.load.spritesheet("bat", "/static/assets/monsters/bat.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // bird
-        this.load.spritesheet("bird", "/static/assets/monsters/bird.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // butterfly
-        this.load.spritesheet("butterfly", "/static/assets/monsters/butterfly.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // coffin
-        this.load.spritesheet("coffin", "/static/assets/monsters/coffin.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // colossus
-        this.load.spritesheet("colossus", "/static/assets/monsters/colossus.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // dwarf
-        this.load.spritesheet("dwarf", "/static/assets/monsters/dwarf.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // eyeball
-        this.load.spritesheet("eyeball", "/static/assets/monsters/eyeball.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // eyebat
-        this.load.spritesheet("eyebat", "/static/assets/monsters/eyebat.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // fire_skull1
-        this.load.spritesheet("fire_skull1", "/static/assets/monsters/fire_skull1.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // fire_skull2
-        this.load.spritesheet("fire_skull2", "/static/assets/monsters/fire_skull2.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // ghost
-        this.load.spritesheet("ghost", "/static/assets/monsters/ghost.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // lich
-        this.load.spritesheet("lich", "/static/assets/monsters/lich.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mask
-        this.load.spritesheet("mask", "/static/assets/monsters/mask.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mimic
-        this.load.spritesheet("mimic", "/static/assets/monsters/mimic.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // moai-b
-        this.load.spritesheet("moai-b", "/static/assets/monsters/moai-b.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // moai-s
-        this.load.spritesheet("moai-s", "/static/assets/monsters/moai-s.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // moai-g
-        this.load.spritesheet("moai-g", "/static/assets/monsters/moai-g.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mummy
-        this.load.spritesheet("mummy", "/static/assets/monsters/mummy.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mushroom
-        this.load.spritesheet("mushroom", "/static/assets/monsters/mushroom.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // rabbit
-        this.load.spritesheet("rabbit", "/static/assets/monsters/rabbit.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // reaper
-        this.load.spritesheet("reaper", "/static/assets/monsters/reaper.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        //scorpion
-        this.load.spritesheet("scorpion", "/static/assets/monsters/scorpion.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // skeleton
-        this.load.spritesheet("skeleton", "/static/assets/monsters/skeleton.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // skull_b
-        this.load.spritesheet("skull_b", "/static/assets/monsters/skull_b.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // skull_w
-        this.load.spritesheet("skull_w", "/static/assets/monsters/skull_w.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });   
-        // slime
-        this.load.spritesheet("slime", "/static/assets/monsters/slime.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // snail
-        this.load.spritesheet("snail", "/static/assets/monsters/snail.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });       
-        // snake
-        this.load.spritesheet("snake", "/static/assets/monsters/snake.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });   
-        // squirrel
-        this.load.spritesheet("squirrel", "/static/assets/monsters/squirrel.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // stingsnake
-        this.load.spritesheet("stingsnake", "/static/assets/monsters/stingsnake.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });       
-        // vampire
-        this.load.spritesheet("vampire", "/static/assets/monsters/vampire.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // weapon
-        this.load.spritesheet("weapon", "/static/assets/monsters/weapon.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // wolf
-        this.load.spritesheet("wolf", "/static/assets/monsters/wolf.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });   
         
         // ==================== 사운드 ========================
         // BGM
@@ -370,6 +199,7 @@ export default class Center extends Phaser.Scene {
 
         preloadFireSkillAssets(this);
         preloadBossPattern(this);
+        preloadMonsterAnims(this);
     }
 
     // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
@@ -1501,6 +1331,7 @@ export default class Center extends Phaser.Scene {
         }
     }
 
+    // 보스용
     onBulletHitB = (bullet, monster) => {
         if (!bullet || !bullet.active || !monster || !monster.active) return;
 
@@ -1511,7 +1342,28 @@ export default class Center extends Phaser.Scene {
         console.log(surventC, '1111111111111111');
 
         // 몬스터 체력 감소 및 피격 이펙트 출력
-        const dmg = Math.round(bullet.damage - (bullet.damage * surventC / 10));
+        let dmg = Math.round(bullet.damage - (bullet.damage * surventC / 10));
+        if (monster.doReflect){
+            dmg = Math.round(dmg - (dmg / 2));
+
+            // 반사딜로 죽지 않음
+            if (this.playerStats.hp > dmg){
+                this.playerStats.hp -= dmg;
+                // 플레이어 피격 sound
+                this.SoundManager.playMonsterAttack();
+                // 피격 데미지 출력 (빨간색)
+                this.showDamageText(this.player, dmg, "#ff3333");
+                // 피격 효과 (카메라, 색상)
+                this.cameras.main.shake(
+                    CFG.playerKB.shake.duration,
+                    CFG.playerKB.shake.intensity
+                );
+                this.player.setTint(0xff6666);
+                this.time.delayedCall(CFG.playerKB.invulMs, () => {
+                    if (this.player) this.player.clearTint();
+                });
+            }
+        }
         monster.hp -= dmg;
         this.spawnHitFlash(monster.x, monster.y);
 
@@ -1678,7 +1530,7 @@ export default class Center extends Phaser.Scene {
         if (now - player._lastHitAt < CFG.playerKB.invulMs) return;
 
         const dmg = monster.atk - (monster.atk * (this.playerStats.defense + this.playerStats.defenseGem) / 100);
-        this.playerStats.hp -= dmg
+        this.playerStats.hp -= dmg;
         // 플레이어 피격 sound
         this.SoundManager.playMonsterAttack();
 
@@ -2447,6 +2299,27 @@ export default class Center extends Phaser.Scene {
 
                 const servuntC = this.monsters.getLength();
                 dmg -= Math.round(dmg * servuntC / 10);
+                if (b.doReflect){
+                    dmg = Math.round(dmg - (dmg / 2));
+
+                    // 반사딜로 죽지 않음
+                    if (this.playerStats.hp > dmg){
+                        this.playerStats.hp -= dmg;
+                        // 플레이어 피격 sound
+                        this.SoundManager.playMonsterAttack();
+                        // 피격 데미지 출력 (빨간색)
+                        this.showDamageText(this.player, dmg, "#ff3333");
+                        // 피격 효과 (카메라, 색상)
+                        this.cameras.main.shake(
+                            CFG.playerKB.shake.duration,
+                            CFG.playerKB.shake.intensity
+                        );
+                        this.player.setTint(0xff6666);
+                        this.time.delayedCall(CFG.playerKB.invulMs, () => {
+                            if (this.player) this.player.clearTint();
+                        });
+                    }
+                }
                 b.hp -= dmg;
                 this.showDamageText(b, dmg, "#ffff66");
                 if (this.spawnHitFlash) this.spawnHitFlash(b.x, b.y);
@@ -2498,6 +2371,27 @@ export default class Center extends Phaser.Scene {
 
                 const servuntC = this.monsters.getLength();
                 let dmg = dot.damage;
+                if (b.doReflect){
+                    dmg = Math.round(dmg - (dmg / 2));
+
+                    // 반사딜로 죽지 않음
+                    if (this.playerStats.hp > dmg){
+                        this.playerStats.hp -= dmg;
+                        // 플레이어 피격 sound
+                        this.SoundManager.playMonsterAttack();
+                        // 피격 데미지 출력 (빨간색)
+                        this.showDamageText(this.player, dmg, "#ff3333");
+                        // 피격 효과 (카메라, 색상)
+                        this.cameras.main.shake(
+                            CFG.playerKB.shake.duration,
+                            CFG.playerKB.shake.intensity
+                        );
+                        this.player.setTint(0xff6666);
+                        this.time.delayedCall(CFG.playerKB.invulMs, () => {
+                            if (this.player) this.player.clearTint();
+                        });
+                    }
+                }
                 dmg -= Math.round(dmg * servuntC / 10);
                 dot.damage = dmg;
 
@@ -2621,6 +2515,27 @@ export default class Center extends Phaser.Scene {
                 if ((lx * lx + ly * ly) > (halfW * halfW)) return;
                 
                 const servuntC = this.monsters.getLength();
+                if (b.doReflect){
+                    dmg = Math.round(dmg - (dmg / 2));
+
+                    // 반사딜로 죽지 않음
+                    if (this.playerStats.hp > dmg){
+                        this.playerStats.hp -= dmg;
+                        // 플레이어 피격 sound
+                        this.SoundManager.playMonsterAttack();
+                        // 피격 데미지 출력 (빨간색)
+                        this.showDamageText(this.player, dmg, "#ff3333");
+                        // 피격 효과 (카메라, 색상)
+                        this.cameras.main.shake(
+                            CFG.playerKB.shake.duration,
+                            CFG.playerKB.shake.intensity
+                        );
+                        this.player.setTint(0xff6666);
+                        this.time.delayedCall(CFG.playerKB.invulMs, () => {
+                            if (this.player) this.player.clearTint();
+                        });
+                    }
+                }
                 dmg -= Math.round(dmg * servuntC / 10);
 
                 this.showDamageText(b, dmg, "#ffff66");

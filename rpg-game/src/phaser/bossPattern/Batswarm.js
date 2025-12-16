@@ -2,8 +2,6 @@ import { BossPatternBase } from "./BossPatternBase";
 
 export class Batswarm extends BossPatternBase {
   cast(scene, caster) {
-    caster.isFrozen = true;
-
     // 발사 시작 위치
     const sx = caster.x;
     const sy = caster.y;
