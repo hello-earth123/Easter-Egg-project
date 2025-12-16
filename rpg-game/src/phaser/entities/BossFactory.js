@@ -104,6 +104,7 @@ export function spawnBoss(scene, boss) {
             isInit: false,
 
             doAvatar: false,
+            doReflect: false,
         });
 
         BossInstance.setCollideWorldBounds(true);
@@ -139,6 +140,7 @@ function CastSkill(skill, scene){
     }
     // 2 phase
     else if (BossInstance.name == 'vampire'){
+        BossInstance.isFrozen = true;
         switch(skill){
             // 기본 공격 (박쥐 무리)
             case 999:
@@ -158,6 +160,10 @@ function CastSkill(skill, scene){
                 BossInstance.patternSet['windAoe'].tryCast(scene, BossInstance);
                 cooltime(scene, 2, 30);
                 break;
+            case 3:
+                BossInstance.patternSet['reflectvoid'].tryCast(scene, BossInstance);
+                cooltime(scene, 3, 30);
+                break;
         }
     }
 }
@@ -171,8 +177,9 @@ function initPattern(scene){
     }
     else if (BossInstance.name == 'vampire'){
         cooltime(scene, 999, 1);    // 기본 공격
-        cooltime(scene, 2, 15);     // 바람 장판 15
-        // cooltime(scene, 1, 23);     // 잡몹 소환
+        cooltime(scene, 1, 23);     // 잡몹 소환
+        cooltime(scene, 2, 15);     // 바람 장판
+        cooltime(scene, 3, 30);     // 데미지 반사
     }
 }
 

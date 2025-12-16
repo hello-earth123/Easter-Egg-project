@@ -22,7 +22,7 @@ export class PlayerStats {
     this.exp = data.exp || 0;
     this.nextExp = calcNextExp(this.level);
 
-    this.maxHp = data.maxHP || 120;
+    this.maxHp = data.maxHP || 100;
     this.hp = data.currentHP || this.maxHp;
     this.maxMp = data.maxMP || 60;
     this.mp = data.currentMP || this.maxMp;

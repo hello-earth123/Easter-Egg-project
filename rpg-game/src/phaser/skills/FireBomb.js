@@ -1,6 +1,7 @@
 // skills/FireBomb.js
 import { FireSkillBase } from "./FireSkillBase.js";
 import { applyVFX } from "../utils/SkillVFX.js";
+import { CFG } from "../config/Config.js";
 
 export class FireBomb extends FireSkillBase {
 
@@ -56,20 +57,41 @@ export class FireBomb extends FireSkillBase {
         });
 
         if (scene.boss){
-          scene.boss.children.iterate(b => {
-            if (!b || !b.active) return;
+            scene.boss.children.iterate(b => {
+              if (!b || !b.active) return;
 
-            const dx = b.x - x;
-            const dy = b.y - y;
-            if (dx * dx + dy * dy > radius * radius) return;
+              const dx = b.x - x;
+              const dy = b.y - y;
+              if (dx * dx + dy * dy > radius * radius) return;
 
-            didHitMonster = true;
+              didHitMonster = true;
 
-            const servuntC = scene.monsters.getLength();
-            dmg -= Math.round(dmg * servuntC / 10);
+              const servuntC = scene.monsters.getLength();
+              dmg -= Math.round(dmg * servuntC / 10);
 
-            scene.showDamageText(b, dmg, "#ffff66");
+              if (b.doReflect){
+                dmg = Math.round(dmg - (dmg / 2));
+    
+                // 반사딜로 죽지 않음
+                if (scene.playerStats.hp > dmg){
+                    scene.playerStats.hp -= dmg;
+                    // 플레이어 피격 sound
+                    scene.SoundManager.playMonsterAttack();
+                    // 피격 데미지 출력 (빨간색)
+                    scene.showDamageText(scene.player, dmg, "#ff3333");
+                    // 피격 효과 (카메라, 색상)
+                    scene.cameras.main.shake(
+                        CFG.playerKB.shake.duration,
+                        CFG.playerKB.shake.intensity
+                    );
+                    scene.player.setTint(0xff6666);
+                    scene.time.delayedCall(CFG.playerKB.invulMs, () => {
+                        if (scene.player) scene.player.clearTint();
+                    });
+                }
+            }
             b.hp -= dmg;
+            scene.showDamageText(b, dmg, "#ffff66");
             scene.spawnHitFlash(b.x, b.y);
             scene.onMonsterAggro(b);
           });

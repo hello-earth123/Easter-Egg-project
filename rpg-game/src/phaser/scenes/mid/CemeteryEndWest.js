@@ -18,6 +18,7 @@ import { setCurrentScene } from "../../manager/sceneRegistry.js";
 import SoundManager from "../../manager/SoundManager.js";
 import { saveGame } from "../../manager/saveManager.js"; 
 import { loadGame } from "../../manager/saveManager.js";
+import { preloadMonsterAnims } from "../../preload/preloadMonsterAnims.js";
 
 // 컷씬
 import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
@@ -133,178 +134,6 @@ export default class CemeteryEndWest extends Phaser.Scene {
             frameHeight: 24,
         });
 
-        // 몬스터 PNG 로드
-        // arrow_skeleton
-        this.load.spritesheet("arrow_skeleton", "/static/assets/monsters/arrow_skeleton.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // bat
-        this.load.spritesheet("bat", "/static/assets/monsters/bat.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // bird
-        this.load.spritesheet("bird", "/static/assets/monsters/bird.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // butterfly
-        this.load.spritesheet("butterfly", "/static/assets/monsters/butterfly.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        // coffin
-        });
-        this.load.spritesheet("coffin", "/static/assets/monsters/coffin.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // colossus
-        this.load.spritesheet("colossus", "/static/assets/monsters/colossus.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // dwarf
-        this.load.spritesheet("dwarf", "/static/assets/monsters/dwarf.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // eyeball
-        this.load.spritesheet("eyeball", "/static/assets/monsters/eyeball.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // eyebat
-        this.load.spritesheet("eyebat", "/static/assets/monsters/eyebat.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // fire_skull1
-        this.load.spritesheet("fire_skull1", "/static/assets/monsters/fire_skull1.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // fire_skull2
-        this.load.spritesheet("fire_skull2", "/static/assets/monsters/fire_skull2.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // ghost
-        this.load.spritesheet("ghost", "/static/assets/monsters/ghost.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // lich
-        this.load.spritesheet("lich", "/static/assets/monsters/lich.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mask
-        this.load.spritesheet("mask", "/static/assets/monsters/mask.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mimic
-        this.load.spritesheet("mimic", "/static/assets/monsters/mimic.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // moai-b
-        this.load.spritesheet("moai-b", "/static/assets/monsters/moai-b.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // moai-s
-        this.load.spritesheet("moai-s", "/static/assets/monsters/moai-s.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // moai-g
-        this.load.spritesheet("moai-g", "/static/assets/monsters/moai-g.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mummy
-        this.load.spritesheet("mummy", "/static/assets/monsters/mummy.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // mushroom
-        this.load.spritesheet("mushroom", "/static/assets/monsters/mushroom.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // rabbit
-        this.load.spritesheet("rabbit", "/static/assets/monsters/rabbit.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // reaper
-        this.load.spritesheet("reaper", "/static/assets/monsters/reaper.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        //scorpion
-        this.load.spritesheet("scorpion", "/static/assets/monsters/scorpion.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // skeleton
-        this.load.spritesheet("skeleton", "/static/assets/monsters/skeleton.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // skull_b
-        this.load.spritesheet("skull_b", "/static/assets/monsters/skull_b.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // skull_w
-        this.load.spritesheet("skull_w", "/static/assets/monsters/skull_w.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });   
-        // slime
-        this.load.spritesheet("slime", "/static/assets/monsters/slime.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // snail
-        this.load.spritesheet("snail", "/static/assets/monsters/snail.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });       
-        // snake
-        this.load.spritesheet("snake", "/static/assets/monsters/snake.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });   
-        // squirrel
-        this.load.spritesheet("squirrel", "/static/assets/monsters/squirrel.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // stingsnake
-        this.load.spritesheet("stingsnake", "/static/assets/monsters/stingsnake.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });       
-        // vampire
-        this.load.spritesheet("vampire", "/static/assets/monsters/vampire.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // weapon
-        this.load.spritesheet("weapon", "/static/assets/monsters/weapon.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });
-        // wolf
-        this.load.spritesheet("wolf", "/static/assets/monsters/wolf.png", {
-            frameWidth: 16,
-            frameHeight: 16,
-        });   
-        
         // ==================== 사운드 ========================
         // BGM
         this.load.audio("bgm_cemetery_end", "/static/assets/sound/background/bgm_cemetery_end.wav");
@@ -357,6 +186,7 @@ export default class CemeteryEndWest extends Phaser.Scene {
         }
         
         preloadFireSkillAssets(this);
+        preloadMonsterAnims(this);
     }
 
     // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
