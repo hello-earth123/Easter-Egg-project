@@ -29,6 +29,8 @@ import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
 import { spawnBoss, ChooseNextSkill, cooltime } from "../../entities/BossFactory.js";
 import { preloadBossPattern } from "../../preload/preloadBossPattern.js";
 import { createBossPattern } from "../../preload/createBossPattern.js";
+import { preloadGameSet } from "../../preload/preloadGameSet.js";
+import { preloadSound } from "../../preload/preloadSound.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
@@ -97,7 +99,6 @@ export default class Center extends Phaser.Scene {
         this.inventoryData;
         this.slotData;
 
-        this.itemList = ['hpPotion', 'mpPotion', 'damageGemLow', 'damageGemMid', 'damageGemHigh', 'damageGemSuper', 'cooldownGemLow', 'cooldownGemMid', 'cooldownGemHigh', 'cooldownGemSuper', 'manaCostGemLow', 'manaCostGemMid', 'manaCostGemHigh', 'manaCostGemSuper', 'defenseGemLow', 'defenseGemMid', 'defenseGemHigh', 'defenseGemSuper', 'luckGemLow', 'luckGemMid', 'luckGemHigh', 'luckGemSuper'];
         this.skills;
 
         this.itemShow = {
@@ -130,76 +131,14 @@ export default class Center extends Phaser.Scene {
     preload() {
         this.load.image("center", "/static/assets/map/center.png");
         this.load.tilemapTiledJSON('centerTile', '/static/assets/map/center.json');
-        // 포탈 PNG 로드
-        this.load.spritesheet("portal", "/static/assets/portal.png", {
-            frameWidth: 102.1428,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
-            frameHeight: 120,  // 프레임 높이(실제 png 높이에 맞추기)
-        });
-        // 플레이어 PNG 로드
-        this.load.spritesheet("playerSheet", "/static/assets/player.png", {
-            frameWidth: 36,
-            frameHeight: 24,
-        });
-        
-        // ==================== 사운드 ========================
         // BGM
         this.load.audio("bgm_center", "/static/assets/sound/background/bgm_center.wav");
-
-        // 몬스터/플레이어 관련
-        this.load.audio("monster_hit", "/static/assets/sound/effects/monster_hit.wav");
-        this.load.audio("monster_attack", "/static/assets/sound/effects/monster_attack.wav");
-        this.load.audio("footstep", "/static/assets/sound/effects/footstep.wav");
-        this.load.audio("monsterDeath", "/static/assets/sound/effects/monsterDeath.wav");
-        this.load.audio("dash", "/static/assets/sound/effects/dash.wav");
-        this.load.audio("portal", "/static/assets/sound/effects/portal.wav");
-        this.load.audio("player_death", "/static/assets/sound/effects/player_death.wav")
-
-        this.load.audio("hassle", "/static/assets/sound/effects/hassle.wav")
-
-        // 아이템 관련
-        this.load.audio("item_drop", "/static/assets/sound/effects/item_drop.wav");
-        this.load.audio("item_pickup", "/static/assets/sound/effects/item_pickup.wav");
-        this.load.audio("item_use", "/static/assets/sound/effects/item_use.wav");
-
-        // 레벨/스킬
-        this.load.audio("level_up", "/static/assets/sound/effects/level_up.wav");
-        this.load.audio("stat_increase", "/static/assets/sound/effects/stat_increase.wav");
-
-        // UI
-        this.load.audio("ui_open", "/static/assets/sound/effects/ui_open.wav");
-        this.load.audio("ui_close", "/static/assets/sound/effects/ui_close.wav");
-        this.load.audio("ui_click", "/static/assets/sound/effects/ui_click.wav");
-
-        // 스킬별
-        this.load.audio("skill_fireball", "/static/assets/sound/effects/skill_fireball.wav");
-        this.load.audio("skill_buff", "/static/assets/sound/effects/skill_buff.wav");
-        this.load.audio("skill_flameA", "/static/assets/sound/effects/skill_flameA.wav");
-        this.load.audio("skill_flameB", "/static/assets/sound/effects/skill_flameB.wav");
-        this.load.audio("skill_flameC", "/static/assets/sound/effects/skill_flameC.wav");
-        this.load.audio("skill_firebomb", "/static/assets/sound/effects/skill_firebomb.wav");
-        this.load.audio("skill_incendiary", "/static/assets/sound/effects/skill_incendiary.wav");
-        this.load.audio("skill_meteor_S", "/static/assets/sound/effects/skill_meteor_S.wav");
-        this.load.audio("skill_meteor_M", "/static/assets/sound/effects/skill_meteor_M.wav");
-        this.load.audio("skill_meteor_L", "/static/assets/sound/effects/skill_meteor_L.wav");
-        this.load.audio("skill_napalm", "/static/assets/sound/effects/skill_napalm.wav");
-        this.load.audio("skill_deathhand", "/static/assets/sound/effects/skill_deathhand.wav");
-        // ... 나머지 스킬들도 필요에 따라 등록
-        // ====================================================
-
-        // 사망 시 나오는 gameover 이미지
-        this.load.image("gameover", "/static/assets/gameover.png");
-
-        this.load.image("bullet", "/static/assets/bullet.png");
-        this.load.image("item", "/static/assets/item.png");
-        // this.load.image("shockwave", "/static/assets/effect_shockwave.png");
-
-        for (const key of this.itemList) {
-            this.load.image(key, `static/assets/${key}.png`)
-        }
 
         preloadFireSkillAssets(this);
         preloadBossPattern(this);
         preloadMonsterAnims(this);
+        preloadGameSet(this);
+        preloadSound(this);
     }
 
     // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
@@ -1043,7 +982,7 @@ export default class Center extends Phaser.Scene {
             cooltime(this, 0, 1);
         }
         // 특수 기믹 재사용 가능
-        if (boss && boss.doAvatar && boss.hp > boss.maxHp * 0.3){
+        if (boss && boss.doAvatar && boss.hp > boss.maxHp * 0.69){
             boss.doAvatar = false;
         }
 
@@ -2217,6 +2156,15 @@ export default class Center extends Phaser.Scene {
             // this.time.delayedCall(400, () => {
             //     if (m && m.destroy) m.destroy();
             // });
+        });
+
+        this.boss.children.iterate((b) => {
+            if (!b || !b.active) return;
+            if (b.hp > 0) return;
+
+            if (b.isAvatar){
+                b.attacked();
+            }
         });
     }
 

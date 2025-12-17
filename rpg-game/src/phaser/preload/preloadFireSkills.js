@@ -19,9 +19,11 @@ export function preloadFireSkillAssets(scene) {
     ];
 
     for (const s of skillSheets) {
-        scene.load.spritesheet(s.key, `/static/assets/${s.file}`, {
-            frameWidth: s.w,
-            frameHeight: s.h
-        });
+        if (!scene.scene.manager.keys[s.key]){
+            scene.load.spritesheet(s.key, `/static/assets/${s.file}`, {
+                frameWidth: s.w,
+                frameHeight: s.h
+            });
+        }
     }
 }
