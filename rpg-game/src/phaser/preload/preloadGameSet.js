@@ -16,6 +16,8 @@ export function preloadGameSet(scene) {
 
     const itemList = ['hpPotion', 'mpPotion', 'damageGemLow', 'damageGemMid', 'damageGemHigh', 'damageGemSuper', 'cooldownGemLow', 'cooldownGemMid', 'cooldownGemHigh', 'cooldownGemSuper', 'manaCostGemLow', 'manaCostGemMid', 'manaCostGemHigh', 'manaCostGemSuper', 'defenseGemLow', 'defenseGemMid', 'defenseGemHigh', 'defenseGemSuper', 'luckGemLow', 'luckGemMid', 'luckGemHigh', 'luckGemSuper'];
     for (const key of itemList) {
-        scene.load.image(key, `static/assets/${key}.png`)
+        if (!scene.scene.manager.keys[key]){
+            scene.load.image(key, `static/assets/${key}.png`)
+        }
     }
 }

@@ -10,9 +10,11 @@ export function preloadBossPattern(scene) {
     ];
 
     for (const b of bossPattern) {
-        scene.load.spritesheet(b.key, `/static/assets/pattern/${b.file}`, {
-            frameWidth: b.w,
-            frameHeight: b.h
-        });
+        if (!scene.scene.manager.keys[b.key]){
+            scene.load.spritesheet(b.key, `/static/assets/pattern/${b.file}`, {
+                frameWidth: b.w,
+                frameHeight: b.h
+            });
+        }
     }
 }
