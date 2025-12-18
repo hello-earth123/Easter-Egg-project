@@ -58,10 +58,10 @@ class player(models.Model):
     level = models.IntegerField(default=1)
     exp = models.FloatField(default=0)
 
-    maxHP = models.IntegerField(default=10)
-    currentHP = models.IntegerField(default=10)
-    maxMP = models.IntegerField(default=10)
-    currentMP = models.IntegerField(default=10)
+    maxHP = models.IntegerField(default=100)
+    currentHP = models.IntegerField(default=100)
+    maxMP = models.IntegerField(default=100)
+    currentMP = models.IntegerField(default=100)
 
     staffDamage = models.FloatField(default=0)
     staffCoolReduce = models.FloatField(default=0)
@@ -76,7 +76,7 @@ class player(models.Model):
     defenseGem = models.FloatField(default=0)
     lukGem = models.FloatField(default=0)
 
-    nowLocation = models.CharField(default="mainScene")
+    nowLocation = models.CharField(default="CastleWall")
 
 
 class Inventory(models.Model):
@@ -100,6 +100,19 @@ class Slot(models.Model):
     itemSlots = models.JSONField(default=defaultItemSlot)
 
 
+def defaultSkillLevel():
+    return {
+        "skill1": 1,
+        "skill2": 0,
+        "skill3": 0,
+        "skill4b": 0,
+        "skill5b": 0,
+        "skill6": 0,
+        "skill7": 0,
+        "skill8a": 0,
+        "skill9": 0
+    }
+
 class SkillLevel(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='skillLv')
-    skillLev = models.JSONField(default=dict)
+    skillLev = models.JSONField(default=defaultSkillLevel)

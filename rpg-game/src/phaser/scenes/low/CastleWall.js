@@ -30,6 +30,9 @@ import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
 export default class CastleWall extends Phaser.Scene {
 
     init(data) {
+        this.userId = data.userId;
+        this.registry.set('userId', this.userId);
+
         let fromPortal = null;
         if (data){
             fromPortal = data.fromPortal;
@@ -807,15 +810,17 @@ export default class CastleWall extends Phaser.Scene {
             },
         });
 
+        const userId = this.registry.get('userId');
+        console.log(this.userId, '000000000000000');
         // 플레이어 데이터 불러오기 (스탯, 인벤토리, 슬롯)
         this.isPlayerLoad = false;
-        initPlayer(3).then(player => {
+        initPlayer(this.userId).then(player => {
             this.playerStats = player;
         })
-        initInventory(3).then(inven => {
+        initInventory(this.userId).then(inven => {
             this.inventoryData = inven;
         })
-        initSlot(3).then(slot => {
+        initSlot(this.userId).then(slot => {
             this.slotData = slot;
             this.isPlayerLoad = true;
         })
@@ -1705,7 +1710,7 @@ export default class CastleWall extends Phaser.Scene {
 
         try {
             // 1) 백엔드에서 저장 데이터 가져오기
-            const saveData = await loadGame();
+            const saveData = await loadGame(userId);
             console.log("[respawnFromLastSave] loaded:", saveData);
 
             if (!saveData || !saveData.stats) {
