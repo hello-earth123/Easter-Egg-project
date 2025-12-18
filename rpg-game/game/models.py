@@ -86,12 +86,18 @@ class Inventory(models.Model):
     invenItem = models.JSONField(default=list)
 
 
+def defaultSkillSlot():
+    return [None, None, None, None]
+
+def defaultItemSlot():
+    return [None, None]
+
 class Slot(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="slot"
     )
-    skillSlots = models.JSONField(default=list)
-    itemSlots = models.JSONField(default=list)
+    skillSlots = models.JSONField(default=defaultSkillSlot)
+    itemSlots = models.JSONField(default=defaultItemSlot)
 
 
 class SkillLevel(models.Model):
