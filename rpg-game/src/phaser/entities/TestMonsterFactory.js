@@ -10,6 +10,24 @@ export function makeMonsterStats(def, scene) {
   return { level, maxHp, atk, expReward: expRw };
 }
 
+function relocateMonster(scene, monster) {
+    const safePoints = scene.safeSpawnPoints; // 미리 정의
+
+    for (const p of safePoints) {
+        console.log(p);
+        monster.setPosition(p[0], p[1]);
+        monster.body.updateFromGameObject();
+
+        if (!scene.physics.overlap(monster, scene.wallGroup)) {
+            return;
+        }
+    }
+
+    console.log('destroy');
+    // 그래도 못 찾으면 제거
+    monster.destroy();
+}
+
 /** 몬스터 객체 생성 및 scene에 추가 - TODO */
 export function spawnMonsters(scene) {
   const names = Object.keys(scene.monsterData)
@@ -222,6 +240,9 @@ export function spawnMonsters(scene) {
             m.setCollideWorldBounds(true);
             // collider box type > circle
             // m.body.setCircle(Math.max(m.width, m.height) / 2);
+            if (scene.physics.overlap(m, scene.wallGroup)) {
+              relocateMonster(scene, m);
+            }
           })
         }
       });

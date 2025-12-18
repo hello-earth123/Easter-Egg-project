@@ -1040,7 +1040,7 @@ export default {
       const rawSlots = skillSlotData || [null, null, null, null];
 
       // Vue상의 skillSlots는 먼저 초기화
-      this.skillSlots = [null, null, null, null];
+      // this.skillSlots = [null, null, null, null];
 
       // DB에서 불러온 스킬을 Vue의 onDropSkillShortcut 방식으로 재적용
       rawSlots.forEach((skill, idx) => {

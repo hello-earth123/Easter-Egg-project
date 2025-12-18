@@ -124,13 +124,17 @@ export default class Center extends Phaser.Scene {
         luckGemMid: '중급 보석 (행운)',
         luckGemHigh: '상급 보석 (행운)',
         luckGemSuper: '특급 보석 (행운)',
-        }
+        };
+
+        this.safeSpawnPoints = [[500, 600]];
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
-        this.load.image("center", "/static/assets/map/center.png");
-        this.load.tilemapTiledJSON('centerTile', '/static/assets/map/center.json');
+        // this.load.image("center", "/static/assets/map/center.png");
+        // this.load.tilemapTiledJSON('centerTile', '/static/assets/map/center.json');
+        this.load.image("center", "/static/assets/test.png");
+        this.load.tilemapTiledJSON('centerTile', '/static/assets/test.json');
         // BGM
         this.load.audio("bgm_center", "/static/assets/sound/background/bgm_center.wav");
 
@@ -586,9 +590,6 @@ export default class Center extends Phaser.Scene {
         this.items = this.physics.add.group();
         this.boss = this.physics.add.group();
 
-        // spawnMonsters(this);
-        spawnBoss(this, ['vampire']);
-
         this.isHassle = false;
 
         this.pattern = this.physics.add.group();
@@ -652,10 +653,6 @@ export default class Center extends Phaser.Scene {
             });
         }
         this.physics.add.collider(this.monsters, this.wallGroup);
-        this.physics.add.overlap(this.monsters, this.wallGroup, (monster, wall) => {
-            // 동작 안되는 중 (image 없는 collider의 크기가 1 * 1로 설정됨)
-            this.physics.world.separate(monster.body, wall.body);
-        })
         this.physics.add.collider(this.player, this.wallGroup);
         this.physics.add.collider(this.items, this.wallGroup);
         this.physics.add.collider(this.bullets, this.wallGroup, (bullet, wall) => {
@@ -676,13 +673,12 @@ export default class Center extends Phaser.Scene {
             });
         }
         this.physics.add.collider(this.monsters, this.wallGroup2);
-        this.physics.add.overlap(this.monsters, this.wallGroup2, (monster, wall) => {
-            // 동작 안되는 중 (image 없는 collider의 크기가 1 * 1로 설정됨)
-            this.physics.world.separate(monster.body, wall.body);
-        })
         this.physics.add.collider(this.player, this.wallGroup2);
         this.physics.add.collider(this.items, this.wallGroup2);
         this.physics.add.collider(this.boss, this.wallGroup2);
+
+        // spawnMonsters(this);
+        spawnBoss(this, ['vampire']);
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();

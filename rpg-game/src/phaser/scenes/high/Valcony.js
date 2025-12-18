@@ -71,7 +71,7 @@ export default class Valcony extends Phaser.Scene {
         this.monsterData = {
             bat: 10,
             rabbit: 3,
-            hidden: 15,
+            hidden: 1,
             lich: 5,
             skull_b: 3,
         };
@@ -116,7 +116,9 @@ export default class Valcony extends Phaser.Scene {
         luckGemMid: '중급 보석 (행운)',
         luckGemHigh: '상급 보석 (행운)',
         luckGemSuper: '특급 보석 (행운)',
-        }
+        };
+
+        this.safeSpawnPoints = [[500, 600]];
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -597,8 +599,6 @@ export default class Valcony extends Phaser.Scene {
         this.bullets = this.physics.add.group();
         this.items = this.physics.add.group();
 
-        spawnMonsters(this);
-
         // 충돌 이벤트 정의
         this.physics.add.collider(this.monsters, this.monsters);
         this.physics.add.collider(
@@ -627,23 +627,26 @@ export default class Valcony extends Phaser.Scene {
         );
 
 
-        // 충돌 보정
+        this.wallGroup = this.physics.add.staticGroup();
         if (collisionObjects && collisionObjects.objects) {
             collisionObjects.objects.forEach(obj => {
                 const x = obj.x + obj.width / 2;
                 const y = obj.y + obj.height / 2; // Tiled y 기준 보정
 
-                const collider = this.add.rectangle(x, y, obj.width, obj.height)
-                    .setOrigin(0.5, 0.5);
-
-                // Arcade Physics body 추가
-                this.physics.add.existing(collider, true); // true = static body
-                this.physics.add.collider(this.monsters, collider);
-                this.physics.add.collider(this.player, collider);
-                this.physics.add.collider(this.items, collider);
-                this.physics.add.collider(this.bullets, collider);
+                const collider = this.wallGroup.create(x, y)
+                    .setSize(obj.width, obj.height)
+                    .setOrigin(0.5, 0.5)
+                    .setVisible(false);
             });
         }
+        this.physics.add.collider(this.monsters, this.wallGroup);
+        this.physics.add.collider(this.player, this.wallGroup);
+        this.physics.add.collider(this.items, this.wallGroup);
+        this.physics.add.collider(this.bullets, this.wallGroup, (bullet, wall) => {
+            bullet.destroy();
+        });
+
+        spawnMonsters(this);
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
