@@ -628,7 +628,7 @@ export default {
       playerMaxMP: 50,
       playerEXP: 0,
       playerNextEXP: 100,
-      playerLevel: 100,
+      playerLevel: 1,
       skillPoints: 0, // 씬에서 들어오긴 하지만, 실제 UI는 playerLevel 기반 계산 사용
 
 
@@ -895,6 +895,8 @@ export default {
       },
 
       selectedSkillId: null,
+
+      userId: null,
     };
   },
 
@@ -973,10 +975,12 @@ export default {
   },
 
   async mounted() {
+    this.userId = localStorage.getItem('user_id')
+
     // Phaser 게임 구동
     let lastScene = "CastleLobby";
 
-    const skillRes = await fetch(`http://127.0.0.1:8000/api/skill/3/`);
+    const skillRes = await fetch(`http://127.0.0.1:8000/api/skill/${this.userId}/`);
     const skillData = await skillRes.json();
     this.skillState = skillData.skillLev;
     const count = this.skillNodes.length;
@@ -993,7 +997,7 @@ export default {
       }
     }
 
-    const res = await fetch(`http://127.0.0.1:8000/api/nowLocation/3/`);
+    const res = await fetch(`http://127.0.0.1:8000/api/nowLocation/${this.userId}/`);
     const data = await res.json();
     lastScene = data.nowLocation;
 
@@ -1006,6 +1010,7 @@ export default {
         default: "arcade",
         arcade: { gravity: { y: 0 }, debug: false },
       },
+      // userId: this.userId,
       // scene: Object.values(sceneMap),
       // scene: [BossScene],
     };
@@ -1016,7 +1021,7 @@ export default {
     Object.entries(sceneMap).forEach(([key, scene]) => {
       game.scene.add(key, scene, false);
     });
-    game.scene.start(lastScene);
+    game.scene.start(lastScene, {userId: this.userId});
 
     // 🔥 Vue 인스턴스를 Phaser game에 연결
     this.$nextTick(() => {
@@ -1035,7 +1040,7 @@ export default {
     window.addEventListener("resize", this.onWindowResize);
 
     /* ----------------------------------------------------------------- */
-    initSlot(3).then((slotData) => {
+    initSlot(this.userId).then((slotData) => {
       const skillSlotData = slotData.skillSlots;
       const rawSlots = skillSlotData || [null, null, null, null];
 
@@ -1172,7 +1177,7 @@ export default {
     /* 저장 */
     save() {
       this.playUiClick();
-      saveGame(this.skillState);
+      saveGame(this.userId, this.skillState);
     },
 
     /* ===================

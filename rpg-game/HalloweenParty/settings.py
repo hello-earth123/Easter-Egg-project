@@ -73,6 +73,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "HalloweenParty.wsgi.application"
 
+# 이메일 검증
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -144,3 +149,14 @@ CORS_ALLOWED_METHODS = [
 ]
 
 AUTH_USER_MODEL = "accounts.CustomUser"
+
+# 개발 환경용 이메일 백엔드
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'YOUREMAIL'
+EMAIL_HOST_PASSWORD = 'PASSWORD'
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
