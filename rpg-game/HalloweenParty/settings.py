@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-1@m3&hg(jgxjjn=2i4o3ae44829!a7)rnmza#49&%)opnt!4j)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] # for test
 
 
 # Application definition
@@ -135,9 +135,12 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"]
 }
 
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5173", "http://localhost:5173"]
+# CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5173", "http://localhost:5173"]
+CORS_ALLOW_ALL_ORIGINS = True   # for test
 CORS_ALLOWED_METHODS = [
+    "GET",
     "POST",
+    "PUT",
 ]
 
 AUTH_USER_MODEL = "accounts.CustomUser"
