@@ -60,8 +60,8 @@ class player(models.Model):
 
     maxHP = models.IntegerField(default=100)
     currentHP = models.IntegerField(default=100)
-    maxMP = models.IntegerField(default=100)
-    currentMP = models.IntegerField(default=100)
+    maxMP = models.IntegerField(default=60)
+    currentMP = models.IntegerField(default=60)
 
     staffDamage = models.FloatField(default=0)
     staffCoolReduce = models.FloatField(default=0)

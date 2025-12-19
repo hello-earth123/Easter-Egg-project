@@ -21,6 +21,7 @@ import { loadGame } from "../../manager/saveManager.js";
 import { preloadMonsterAnims } from "../../preload/preloadMonsterAnims.js";
 import { preloadGameSet } from "../../preload/preloadGameSet.js";
 import { preloadSound } from "../../preload/preloadSound.js";
+import { createPlayerAnims } from "../../preload/createPlayerAnims.js";
 
 // 컷씬
 import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
@@ -72,7 +73,9 @@ export default class CastleWall extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            
+            snake: 2,
+            wolf: 1,
+            rabbit: 3,
         };
 
         this.minLevel = 1;
@@ -391,66 +394,65 @@ export default class CastleWall extends Phaser.Scene {
         });
         // ========================================================
 
+        createPlayerAnims(this);
+        // // =================== 플레이어 sprite =====================
+        // // 3. 플레이어 이동 모션
+        // this.anims.create({
+        //     key: "player_walk",
+        //     frames: this.anims.generateFrameNumbers("playerSheet", {
+        //         start: 0,
+        //         end: 5,
+        //     }),
+        //     frameRate: 10,
+        //     repeat: -1,
+        // });
 
+        // // 4. 플레이어 피격 모션
+        // this.anims.create({
+        //     key: "player_hit",
+        //     frames: this.anims.generateFrameNumbers("playerSheet", {
+        //         start: 30,
+        //         end: 32,
+        //     }),
+        //     frameRate: 12,
+        //     repeat: 0
+        // });
 
-        // =================== 플레이어 sprite =====================
-        // 3. 플레이어 이동 모션
-        this.anims.create({
-            key: "player_walk",
-            frames: this.anims.generateFrameNumbers("playerSheet", {
-                start: 0,
-                end: 5,
-            }),
-            frameRate: 10,
-            repeat: -1,
-        });
+        // // 5. 플레이어 사망 모션
+        // this.anims.create({
+        //     key: "player_death",
+        //     frames: this.anims.generateFrameNumbers("playerSheet", {
+        //         start: 36,
+        //         end: 40,
+        //     }),
+        //     frameRate: 8,
+        //     repeat: 0
+        // });
 
-        // 4. 플레이어 피격 모션
-        this.anims.create({
-            key: "player_hit",
-            frames: this.anims.generateFrameNumbers("playerSheet", {
-                start: 30,
-                end: 32,
-            }),
-            frameRate: 12,
-            repeat: 0
-        });
+        // // 6. 플레이어 스킬 모션 sprite
+        // // 1) fireball / firebomb / incendiary / napalm
+        // this.anims.create({
+        //     key: "player_cast_small",
+        //     frames: this.anims.generateFrameNumbers("playerSheet", { start: 18, end: 21 }),
+        //     frameRate: 12,
+        //     repeat: 0
+        // });
 
-        // 5. 플레이어 사망 모션
-        this.anims.create({
-            key: "player_death",
-            frames: this.anims.generateFrameNumbers("playerSheet", {
-                start: 36,
-                end: 40,
-            }),
-            frameRate: 8,
-            repeat: 0
-        });
+        // // 2) buff skill
+        // this.anims.create({
+        //     key: "player_buff",
+        //     frames: this.anims.generateFrameNumbers("playerSheet", { start: 24, end: 27 }),
+        //     frameRate: 10,
+        //     repeat: 0
+        // });
 
-        // 6. 플레이어 스킬 모션 sprite
-        // 1) fireball / firebomb / incendiary / napalm
-        this.anims.create({
-            key: "player_cast_small",
-            frames: this.anims.generateFrameNumbers("playerSheet", { start: 18, end: 21 }),
-            frameRate: 12,
-            repeat: 0
-        });
-
-        // 2) buff skill
-        this.anims.create({
-            key: "player_buff",
-            frames: this.anims.generateFrameNumbers("playerSheet", { start: 24, end: 27 }),
-            frameRate: 10,
-            repeat: 0
-        });
-
-        // 3) meteor S, M, L / deathhand / flameA,B,C
-        this.anims.create({
-            key: "player_cast_big",
-            frames: this.anims.generateFrameNumbers("playerSheet", { start: 42, end: 47 }),
-            frameRate: 10,
-            repeat: 0
-        });
+        // // 3) meteor S, M, L / deathhand / flameA,B,C
+        // this.anims.create({
+        //     key: "player_cast_big",
+        //     frames: this.anims.generateFrameNumbers("playerSheet", { start: 42, end: 47 }),
+        //     frameRate: 10,
+        //     repeat: 0
+        // });
 
         // 스킬 애니메이션 매핑
         this.skillMotionType = {

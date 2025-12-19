@@ -27,6 +27,7 @@ export function preloadSound(scene) {
         {file: 'skill_meteor_L.wav'},
         {file: 'skill_napalm.wav'},
         {file: 'skill_deathhand.wav'},
+        {file: 'hassle.wav'},
     ];
 
     for (const m of monsterAnims) {
