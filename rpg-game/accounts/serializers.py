@@ -18,6 +18,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class MeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ("id", "username", "email", "firstScene")
+        read_only_fields = ("id", "username", "email")
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)

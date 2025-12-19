@@ -98,18 +98,20 @@ export const CFG = {
   buff: {
     baseCost: 24,
     costScale: 0,
-    cd: 25000,
+    cd: 60000,
 
     duration: 10000,
-    hpUp: 200,
-    mpUp: 150,
+    
+    damageMultiplier: 1.2,
+    manaCostMultiplier: 1.3,
+
     frameRate: 15,
 
     // 🔥 연출
     scale: 1.3,
     vfx: "buff_aura",
 
-    description: "마나의 축복이 있으리라.\n 짧은 시간 체력과 마나의 상한선이 증가한다.",
+    description: "마나의 축복이 있으리라.\n 짧은 시간 스킬의 데미지와 마나 소모량이 증가한다.",
   },
 
   // Flame A (1타)

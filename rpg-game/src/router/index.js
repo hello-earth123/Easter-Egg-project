@@ -2,12 +2,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Game from '../views/Game.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
+import IntroCutscene from '../views/IntroCutscene.vue'
 
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
-  { path: '/game', component: Game, meta: { requiresAuth: true } }
+  { path: '/game', component: Game, meta: { requiresAuth: true } },
+  { path: '/introCutscene', component: IntroCutscene },
 ]
 
 const router = createRouter({

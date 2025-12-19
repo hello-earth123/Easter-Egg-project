@@ -1,9 +1,10 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from .serializers import RegisterSerializer, LoginSerializer
+from rest_framework.permissions import IsAuthenticated
+from .serializers import RegisterSerializer, LoginSerializer, MeSerializer
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from django.shortcuts import redirect
@@ -11,8 +12,15 @@ from django.http import HttpResponse
 from .models import CustomUser
 from game.models import player, Inventory, Slot, SkillLevel
 
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+
 # 이메일 인증 토큰 저장용 (간단한 예시)
 email_tokens = {}
+
+User = get_user_model()
 
 class RegisterView(APIView):
     def post(self, request):
@@ -55,6 +63,47 @@ class VerifyEmailView(APIView):
 
         # 인증 완료 후 Vue 로그인 화면으로 리다이렉트
         return redirect("http://localhost:8000/login")
+
+
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(MeSerializer(request.user).data)
+    
+    def patch(self, request):
+        first_scene = request.data.get("firstScene", False)
+        if not first_scene:
+            return Response(
+                {"detail": "firstScene must be true"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        request.user.firstScene = True
+        request.user.save(update_fields=["firstScene"])
+        return Response(MeSerializer(request.user).data)
+
+
+
+class FirstSceneView(APIView):
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # user 모델 필드명이 firstScene / first_scene 등 무엇인지에 맞춰 수정
+        return Response({"firstScene": bool(getattr(user, "firstScene", False))})
+
+    def patch(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        setattr(user, "firstScene", True)
+        user.save(update_fields=["firstScene"])
+
+        return Response({"firstScene": True})
 
 
 class LoginView(APIView):

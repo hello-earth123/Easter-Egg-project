@@ -41,6 +41,10 @@ export class PlayerStats {
     this.point = data.point || 0;
     this.maxPoint = 100;
 
+    // 버프에 의한 데미지 및 마나 소모량 증가
+    this.damageMultiplier = 1.0;
+    this.manaCostMultiplier = 1.0;
+
     // 젬
     this.damageGem = data.damageGem || 0;
     this.cooldownGem = data.CoolReduceGem || 0;
@@ -63,6 +67,20 @@ export class PlayerStats {
 
     playerInstance = this;
   }
+
+  // =============================================================
+  // 🔥 BUFF API (⭐ 여기에 넣으세요)
+  // =============================================================
+  applyBuff({ damageMultiplier = 1.0, manaCostMultiplier = 1.0 }) {
+    this.damageMultiplier *= damageMultiplier;
+    this.manaCostMultiplier *= manaCostMultiplier;
+  }
+
+  clearBuff({ damageMultiplier = 1.0, manaCostMultiplier = 1.0 }) {
+    this.damageMultiplier /= damageMultiplier;
+    this.manaCostMultiplier /= manaCostMultiplier;
+  }
+
 
   // =============================================================
   // EXP & LEVEL
