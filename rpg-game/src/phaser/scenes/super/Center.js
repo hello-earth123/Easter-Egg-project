@@ -678,7 +678,7 @@ export default class Center extends Phaser.Scene {
         this.physics.add.collider(this.boss, this.wallGroup2);
 
         // spawnMonsters(this);
-        spawnBoss(this, ['vampire']);
+        spawnBoss(this, ['coffin']);
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();

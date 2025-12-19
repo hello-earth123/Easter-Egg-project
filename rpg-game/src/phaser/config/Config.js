@@ -46,12 +46,12 @@ export const CFG = {
   // ============ BOSS PATTERN ============
   thunder: {
     scale: 2.0,
-    baseDmg: 3000,
+    baseDmg: 250,
   },
 
   fireshoot: {
     scale: 0.8,
-    baseDmg: 500,
+    baseDmg: 750,
     speed: 400,
   },
 
