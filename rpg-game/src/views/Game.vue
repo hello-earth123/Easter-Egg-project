@@ -2,6 +2,14 @@
   <div id="app-wrap">
     <!-- 게임 컨테이너 (Phaser가 붙는 영역) -->
     <div id="game-container">
+
+      <!-- 인트로 컷 씬 -->
+      <IntroCutscene
+        v-if="showIntroCutscene"
+        :images="cutsceneImages"
+        @finished="onIntroFinished"
+      />
+
       <!-- =================== 오버레이 HUD =================== -->
       <div class="hud-root">
         <!-- 🔹 좌측 상단: Lv + HP/MP/EXP 패널 -->
@@ -589,6 +597,7 @@ import { increaseStat, resetStat } from "../phaser/player/PlayerStats.js";
 import { saveGame } from "../phaser/manager/saveManager.js";
 import SoundManager from "../phaser/manager/SoundManager.js";
 import DialogueUI from "../phaser/ui/DialogueUI.vue";
+import IntroCutscene from "./IntroCutscene.vue";
 import BossScene from "../phaser/scenes/BossScene.js";
 
 /* Chart.js Radar import */
@@ -603,6 +612,15 @@ import {
   Legend,
   BarController,
 } from "chart.js";
+import CutscenePlayer from "../phaser/cutscene/CutscenePlayer.js";
+
+const CUTSCENE_IMAGES = [
+  "/static/assets/cutscene/intro_1.png",
+  "/static/assets/cutscene/intro_2.png",
+  "/static/assets/cutscene/intro_3.png",
+  "/static/assets/cutscene/intro_4.png",
+  "/static/assets/cutscene/intro_5.png",
+];
 
 Chart.register(
   RadarController,
@@ -617,7 +635,7 @@ Chart.register(
 export default {
 
   // 컷씬 UI
-  components: { DialogueUI, MiniMap },
+  components: { DialogueUI, MiniMap, IntroCutscene },
 
   data() {
     return {
@@ -897,6 +915,12 @@ export default {
       selectedSkillId: null,
 
       userId: null,
+
+      // 인트로 일러스트 컷씬
+      showIntroCutscene: false,
+      cutsceneImages: CUTSCENE_IMAGES,
+      hasStartedGame: false,
+
     };
   },
 
@@ -976,6 +1000,35 @@ export default {
 
   async mounted() {
     this.userId = localStorage.getItem('user_id')
+
+    // 여기서 firstScene 여부 먼저 확인
+    // 아래 API는 네가 만든 firstScene 조회 endpoint로 바꿔서 쓰면 됨.
+    // 예시: /accounts/first-scene/<userId>/ 같은 형태
+    const API_BASE = "http://127.0.0.1:8000";
+
+    const firstRes = await fetch(`${API_BASE}/accounts/first-scene/${this.userId}/`);
+    const ct = firstRes.headers.get("content-type") || "";
+    console.log("first-scene status:", firstRes.status);
+    console.log("first-scene content-type:", ct);
+
+    if (!ct.includes("application/json")) {
+      const raw = await firstRes.text();
+      console.log("first-scene raw:", raw.slice(0, 300));
+      throw new Error("first-scene endpoint did not return JSON. Check URL / auth / server error.");
+    }
+
+    const firstData = await firstRes.json();
+    this.showIntroCutscene = firstData.firstScene; // true면 컷씬 보여줌(첫 방문)
+    if (!this.showIntroCutscene) await this.startGame();
+
+    // const firstRes = await fetch(`api/accounts/first-scene/${this.userId}/`);
+    // const firstData = await firstRes.json();
+
+    this.showIntroCutscene = firstData.firstScene;
+
+    if (!this.showIntroCutscene) {
+      await this.startGame(); // 컷씬 없으면 즉시 게임 시작
+    }
 
     // Phaser 게임 구동
     let lastScene = "CastleLobby";
@@ -1179,6 +1232,178 @@ export default {
       this.playUiClick();
       saveGame(this.userId, this.skillState);
     },
+
+    async startGame() {
+      if (this.hasStartedGame) return;
+      this.hasStartedGame = true;
+
+      // mounted()에 있던 코드랑 똑같음 (그대로 복붙)
+      // Phaser 게임 구동
+      let lastScene = "CastleLobby";
+
+      const skillRes = await fetch(`http://127.0.0.1:8000/api/skill/${this.userId}/`);
+      const skillData = await skillRes.json();
+      this.skillState = skillData.skillLev;
+      const count = this.skillNodes.length;
+
+      for (let index = 0; index < count; index++) {
+        let node = this.skillNodes[index];
+
+        if (
+          this.skillState[node.id] &&
+          this.skillState[node.id] > 0 &&
+          node.branchGroup
+        ) {
+          this.branchChosen[node.branchGroup] = node.id;
+        }
+      }
+
+      const res = await fetch(`http://127.0.0.1:8000/api/nowLocation/${this.userId}/`);
+      const data = await res.json();
+      lastScene = data.nowLocation;
+
+      const config = {
+        type: Phaser.AUTO,
+        width: 900,
+        height: 700,
+        parent: "game-container",
+        physics: {
+          default: "arcade",
+          arcade: { gravity: { y: 0 }, debug: false },
+        },
+        // userId: this.userId,
+        // scene: Object.values(sceneMap),
+        // scene: [BossScene],
+      };
+
+      const game = new Phaser.Game(config);
+      window.game = game;
+      this.game = game;
+      Object.entries(sceneMap).forEach(([key, scene]) => {
+        game.scene.add(key, scene, false);
+      });
+      game.scene.start(lastScene, {userId: this.userId});
+
+      // 🔥 Vue 인스턴스를 Phaser game에 연결
+      this.$nextTick(() => {
+        game.vue = this;
+      });
+
+      // 🔊 사운드 매니저 초기화
+      const sm = SoundManager.init(game);
+      const vols = sm.getVolumes();
+      this.soundSettings.master = vols.master;
+      this.soundSettings.bgm = vols.bgm;
+      this.soundSettings.sfx = vols.sfx;
+
+      this._keyHandler = (e) => this.onGlobalKeyDown(e);
+      window.addEventListener("keydown", this._keyHandler);
+      window.addEventListener("resize", this.onWindowResize);
+
+      /* ----------------------------------------------------------------- */
+      initSlot(this.userId).then((slotData) => {
+        const skillSlotData = slotData.skillSlots;
+        const rawSlots = skillSlotData || [null, null, null, null];
+
+        // Vue상의 skillSlots는 먼저 초기화
+        // this.skillSlots = [null, null, null, null];
+
+        // DB에서 불러온 스킬을 Vue의 onDropSkillShortcut 방식으로 재적용
+        rawSlots.forEach((skill, idx) => {
+          if (!skill) return;
+
+          const fakeEv = {
+            dataTransfer: {
+              getData: (key) => (key === "skill-id" ? skill : ""),
+            },
+          };
+
+          // 기존 drop 로직 100% 그대로 활용
+          this.onDropSkillShortcut(fakeEv, idx);
+        });
+
+        if (slotData.itemSlots) {
+          this.itemSlots = slotData.itemSlots.map((i) =>
+            i ? { name: i.name, icon: i.icon } : null
+          );
+        }
+      });
+      /* ----------------------------------------------------------------- */
+
+      // Vue ← Phaser 동기화
+      this.pollTimer = setInterval(() => {
+        const main = game.scene.getScenes(true)[0];
+
+        this.scene = main;
+        
+        // 맵 이름 띄우기
+        if (main.mapName && this.currentMapTitle !== main.mapName) {
+          this.currentMapTitle = main.mapName;
+          this.triggerMapTitle();
+        }
+
+
+
+        if (!main || !main.playerStats) return;
+
+        this.playerHP = Math.round(main.playerStats.hp);
+        this.playerMaxHP = Math.round(main.playerStats.maxHp);
+        this.playerMP = Math.round(main.playerStats.mp);
+        this.playerMaxMP = Math.round(main.playerStats.maxMp);
+        this.playerEXP = Math.round(main.playerStats.exp);
+        this.playerNextEXP = Math.round(main.playerStats.nextExp);
+        this.playerLevel = main.playerStats.level || 1;
+        this.skillPoints = main.playerStats.skillPoints || 0; // 참고용
+        this.statPoints = main.playerStats.point ?? 0;
+        this.maxStatPoints = main.playerStats.maxPoint ?? 100;
+
+        // Gem 사용량 업데이트 ⭐⭐
+        // Gem 사용량 업데이트 ⭐ PlayerStats 필드에 맞게
+        const g = main.playerStats || {};
+
+        this.gemUsage.damage   = g.damageGem   ?? 0;     // damageGem
+        this.gemUsage.manaCost = g.manaCostGem ?? 0;     // manaCostGem
+        this.gemUsage.cooldown = g.cooldownGem ?? 0;     // cooldownGem
+        this.gemUsage.defense  = g.defenseGem  ?? 0;     // defenseGem
+        this.gemUsage.luck     = g.luckGem     ?? 0;     // luckGem
+
+
+
+        this.weaponStats.damage = main.playerStats.damage;
+        this.weaponStats.cooldown = main.playerStats.cooldown;
+        this.weaponStats.manaCost = main.playerStats.manaCost;
+        this.weaponStats.defense = main.playerStats.defense;
+        this.weaponStats.luck = main.playerStats.luck;
+
+        this.textBar = main.textBar || "";
+
+        // 인벤토리
+        this.inventory.items = (main.inventoryData.inventory.items || []).map((i) => ({...i, showName: this.items[i.name]}));
+
+        // 아이템 슬롯
+        if (main.inventoryData.itemSlots) {
+          this.itemSlots = main.inventoryData.itemSlots.map((i) =>
+            i ? { name: i.name, icon: i.icon } : null
+          );
+        }
+      }, 100);
+    },
+
+    async onIntroFinished() {
+      // 1) 컷씬 닫기
+      this.showIntroCutscene = false;
+
+      // 2) 서버에 "이제 컷씬 봤음" 저장
+      await fetch(`api/accounts/first-scene/${this.userId}/`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}), // body 없어도 됨
+      });
+
+      // 3) 게임 시작
+      await this.startGame();
+    },
+
 
     /* ===================
     gem 스탯 및 레이더 차트

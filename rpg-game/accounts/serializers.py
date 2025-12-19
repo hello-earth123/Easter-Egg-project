@@ -5,7 +5,7 @@ from .models import CustomUser
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'password', 'firstScene')
+        fields = ('username', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -16,6 +16,13 @@ class RegisterSerializer(serializers.ModelSerializer):
             is_active=False  # 이메일 인증 후 활성화
         )
         return user
+
+
+class MeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ("id", "username", "email", "firstScene")
+        read_only_fields = ("id", "username", "email")
 
 
 class LoginSerializer(serializers.Serializer):
