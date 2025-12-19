@@ -9,7 +9,7 @@ export function createFireSkillAnims(scene) {
   };
 
   Object.entries(frames).forEach(([key, max]) => {
-    if (!scene.scene.manager.keys[key]){
+    if (!scene.anims.exists(key)){
       scene.anims.create({
         key,
         frames: scene.anims.generateFrameNumbers(key, { start: 0, end: max }),

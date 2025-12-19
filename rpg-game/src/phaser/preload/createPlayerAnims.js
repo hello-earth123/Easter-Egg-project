@@ -2,7 +2,7 @@ export function createPlayerAnims(scene) {
   const keys = ["player_walk", "player_hit", "player_death", "player_cast_small", "player_buff", "player_cast_big"]
 
   keys.forEach((key) => {
-    if (!scene.scene.manager.keys[key]){
+    if (!scene.anims.exists(key)){
       switch (key){
         case "player_walk":
           scene.anims.create({

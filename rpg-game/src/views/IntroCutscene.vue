@@ -16,21 +16,32 @@
 </template>
 
 <script>
+import img01 from "../assets/cutscene/intro_1.png";
+import img02 from "../assets/cutscene/intro_2.png";
+import img03 from "../assets/cutscene/intro_3.png";
+import img04 from "../assets/cutscene/intro_4.png";
+import img05 from "../assets/cutscene/intro_5.png";
+
 export default {
   name: "IntroCutscene",
-  props: {
-    images: { type: Array, required: true },
-  },
   emits: ["finished"],
   data() {
     return {
+      userId: Number(this.$route.query.userId),
+      images: [
+        img01,
+        img02,
+        img03,
+        img04,
+        img05,
+      ],
       currentIndex: 0,
       visible: true,
     };
   },
   mounted() {
     this._onKey = (e) => {
-      if (e.key === " " || e.key === "Enter") this.next();
+      if (e.code === "Space" || e.key === "Enter") this.next();
     };
     window.addEventListener("keydown", this._onKey);
   },
@@ -38,12 +49,17 @@ export default {
     window.removeEventListener("keydown", this._onKey);
   },
   methods: {
-    next() {
+    async next() {
       if (this.currentIndex < this.images.length - 1) {
         this.currentIndex += 1;
       } else {
         this.visible = false;
-        this.$emit("finished");
+        await fetch(`http://127.0.0.1:8000/api/accounts/first-scene/${this.userId}/`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}), // body 없어도 됨
+        });
+        this.$router.push('/game');
       }
     },
   },

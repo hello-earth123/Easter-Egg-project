@@ -51,19 +51,18 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class FirstSceneView(APIView):
-    permission_classes = [AllowAny]
+class VerifyEmailView(APIView):
+    def get(self, request, token):
+        user_pk = email_tokens.get(token)
+        if not user_pk:
+            return HttpResponse("유효하지 않은 인증 링크", status=400)
 
-    def get(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
-        return Response({"firstScene": bool(getattr(user, "firstScene", True))})
+        user = CustomUser.objects.get(pk=user_pk)
+        user.is_active = True
+        user.save()
 
-    def patch(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
-        # 컷씬 봤으면 false로 바꿈(=다음부터는 스킵)
-        user.firstScene = False
-        user.save(update_fields=["firstScene"])
-        return Response({"firstScene": user.firstScene})
+        # 인증 완료 후 Vue 로그인 화면으로 리다이렉트
+        return redirect("http://localhost:8000/login")
 
 
 class MeView(APIView):
@@ -73,8 +72,8 @@ class MeView(APIView):
         return Response(MeSerializer(request.user).data)
     
     def patch(self, request):
-        first_scene = request.data.get("firstScene", None)
-        if first_scene is not True:
+        first_scene = request.data.get("firstScene", False)
+        if not first_scene:
             return Response(
                 {"detail": "firstScene must be true"},
                 status=status.HTTP_400_BAD_REQUEST

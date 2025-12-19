@@ -21,8 +21,8 @@ import CemeteryEndWest from "../scenes/mid/CemeteryEndWest";
 // high
 import CastleLobby from "../scenes/high/CastleLobby";
 import CastleInside from "../scenes/high/CastleInside";
-import MortuaryRoomEast from "../scenes/high/MortuaryRoomEast";
-import MortuaryRoomSouth from "../scenes/high/MortuaryRoomSouth";
+import BanquetHall from "../scenes/high/BanquetHall";
+import RitualRoom from "../scenes/high/RitualRoom";
 import Hall1 from "../scenes/high/Hall1";
 import Hall2 from "../scenes/high/Hall2";
 import Valcony from "../scenes/high/Valcony";
@@ -31,8 +31,8 @@ import Valcony from "../scenes/high/Valcony";
 import Corridor1 from "../scenes/super/Corridor1";
 import Corridor2 from "../scenes/super/Corridor2";
 import Corridor3 from "../scenes/super/Corridor3";
-import RitualRoom from "../scenes/super/RitualRoom";
-import Jail from "../scenes/super/Jail";
+import Threeway from "../scenes/super/Threeway";
+import ThroneRoom from "../scenes/super/ThroneRoom";
 import CenterEntrance from "../scenes/super/CenterEntrance";
 import Center from "../scenes/super/Center";
 
@@ -66,8 +66,8 @@ export const sceneMap = {
   // high ======================
   CastleLobby,
   CastleInside,
-  MortuaryRoomEast,
-  MortuaryRoomSouth,
+  BanquetHall,
+  RitualRoom,
   Hall1,
   Hall2,
   Valcony,
@@ -78,8 +78,8 @@ export const sceneMap = {
   Corridor1,
   Corridor2,
   Corridor3,
-  RitualRoom,
-  Jail,
+  Threeway,
+  ThroneRoom,
   CenterEntrance,
   Center,
 
