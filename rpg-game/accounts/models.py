@@ -5,3 +5,4 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
+    firstScene = models.BooleanField(default=False)
