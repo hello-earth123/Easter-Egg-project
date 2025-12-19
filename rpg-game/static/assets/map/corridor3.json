@@ -4,7 +4,7 @@
  "layers":[
         {
          "id":2,
-         "image":"corridor3.png",
+         "image":"corridor2.png",
          "imageheight":1216,
          "imagewidth":1600,
          "name":"Image Layer 1",
@@ -20,70 +20,26 @@
          "name":"collider",
          "objects":[
                 {
-                 "height":1119.28265919283,
+                 "height":518.027053811659,
                  "id":2,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":535.246860986547,
+                 "width":1600.00022421525,
                  "x":-0.000112107623181146,
                  "y":-0.717562780269045
                 }, 
                 {
-                 "height":93.2738071748879,
+                 "height":410.403852017937,
                  "id":6,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":1597.12964125561,
-                 "x":2.87015695067269,
-                 "y":1121.43484529148
-                }, 
-                {
-                 "height":1116.41,
-                 "id":7,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":516.592291479821,
-                 "x":1082.69040134529,
-                 "y":1.43625560538116
-                }, 
-                {
-                 "height":170.762589237668,
-                 "id":8,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":548.161390134529,
-                 "x":534.529170403588,
-                 "y":2.15233766816141
-                }, 
-                {
-                 "height":96.1434977578476,
-                 "id":9,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":43.0493273542602,
-                 "x":1037.48878923767,
-                 "y":685.919282511211
-                }, 
-                {
-                 "height":0,
-                 "id":10,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":1721.9730941704,
-                 "y":538.116591928251
+                 "width":1598.56461883408,
+                 "x":1.43517937219735,
+                 "y":804.304800448431
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -92,7 +48,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":11,
+ "nextobjectid":7,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

@@ -31,12 +31,18 @@ import { preloadBossPattern } from "../../preload/preloadBossPattern.js";
 import { createBossPattern } from "../../preload/createBossPattern.js";
 import { preloadGameSet } from "../../preload/preloadGameSet.js";
 import { preloadSound } from "../../preload/preloadSound.js";
+import { createPotalAnims } from "../../preload/createPotalAnims.js";
+import { createPlayerAnims } from "../../preload/createPlayerAnims.js";
+import { createMonsterAnims } from "../../preload/createMonsterAnims.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
 export default class Center extends Phaser.Scene {
 
     init(data) {
+        this.userId = data.userId;
+        this.registry.set('userId', this.userId);
+        
         let fromPortal = null;
         if (data){
             fromPortal = data.fromPortal;
@@ -133,8 +139,8 @@ export default class Center extends Phaser.Scene {
     preload() {
         // this.load.image("center", "/static/assets/map/center.png");
         // this.load.tilemapTiledJSON('centerTile', '/static/assets/map/center.json');
-        this.load.image("center", "/static/assets/test.png");
-        this.load.tilemapTiledJSON('centerTile', '/static/assets/test.json');
+        this.load.image("center", "/static/assets/map/center.png");
+        this.load.tilemapTiledJSON('centerTile', '/static/assets/map/center.json');
         // BGM
         this.load.audio("bgm_center", "/static/assets/sound/background/bgm_center.wav");
 
@@ -161,84 +167,11 @@ export default class Center extends Phaser.Scene {
 
         // 1. 씬 BGM
         this.SoundManager.playBgm("bgm_center")
-        // ==================================================
-        // 포탈
-        this.anims.create({
-            key: "portal-anim",
-            frames: this.anims.generateFrameNumbers("portal", { start: 0, end: 6 }),
-            frameRate: 12,
-            repeat: -1
-        });
 
-        // 플레이어 이동
-        this.anims.create({
-            key: "player_walk",
-            frames: this.anims.generateFrameNumbers("playerSheet", {
-                start: 0,
-                end: 5,
-            }),
-            frameRate: 10,
-            repeat: -1,
-        });
-
-        // 플레이어 피격
-        this.anims.create({
-            key: "player_hit",
-            frames: this.anims.generateFrameNumbers("playerSheet", {
-                start: 30,
-                end: 32,
-            }),
-            frameRate: 12,
-            repeat: 0
-        });
-
-        // 플레이어 사망
-        this.anims.create({
-            key: "player_death",
-            frames: this.anims.generateFrameNumbers("playerSheet", {
-                start: 36,
-                end: 40,
-            }),
-            frameRate: 8,
-            repeat: 0
-        });
-
-
-                // =========================
-        // === 스킬 모션 애니메이션 ===
-        // fireball / firebomb / incendiary / napalm
-        this.anims.create({
-            key: "player_cast_small",
-            frames: this.anims.generateFrameNumbers("playerSheet", { start: 18, end: 21 }),
-            frameRate: 12,
-            repeat: 0
-        });
-
-        // buff skill
-        this.anims.create({
-            key: "player_buff",
-            frames: this.anims.generateFrameNumbers("playerSheet", { start: 24, end: 27 }),
-            frameRate: 10,
-            repeat: 0
-        });
-
-        // meteor S, M, L / deathhand / flameA,B,C
-        this.anims.create({
-            key: "player_cast_big",
-            frames: this.anims.generateFrameNumbers("playerSheet", { start: 42, end: 47 }),
-            frameRate: 10,
-            repeat: 0
-        });
-
-        // incendiary 전용 — 홀드 유지 프레임 반복(20~21)
-        this.anims.create({
-            key: "player_incendiary_loop",
-            frames: this.anims.generateFrameNumbers("playerSheet", { start: 20, end: 21 }),
-            frameRate: 6,
-            repeat: -1
-        });
-
-       
+        createPotalAnims(this);
+        createPlayerAnims(this);
+        createMonsterAnims(this);
+        
         // 스킬 애니메이션 매핑
         this.skillMotionType = {
             fireball: "small",
@@ -257,248 +190,6 @@ export default class Center extends Phaser.Scene {
             flameB: "big",
             flameC: "big",
         };
-
-
-        // arrow_skeleton
-        this.anims.create({
-            key: "arrow_skeleton_walk",
-            frames: this.anims.generateFrameNumbers("arrow_skeleton", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // bat
-        this.anims.create({
-            key: "bat_walk",
-            frames: this.anims.generateFrameNumbers("bat", { start: 0, end: 2 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // bird
-        this.anims.create({
-            key: "bird_walk",
-            frames: this.anims.generateFrameNumbers("bird", { start: 0, end: 7 }),
-            frameRate: 8,
-            repeat: -1,
-        });      
-        // butterfly
-        this.anims.create({
-            key: "butterfly_walk",
-            frames: this.anims.generateFrameNumbers("butterfly", { start: 0, end: 2 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // coffin
-        this.anims.create({
-            key: "coffin_walk",
-            frames: this.anims.generateFrameNumbers("coffin", { start: 0, end: 10 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // colossus
-        this.anims.create({
-            key: "colossus_walk",
-            frames: this.anims.generateFrameNumbers("colossus", { start: 0, end: 6 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // dwarf
-        this.anims.create({
-            key: "dwarf_walk",
-            frames: this.anims.generateFrameNumbers("dwarf", { start: 0, end: 7 }),
-            frameRate: 8,
-            repeat: -1,
-        });  
-        // eyeball
-        this.anims.create({
-            key: "eyeball_walk",
-            frames: this.anims.generateFrameNumbers("eyeball", { start: 0, end: 14 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // eyebat
-        this.anims.create({
-            key: "eyebat_walk",
-            frames: this.anims.generateFrameNumbers("eyebat", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // fire_skull1
-        this.anims.create({
-            key: "fire_skull1_walk",
-            frames: this.anims.generateFrameNumbers("fire_skull1", { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1,
-        });       
-        // fire_skull2
-        this.anims.create({
-            key: "fire_skull2_walk",
-            frames: this.anims.generateFrameNumbers("fire_skull2", { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // ghost
-        this.anims.create({
-            key: "ghost_walk",
-            frames: this.anims.generateFrameNumbers("ghost", { start: 0, end: 7 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // lich
-        this.anims.create({
-            key: "lich_walk",
-            frames: this.anims.generateFrameNumbers("lich", { start: 0, end: 7 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // mask
-        this.anims.create({
-            key: "mask_walk",
-            frames: this.anims.generateFrameNumbers("mask", { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // mimic
-        this.anims.create({
-            key: "mimic_walk",
-            frames: this.anims.generateFrameNumbers("mimic", { start: 0, end: 9 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // moai-b
-        this.anims.create({
-            key: "moai-b_walk",
-            frames: this.anims.generateFrameNumbers("moai-b", { start: 0, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // moai-s
-        this.anims.create({
-            key: "moai-s_walk",
-            frames: this.anims.generateFrameNumbers("moai-s", { start: 0, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // moai-g
-        this.anims.create({
-            key: "moai-g_walk",
-            frames: this.anims.generateFrameNumbers("moai-g", { start: 0, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // mummy
-        this.anims.create({
-            key: "mummy_walk",
-            frames: this.anims.generateFrameNumbers("mummy", { start: 0, end: 9 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // mushroom
-        this.anims.create({
-            key: "mushroom_walk",
-            frames: this.anims.generateFrameNumbers("mushroom", { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // rabbit
-        this.anims.create({
-            key: "rabbit_walk",
-            frames: this.anims.generateFrameNumbers("rabbit", { start: 0, end: 6 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // reaper
-        this.anims.create({
-            key: "reaper_walk",
-            frames: this.anims.generateFrameNumbers("reaper", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // scorpion
-        this.anims.create({
-            key: "scorpion_walk",
-            frames: this.anims.generateFrameNumbers("scorpion", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // skeleton
-        this.anims.create({
-            key: "skeleton_walk",
-            frames: this.anims.generateFrameNumbers("skeleton", { start: 0, end: 8 }),
-            frameRate: 8,
-            repeat: -1,
-        });  
-        // skull_b
-        this.anims.create({
-            key: "skull_b_walk",
-            frames: this.anims.generateFrameNumbers("skull_b", { start: 0, end: 12 }),
-            frameRate: 8,
-            repeat: -1,
-        });  
-        // skull_w
-        this.anims.create({
-            key: "skull_w_walk",
-            frames: this.anims.generateFrameNumbers("skull_w", { start: 0, end: 12 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // slime
-        this.anims.create({
-            key: "slime_walk",
-            frames: this.anims.generateFrameNumbers("slime", { start: 0, end: 15 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // snail
-        this.anims.create({
-            key: "snail_walk",
-            frames: this.anims.generateFrameNumbers("snail", { start: 0, end: 11 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // snake
-        this.anims.create({
-            key: "snake_walk",
-            frames: this.anims.generateFrameNumbers("snake", { start: 0, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // squirrel
-        this.anims.create({
-            key: "squirrel_walk",
-            frames: this.anims.generateFrameNumbers("squirrel", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // stingsnake
-        this.anims.create({
-            key: "stingsnake_walk",
-            frames: this.anims.generateFrameNumbers("stingsnake", { start: 0, end: 4 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // vampire
-        this.anims.create({
-            key: "vampire_walk",
-            frames: this.anims.generateFrameNumbers("vampire", { start: 0, end: 11 }),
-            frameRate: 8,
-            repeat: -1,
-        });
-        // weapon
-        this.anims.create({
-            key: "weapon_walk",
-            frames: this.anims.generateFrameNumbers("weapon", { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-        // wolf
-        this.anims.create({
-            key: "wolf_walk",
-            frames: this.anims.generateFrameNumbers("wolf", { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1,
-        }); 
-       
-
 
         this.uiState = {
             inventory: false,
@@ -571,13 +262,13 @@ export default class Center extends Phaser.Scene {
         };
 
         this.isPlayerLoad = false;
-        initPlayer(3).then(player => {
+        initPlayer(this.userId).then(player => {
             this.playerStats = player;
         })
-        initInventory(3).then(inven => {
+        initInventory(this.userId).then(inven => {
             this.inventoryData = inven;
         })
-        initSlot(3).then(slot => {
+        initSlot(this.userId).then(slot => {
             this.slotData = slot;
             this.isPlayerLoad = true;
         })
