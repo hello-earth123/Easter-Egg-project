@@ -37,31 +37,49 @@ export class BuffSkill extends FireSkillBase {
     });
 
     // ==================================
-    // 🔥 버프 능력치 적용 (1분 지속)
+    // 버프 능력치 적용 (1분 지속)
     // ==================================
-    const hpUp = this.base.hpUp || 0;
-    const mpUp = this.base.mpUp || 0;
+    const damageMultiplier = 1.0 + (0.20 + (this.level) * 0.05);
+    const manaCostMultiplier = 1.0 + (0.30 + (this.level) * 0.01);
 
-    // 원래 max 값 저장 (복구하려면 필요)
-    const originalMaxHp = scene.playerStats.maxHp;
-    const originalMaxMp = scene.playerStats.maxMp;
+    const stats = scene.playerStats;
+
+    this.buffTimer = null;
+    this.buffDamageMultiplier = 1.0;
+    this.buffManaCostMultiplier = 1.0;
+
+    // ===============================
+    // 중복 버프 처리 (갱신)
+    // ===============================
+    if (stats.buffTimer) {
+      stats.buffTimer.destroy();
+
+      stats.clearBuff({
+        damageMultiplier: stats.buffDamageMultiplier,
+        manaCostMultiplier: stats.buffManaCostMultiplier,
+      });
+
+      stats.buffTimer = null;
+    }
 
     // 버프 적용
-    scene.playerStats.maxHp += hpUp;
-    scene.playerStats.maxMp += mpUp;
+    stats.applyBuff({
+      damageMultiplier,
+      manaCostMultiplier,
+    });
 
-    // 현재 HP/MP가 최대치를 넘지 않도록 보정
-    scene.playerStats.hp = Math.min(scene.playerStats.hp, scene.playerStats.maxHp);
-    scene.playerStats.mp = Math.min(scene.playerStats.mp, scene.playerStats.maxMp);
+    // 현재 버프 정보 저장
+    stats.buffDamageMultiplier = damageMultiplier;
+    stats.buffManaCostMultiplier = manaCostMultiplier;
 
     // === ⏳ 1분(60000ms) 뒤 능력치 복구 ===
-    scene.time.delayedCall(60000, () => {
-      scene.playerStats.maxHp = originalMaxHp;
-      scene.playerStats.maxMp = originalMaxMp;
+    stats.buffTimer = scene.time.delayedCall(60000, () => {
+      stats.clearBuff({
+        damageMultiplier,
+        manaCostMultiplier,
+      });
 
-      // HP/MP도 다시 보정
-      scene.playerStats.hp = Math.min(scene.playerStats.hp, scene.playerStats.maxHp);
-      scene.playerStats.mp = Math.min(scene.playerStats.mp, scene.playerStats.maxMp);
+      stats.buffTimer = null;
     });
 
     // UI 출력

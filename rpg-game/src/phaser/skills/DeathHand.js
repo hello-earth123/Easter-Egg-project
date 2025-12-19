@@ -22,7 +22,6 @@ export class DeathHand extends FireSkillBase {
     const frameTime = 1000 / 14;
     const hitFrames = [0, 11];
     const skipFrames = [15, 16, 17];
-    const loopStartFrame = 18;
 
     let currentFrame = 0;
     let isDestroying = false;

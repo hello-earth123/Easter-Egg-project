@@ -45,6 +45,11 @@ export class SkillBase {
         value *= damageScale * levelScalePlayer;
     }
 
+    // 버프(데미지 증가) 반영
+    if (stats?.damageMultiplier) {
+        value *= stats.damageMultiplier;
+    }
+
     return Math.floor(value);
     }
 
@@ -66,6 +71,11 @@ export class SkillBase {
             // manaCost 1 당 1% 감소, 최소 30%까지만 감소
             const reduceScale = Math.max(0.3, 1 - manaStat * 0.01);
             value *= reduceScale;
+        }
+
+        // 버프 (마나 소모량 증가) 반영
+        if (stats?.manaCostMultiplier) {
+            value *= stats.manaCostMultiplier;
         }
 
         value = Math.floor(value);
