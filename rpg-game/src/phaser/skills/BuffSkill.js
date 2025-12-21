@@ -5,28 +5,28 @@ import { applyVFX } from "../utils/SkillVFX.js";
 export class BuffSkill extends FireSkillBase {
   cast(scene, caster) {
 
-    // === 🔥 버프 스프라이트 생성 ===
+    // === 버프 스프라이트 생성 ===
     const fx = scene.add.sprite(caster.x, caster.y - 30, "buff");
     fx.setOrigin(0.5);
 
-    // === 🔥 scale 적용 (Config 기반) ===
+    // === scale 적용 (Config 기반) ===
     const scale = this.base.scale ?? 1.2;
     fx.setScale(scale);
 
-    // === 🔥 VFX 적용 (buff_aura) ===
+    // === VFX 적용 (buff_aura) ===
     applyVFX(scene, fx, this.base.vfx);
 
-    // === 🔥 애니메이션 재생 ===
+    // === 애니메이션 재생 ===
     fx.play("buff");
 
-    // === 🔥 플레이어 따라가기 ===
+    // === 플레이어 따라가기 ===
     fx.update = () => {
       fx.x = caster.x;
       fx.y = caster.y - 30;
     };
     scene.events.on("update", fx.update, fx);
 
-    // === 🎬 FX 애니메이션(비주얼) 완료 → FX만 제거 ===
+    // === FX 애니메이션(비주얼) 완료 → FX만 제거 ===
     fx.once("animationcomplete", () => {
       scene.events.off("update", fx.update, fx);
 
@@ -71,6 +71,32 @@ export class BuffSkill extends FireSkillBase {
     // 현재 버프 정보 저장
     stats.buffDamageMultiplier = damageMultiplier;
     stats.buffManaCostMultiplier = manaCostMultiplier;
+
+        // ✅ 씬이 꺼질 때 버프가 영구로 남지 않게 강제 정리
+    const cleanupBuffOnSceneExit = () => {
+      // 타이머 정리
+      if (stats.buffTimer) {
+        stats.buffTimer.remove?.(false);
+        stats.buffTimer.destroy?.();
+        stats.buffTimer = null;
+      }
+
+      // 버프 해제 (현재 저장된 배수 기준)
+      if (stats.buffDamageMultiplier !== 1.0 || stats.buffManaCostMultiplier !== 1.0) {
+        stats.clearBuff({
+          damageMultiplier: stats.buffDamageMultiplier,
+          manaCostMultiplier: stats.buffManaCostMultiplier,
+        });
+      }
+
+      // 값 리셋 (다음 씬에서 “이미 버프중” 같은 판정 방지)
+      stats.buffDamageMultiplier = 1.0;
+      stats.buffManaCostMultiplier = 1.0;
+    };
+
+    // once로 중복 등록 방지
+    scene.events.once("shutdown", cleanupBuffOnSceneExit);
+    scene.events.once("destroy", cleanupBuffOnSceneExit);
 
     // === ⏳ 1분(60000ms) 뒤 능력치 복구 ===
     stats.buffTimer = scene.time.delayedCall(60000, () => {

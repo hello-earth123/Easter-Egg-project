@@ -69,7 +69,7 @@ export class PlayerStats {
   }
 
   // =============================================================
-  // 🔥 BUFF API (⭐ 여기에 넣으세요)
+  //  BUFF API
   // =============================================================
   applyBuff({ damageMultiplier = 1.0, manaCostMultiplier = 1.0 }) {
     this.damageMultiplier *= damageMultiplier;
