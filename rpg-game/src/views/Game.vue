@@ -646,7 +646,7 @@ export default {
       playerMaxMP: 50,
       playerEXP: 0,
       playerNextEXP: 100,
-      playerLevel: 1,
+      playerLevel: 100,
       skillPoints: 0, // 씬에서 들어오긴 하지만, 실제 UI는 playerLevel 기반 계산 사용
 
 
@@ -891,7 +891,7 @@ export default {
 
       // 각 스킬의 현재 레벨
       skillState: {
-        skill1: 1,
+        skill1: 0,
         skill2: 0,
         skill3: 0,
         skill4a: 0,

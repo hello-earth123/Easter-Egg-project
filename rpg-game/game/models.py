@@ -87,7 +87,7 @@ class Inventory(models.Model):
 
 
 def defaultSkillSlot():
-    return [None, None, None, None]
+    return ["fireball", None, None, None]
 
 def defaultItemSlot():
     return [None, None]

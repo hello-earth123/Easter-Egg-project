@@ -31,14 +31,14 @@ export class PlayerStats {
     this.baseDamage = data.staffDamage || 0;
 
     // ⭐ 기존 damage 는 버튼 스탯 (0~50 유지)
-    this.damage = data.staffDamagePoint || 0;
+    this.damage = data.staffDamage || 0;       //this.damage = data.staffDamagePoint || 0;
 
     this.cooldown = data.staffCoolReduce || 0;
     this.manaCost = data.staffManaReduce || 0;
     this.defense = data.staffDefense || 0;
     this.luck = data.staffLuk || 0;
 
-    this.point = data.point || 0;
+    this.point = (this.level * 2) - (this.damage + this.cooldown + this.manaCost + this.defense + this.luck);
     this.maxPoint = 100;
 
     // 버프에 의한 데미지 및 마나 소모량 증가
@@ -86,34 +86,41 @@ export class PlayerStats {
   // EXP & LEVEL
   // =============================================================
   addExp(amount) {
-    this.exp += amount;
-    while (this.exp >= this.nextExp) {
-      this.exp -= this.nextExp;
-      this.levelUp();
+    if (this.level < 50){
+      this.exp += amount;
+      while (this.exp >= this.nextExp) {
+        this.exp -= this.nextExp;
+        this.levelUp();
+      }
     }
   }
 
   levelUp() {
-    this.level++;
-    this.nextExp = calcNextExp(this.level);
+    if(this.level < 50){
+      this.level++;
+      this.nextExp = calcNextExp(this.level);
 
-    // HP / MP 성장
-    this.maxHp = Math.floor(this.maxHp * growthHpPerLevel);
-    this.maxMp = Math.floor(this.maxMp * growthMpPerLevel);
-    this.hp = this.maxHp;
-    this.mp = this.maxMp;
+      // HP / MP 성장
+      this.maxHp = Math.floor(this.maxHp * growthHpPerLevel);
+      this.maxMp = Math.floor(this.maxMp * growthMpPerLevel);
+      this.hp = this.maxHp;
+      this.mp = this.maxMp;
 
-    // ⭐ 레벨업 기반 공격력 증가 (상한 없음)
-    this.baseDamage += growthDamagePerLevel;
+      // ⭐ 레벨업 기반 공격력 증가 (상한 없음)
+      this.baseDamage += growthDamagePerLevel;
 
-    if (this.level % 2 == 0) {
-      // 스킬 포인트
-      this.skillPoints += 1;
+      if (this.level % 2 == 0) {
+        // 스킬 포인트
+        this.skillPoints += 1;
+      }
+
+
+      // 스탯 포인트 2 지급
+      this.point += 2;  
     }
-
-
-    // 스탯 포인트 2 지급
-    this.point += 2;
+    else{
+      this.exp = 0;
+    }
   }
 
   // =============================================================
