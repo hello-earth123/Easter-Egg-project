@@ -406,7 +406,7 @@
 
             <!-- ⭐ Gem 그래프 영역 -->
             <div class="gem-usage-section">
-              <div class="gem-title">Gem Usage (Total {{ totalGemUsed }}/20)</div>
+              <div class="gem-title">Gem Usage (Total {{ (totalGemUsed).toFixed(2) }}/20)</div>
 
               <!-- Damage -->
               <div class="gem-row">
@@ -420,7 +420,7 @@
                     }"
                   ></div>
                 </div>
-                <div class="gem-value">{{ gemUsage.damage }}</div>
+                <div class="gem-value">{{ (gemUsage.damage).toFixed(2) }}</div>
               </div>
               
               <!-- Cooldown -->
@@ -435,7 +435,7 @@
                     }"
                   ></div>
                 </div>
-                <div class="gem-value">{{ gemUsage.cooldown }}</div>
+                <div class="gem-value">{{ (gemUsage.cooldown).toFixed(2) }}</div>
               </div>
 
               <!-- ManaCost -->
@@ -450,7 +450,7 @@
                     }"
                   ></div>
                 </div>
-                <div class="gem-value">{{ gemUsage.manaCost }}</div>
+                <div class="gem-value">{{ (gemUsage.manaCost).toFixed(2) }}</div>
               </div>
 
               <!-- Defense -->
@@ -465,7 +465,7 @@
                     }"
                   ></div>
                 </div>
-                <div class="gem-value">{{ gemUsage.defense }}</div>
+                <div class="gem-value">{{ (gemUsage.defense).toFixed(2) }}</div>
               </div>
 
               <!-- Luck -->
@@ -480,7 +480,7 @@
                     }"
                   ></div>
                 </div>
-                <div class="gem-value">{{ gemUsage.luck }}</div>
+                <div class="gem-value">{{ (gemUsage.luck).toFixed(2) }}</div>
               </div>
             </div>
           </div>

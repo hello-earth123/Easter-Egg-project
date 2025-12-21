@@ -28,10 +28,10 @@ export class PlayerStats {
     this.mp = data.currentMP || this.maxMp;
 
     // ⭐ 기존 staffDamage → baseDamage 로 승격 (레벨 성장 대상)
-    this.baseDamage = data.staffDamage || 0;
+    this.baseDamage = (this.level - 1) * growthDamagePerLevel;
 
     // ⭐ 기존 damage 는 버튼 스탯 (0~50 유지)
-    this.damage = data.staffDamage || 0;       //this.damage = data.staffDamagePoint || 0;
+    this.damage = data.staffDamage || 0;
 
     this.cooldown = data.staffCoolReduce || 0;
     this.manaCost = data.staffManaReduce || 0;
@@ -86,7 +86,7 @@ export class PlayerStats {
   // EXP & LEVEL
   // =============================================================
   addExp(amount) {
-    if (this.level < 50){
+    if (this.level < 50) {
       this.exp += amount;
       while (this.exp >= this.nextExp) {
         this.exp -= this.nextExp;
@@ -96,7 +96,7 @@ export class PlayerStats {
   }
 
   levelUp() {
-    if(this.level < 50){
+    if (this.level < 50) {
       this.level++;
       this.nextExp = calcNextExp(this.level);
 
@@ -116,9 +116,9 @@ export class PlayerStats {
 
 
       // 스탯 포인트 2 지급
-      this.point += 2;  
+      this.point += 2;
     }
-    else{
+    else {
       this.exp = 0;
     }
   }
@@ -185,7 +185,7 @@ export function increaseStat(key) {
     console.log("no stat points left");
     return;
   }
-  
+
   playerInstance[key]++;
   playerInstance.point--;
   console.log(
@@ -196,12 +196,12 @@ export function increaseStat(key) {
 export function resetStat() {
   let tmpPoint = 0;
 
-  tmpPoint = 
-  playerInstance.damage +
-  playerInstance.cooldown +
-  playerInstance.manaCost +
-  playerInstance.defense +
-  playerInstance.luck;
+  tmpPoint =
+    playerInstance.damage +
+    playerInstance.cooldown +
+    playerInstance.manaCost +
+    playerInstance.defense +
+    playerInstance.luck;
 
 
   if (tmpPoint == 0) {
