@@ -78,6 +78,7 @@ export default class CastleWall extends Phaser.Scene {
             snake: 2,
             wolf: 1,
             rabbit: 3,
+            hidden: 1,
         };
 
         this.minLevel = 1;
