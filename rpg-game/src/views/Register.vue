@@ -8,11 +8,16 @@
     <main class="panel" role="main" aria-label="프라가라흐 회원가입">
       <header class="header">
         <div class="badge">NEW ADVENTURER</div>
-        <h1 class="title">프라가라흐</h1>
+        <h1 class="title">
+          <span class="title-orn left" aria-hidden="true">◆</span>
+          <span class="title-text">프라가라흐</span>
+          <span class="title-orn right" aria-hidden="true">◆</span>
+        </h1>
         <p class="subtitle">회원가입</p>
       </header>
 
-      <section class="card">
+      <!-- ✅ form으로 감싸서 Enter/Click 중복 호출(이메일 중복 오류처럼 보이는 현상) 방지 -->
+      <form class="card" @submit.prevent="register">
         <h2 class="card-title">회원가입</h2>
 
         <label class="field">
@@ -50,20 +55,19 @@
             autocomplete="new-password"
             required
             :disabled="isLoading"
-            @keydown.enter.prevent="register"
           />
         </label>
 
-        <button class="btn primary" @click="register" :disabled="isLoading || !canSubmit">
+        <button class="btn primary" type="submit" :disabled="isLoading || !canSubmit">
           <span class="btn-glow" aria-hidden="true"></span>
           {{ isLoading ? '등록 중...' : '회원가입' }}
         </button>
 
         <div class="row">
-          <button class="btn ghost" @click="$router.push('/login')" :disabled="isLoading">
+          <button class="btn ghost" type="button" @click="$router.push('/login')" :disabled="isLoading">
             이미 계정이 있어요(로그인)
           </button>
-          <button class="btn ghost subtle" @click="clearForm" :disabled="isLoading">
+          <button class="btn ghost subtle" type="button" @click="clearForm" :disabled="isLoading">
             초기화
           </button>
         </div>
@@ -76,7 +80,7 @@
           <span class="hint-key">INFO</span>
           <span class="hint-text">회원가입 성공 시 로그인 페이지로 이동합니다.</span>
         </div>
-      </section>
+      </form>
 
       <footer class="footer">
         <span class="footer-text">© Pragarach — Create your legend</span>
@@ -127,6 +131,9 @@ export default {
       return JSON.stringify(data);
     },
     async register() {
+      // ✅ 중복 클릭/Enter 연타 방지
+      if (this.isLoading) return;
+
       this.statusMessage = "";
       this.isOk = true;
       this.isLoading = true;
@@ -166,6 +173,15 @@ export default {
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+/* 레이아웃 튐/오버플로 방지 */
+.auth-screen,
+.auth-screen *,
+.auth-screen *::before,
+.auth-screen *::after {
+  box-sizing: border-box;
+}
+
 
 .auth-screen {
   min-height: 100vh;
@@ -221,10 +237,81 @@ export default {
 }
 
 .title {
-  margin: 14px 0 8px;
-  font-size: 22px;
-  line-height: 1.35;
-  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.65);
+
+  margin: 14px 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: clamp(20px, 4.6vw, 30px);
+  line-height: 1.25;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.75));
+}
+
+.title-text {
+  position: relative;
+  z-index: 0;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+  letter-spacing: 1px;
+
+  /* 화려함(그라데이션) */
+  background-image: linear-gradient(90deg, #ffd166, #ff6b6b, #ff9f1c, #ffd166);
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  color: #ffe08a; /* fallback */
+
+  animation: titleShimmer 6s linear infinite;
+
+  text-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.92),
+    2px 2px 0 rgba(0, 0, 0, 0.92),
+    -2px 2px 0 rgba(0, 0, 0, 0.92),
+    2px -2px 0 rgba(0, 0, 0, 0.92),
+    -2px -2px 0 rgba(0, 0, 0, 0.92),
+    0 0 10px rgba(255, 120, 0, 0.18);
+}
+
+.title-text::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -6px -10px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.42);
+  border: 3px solid rgba(0, 0, 0, 0.78);
+  box-shadow:
+    0 6px 0 rgba(0, 0, 0, 0.55),
+    0 0 14px rgba(255, 112, 0, 0.10);
+}
+
+.title-orn {
+  font-size: 18px;
+  color: #ff9f1c;
+  opacity: 0.95;
+  text-shadow:
+    0 0 10px rgba(255, 159, 28, 0.65),
+    0 0 18px rgba(255, 107, 107, 0.35),
+    0 3px 0 rgba(0, 0, 0, 0.75);
+  animation: titlePulse 2.2s ease-in-out infinite;
+}
+
+.title-orn.left { transform: translateY(1px); }
+.title-orn.right { transform: translateY(1px) scaleX(-1); }
+
+@keyframes titleShimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes titlePulse {
+  0%, 100% { transform: translateY(1px) scale(1); opacity: 0.92; }
+  50% { transform: translateY(1px) scale(1.08); opacity: 1; }
 }
 
 .subtitle {
@@ -240,6 +327,7 @@ export default {
   box-shadow: 0 16px 0 rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(255, 106, 0, 0.25) inset;
   border-radius: 14px;
   padding: 18px 16px 16px;
+  overflow: hidden;
 }
 
 .card-title {
@@ -252,6 +340,7 @@ export default {
   display: grid;
   gap: 8px;
   margin-top: 12px;
+  min-width: 0;
 }
 
 .label {
@@ -260,6 +349,7 @@ export default {
 }
 
 .input {
+  box-sizing: border-box;
   width: 100%;
   padding: 12px 12px;
   font-size: 12px;
@@ -273,6 +363,8 @@ export default {
 
   outline: none;
   box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.18) inset;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .input:focus {
