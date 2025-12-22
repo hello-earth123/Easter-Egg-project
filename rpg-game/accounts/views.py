@@ -37,7 +37,7 @@ class RegisterView(APIView):
             # 이메일 인증 링크 생성
             token = get_random_string(32)
             email_tokens[token] = user.pk
-            verification_link = f"http://localhost:8000/api/accounts/verify-email/{token}/"
+            verification_link = f"http://121.162.159.56:8000/api/accounts/verify-email/{token}/"
 
             # Gmail로 전송
             send_mail(
@@ -62,7 +62,7 @@ class VerifyEmailView(APIView):
         user.save()
 
         # 인증 완료 후 Vue 로그인 화면으로 리다이렉트
-        return redirect("http://localhost:8000/login")
+        return redirect("http://121.162.159.56:8000/login")
 
 
 class MeView(APIView):
