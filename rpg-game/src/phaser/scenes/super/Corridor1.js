@@ -73,7 +73,7 @@ export default class Corridor1 extends Phaser.Scene {
             ArrowDown: 0,
         };
         this.lastDashAt = 0;
-s
+
         this.monsterData = {
             arrow_skeleton: 1,
             butterfly: 5,

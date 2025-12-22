@@ -52,7 +52,7 @@ export default class Center extends Phaser.Scene {
             east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
             south: { x: 700, y: 1000 },
             west: { x: 1400, y: 600 },
-            north: { x: 700, y: 200},
+            north: { x: 800, y: 1100},
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
@@ -86,7 +86,7 @@ export default class Center extends Phaser.Scene {
             // reaper: 4,
             arrow_skeleton: 2,
             butterfly: 2,
-            colossus: 2,
+            colossus: 1,
             skeleton: 2,
         };
 
