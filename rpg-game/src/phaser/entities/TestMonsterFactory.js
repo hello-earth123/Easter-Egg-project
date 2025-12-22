@@ -195,8 +195,8 @@ export function spawnMonsters(scene) {
             const hb = MONSTER_HITBOX[def.name] ?? { w: 0.55, h: 0.85, ox: 0.225, oy: 0.08 };
 
             // 최종 히트박스 크기
-            const hitW = w * hb.w;
-            const hitH = h * hb.h;
+            let hitW = w * hb.w;
+            let hitH = h * hb.h;
 
             // Body 적용 (sprite에서 벗어나지 않게)
             m.body.setSize(hitW, hitH);
@@ -206,6 +206,16 @@ export function spawnMonsters(scene) {
               (w - hitW) * 0.5,  // 기존: w * hb.ox
               (h - hitH) * 0.5   // 기존: h * hb.oy
             );
+
+            if (def.name.includes('moai')) {
+              hitW *= 0.5;
+              hitH *= 0.5;
+              m.body.setSize(hitW, hitH);
+              m.body.setOffset(
+                w * hb.ox,
+                h * hb.oy
+              );
+            }
 
             // m.setDisplaySize(64, 64);
 
