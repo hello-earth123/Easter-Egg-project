@@ -52,8 +52,8 @@ export default class Corridor3 extends Phaser.Scene {
             this.spawnX = portalSpawnPoints[fromPortal].x;
             this.spawnY = portalSpawnPoints[fromPortal].y;
         } else {
-            this.spawnX = 400;
-            this.spawnY = 300;
+            this.spawnX = 800;
+            this.spawnY = 600;
         }
     }
 
@@ -75,11 +75,9 @@ export default class Corridor3 extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            reaper: 3,
+            lich: 2,
+            // hidden: 15,
         };
 
         this.minLevel = 1;
@@ -1717,7 +1715,7 @@ export default class Corridor3 extends Phaser.Scene {
         // ⭐ 포탈 → 목적지 씬 매핑 테이블
         const portalToScene = {
             east:  "CenterEntrance",
-            west:  "RitualRoom",
+            west:  "Threeway",
         };
 
         const nextScene = portalToScene[portalId];

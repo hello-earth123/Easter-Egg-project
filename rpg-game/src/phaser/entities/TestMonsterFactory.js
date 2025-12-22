@@ -39,7 +39,7 @@ export function spawnMonsters(scene) {
     bird: 2.5,
     butterfly: 2.3,
     coffin: 3.0,
-    colossus: 4.0,
+    colossus: 10.0,
     dwarf: 3.0,
     eyeball: 4.0,
     eyebat: 3.3,
