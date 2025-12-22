@@ -147,6 +147,43 @@ export function spawnMonsters(scene) {
     wolf: { w: 0.58, h: 0.85, ox: 0.21, oy: 0.08 },
   };
 
+  const monsterName = {
+    bat: "박쥐",
+    bird: "시체 먹이 새",
+    butterfly: "황혼 나비",
+    coffin: "스산한 관",
+    colossus: "수호 거인",
+    dwarf: "노움",
+    eyeball: "눈알",
+    eyebat: "외눈 박쥐",
+    fire_skull1: "불타는 두개골",
+    fire_skull2: "불타는 두개골",
+    ghost: "원혼",
+    hidden: "테스트",
+    lich: "리치",
+    mask: "저주받은 가면",
+    mimic: "미믹",
+    moai_b: "황동 조각상",
+    moai_s: "은 조각상",
+    moai_g: "금 조각상",
+    mummy: "조금 썩은 시체",
+    mushroom: "시체 버섯",
+    rabbit: "토끼",
+    reaper: "사신",
+    scorpion: "변이한 전갈",
+    skeleton: "스켈레톤",
+    skull_b: "검은 두개골",
+    skull_w: "하얀 두개골",
+    slime: "무덤 슬라임",
+    snail: "뇌팽이",
+    snake: "독사",
+    squirrel: "다람쥐",
+    stingsnake: "변이한 독사",
+    vampire: "콘스탄티나 갈테리우스 마르카디에 오더릭 폰 세노", // 보스 ㅋ
+    weapon: "귀신 들린 검",
+    wolf: "산 늑대",
+  }
+
   fetch("http://121.162.159.56:8000/api/monsters/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -233,7 +270,7 @@ export function spawnMonsters(scene) {
               isKnockback: false,
               knockbackVel: new Phaser.Math.Vector2(0, 0),
               hpBar: scene.add.graphics(),
-              label: scene.add.text(0, 0, `Lv${stats.level} ${def.name}`, {
+              label: scene.add.text(0, 0, `Lv${stats.level} ${monsterName[def.name]}`, {
                 fontSize: "12px",
                 fill: "#fff",
               }),

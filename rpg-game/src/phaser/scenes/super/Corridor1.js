@@ -16,7 +16,7 @@ import { preloadFireSkillAssets } from "../../preload/preloadFireSkills.js";
 import { createFireSkillAnims } from "../../preload/createFireSkillAnims.js";
 import { setCurrentScene } from "../../manager/sceneRegistry.js";
 import SoundManager from "../../manager/SoundManager.js";
-import { saveGame } from "../../manager/saveManager.js"; 
+import { saveGame } from "../../manager/saveManager.js";
 import { loadGame } from "../../manager/saveManager.js";
 import { preloadMonsterAnims } from "../../preload/preloadMonsterAnims.js";
 import { preloadGameSet } from "../../preload/preloadGameSet.js";
@@ -35,9 +35,9 @@ export default class Corridor1 extends Phaser.Scene {
     init(data) {
         this.userId = data.userId;
         this.registry.set('userId', this.userId);
-        
+
         let fromPortal = null;
-        if (data){
+        if (data) {
             fromPortal = data.fromPortal;
         }
 
@@ -73,7 +73,7 @@ export default class Corridor1 extends Phaser.Scene {
             ArrowDown: 0,
         };
         this.lastDashAt = 0;
-s
+
         this.monsterData = {
             arrow_skeleton: 1,
             butterfly: 5,
@@ -98,28 +98,28 @@ s
         this.skills;
 
         this.itemShow = {
-        hpPotion: 'HP 포션',
-        mpPotion: 'MP 포션',
-        damageGemLow: '하급 보석 (데미지)',
-        damageGemMid: '중급 보석 (데미지)',
-        damageGemHigh: '상급 보석 (데미지)',
-        damageGemSuper: '특급 보석 (데미지)',
-        cooldownGemLow: '하급 보석 (쿨타임)',
-        cooldownGemMid: '중급 보석 (쿨타임)',
-        cooldownGemHigh: '상급 보석 (쿨타임)',
-        cooldownGemSuper: '특급 보석 (쿨타임)',
-        manaCostGemLow: '하급 보석 (마나 소모)',
-        manaCostGemMid: '중급 보석 (마나 소모)',
-        manaCostGemHigh: '상급 보석 (마나 소모)',
-        manaCostGemSuper: '특급 보석 (마나 소모)',
-        defenseGemLow: '하급 보석 (방어력)',
-        defenseGemMid: '중급 보석 (방어력)',
-        defenseGemHigh: '상급 보석 (방어력)',
-        defenseGemSuper: '특급 보석 (방어력)',
-        luckGemLow: '하급 보석 (행운)',
-        luckGemMid: '중급 보석 (행운)',
-        luckGemHigh: '상급 보석 (행운)',
-        luckGemSuper: '특급 보석 (행운)',
+            hpPotion: 'HP 포션',
+            mpPotion: 'MP 포션',
+            damageGemLow: '하급 보석 (데미지)',
+            damageGemMid: '중급 보석 (데미지)',
+            damageGemHigh: '상급 보석 (데미지)',
+            damageGemSuper: '특급 보석 (데미지)',
+            cooldownGemLow: '하급 보석 (쿨타임)',
+            cooldownGemMid: '중급 보석 (쿨타임)',
+            cooldownGemHigh: '상급 보석 (쿨타임)',
+            cooldownGemSuper: '특급 보석 (쿨타임)',
+            manaCostGemLow: '하급 보석 (마나 소모)',
+            manaCostGemMid: '중급 보석 (마나 소모)',
+            manaCostGemHigh: '상급 보석 (마나 소모)',
+            manaCostGemSuper: '특급 보석 (마나 소모)',
+            defenseGemLow: '하급 보석 (방어력)',
+            defenseGemMid: '중급 보석 (방어력)',
+            defenseGemHigh: '상급 보석 (방어력)',
+            defenseGemSuper: '특급 보석 (방어력)',
+            luckGemLow: '하급 보석 (행운)',
+            luckGemMid: '중급 보석 (행운)',
+            luckGemHigh: '상급 보석 (행운)',
+            luckGemSuper: '특급 보석 (행운)',
         }
     }
 
@@ -142,7 +142,7 @@ s
         setCurrentScene(this);
         if (this.game.vue?.setMapTitle) {
             this.game.vue.setMapTitle(this.mapName);
-        }        
+        }
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;
@@ -173,7 +173,7 @@ s
             flameB: "big",
             flameC: "big",
         };
-        
+
         // ======================= UI =============================
         this.uiState = {
             inventory: false,   // 인벤토리 창
@@ -194,7 +194,7 @@ s
         this.cameras.main.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
         const map = this.add.image(0, 0, "corridor1").setOrigin(0);
-        const tile = this.make.tilemap({key: 'corridor1Tile'});
+        const tile = this.make.tilemap({ key: 'corridor1Tile' });
         const collisionObjects = tile.getObjectLayer("collider");
 
 
@@ -345,11 +345,11 @@ s
 
         // ======================= 단축키 ===========================
         // 입력 가능한 키에 대한 객체 생성
-        this.keys = this.input.keyboard.addKeys("Q,W,E,R");  
-        const pageUp = this.input.keyboard.addKey(           
+        this.keys = this.input.keyboard.addKeys("Q,W,E,R");
+        const pageUp = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.PAGE_UP
         );
-        const pageDown = this.input.keyboard.addKey(        
+        const pageDown = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN
         );
 
@@ -384,8 +384,8 @@ s
 
         // 포탈 4개 생성
         this.portals = {
-            east:  this.physics.add.sprite(1530, 600, "portal"),
-            west:  this.physics.add.sprite(70, 600, "portal"),
+            east: this.physics.add.sprite(1530, 600, "portal"),
+            west: this.physics.add.sprite(70, 600, "portal"),
             // south: this.physics.add.sprite(800, 910, "portal"),
             // north: this.physics.add.sprite(800, 100, "portal")
         };
@@ -415,9 +415,9 @@ s
             backgroundColor: "rgba(0,0,0,0.45)",
             padding: { x: 8, y: 4 }
         })
-        .setOrigin(0.5)
-        .setVisible(false)
-        .setDepth(9999);
+            .setOrigin(0.5)
+            .setVisible(false)
+            .setDepth(9999);
 
         // 플레이어가 어떤 포탈이든 밟으면 감지
         for (const key in this.portals) {
@@ -451,7 +451,7 @@ s
         });
 
         this.cutscene = new CutscenePlayer(this);
-     
+
         // 게임 시작 자동 컷씬 스크립트
         const introScript = [
             // { cmd: "say", text: "…여긴 어디지?" },
@@ -625,7 +625,7 @@ s
 
 
 
-    
+
     // update() : 유니티의 update()와 동일 (프레임 단위 호출)
     update(time, delta) {
         // 컷씬 중에는 모든 조작 차단 + 몬스터도 멈춤
@@ -654,7 +654,7 @@ s
 
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
         if (this.player?.isDead) return;// 플레이어 죽으면 return
-        
+
         const now = this.time.now;
 
         // 발소리 사운드 쿨타임
@@ -743,7 +743,7 @@ s
             const portals = [];
             if (this.portals) {
                 Object.values(this.portals).forEach(p => {
-                if (p) portals.push({ x: p.x, y: p.y });
+                    if (p) portals.push({ x: p.x, y: p.y });
                 });
             }
 
@@ -814,7 +814,7 @@ s
             if (!this.player.isCasting) {
                 this.player.anims.stop();
                 this.player.setFrame(0);  // 기본 프레임 유지
-                
+
             }
             // 멈춘 순간 쿨타임 리셋 → 다시 움직이면 바로 발소리 나게
             this.footstepCooldown = 0;
@@ -942,7 +942,7 @@ s
 
         // 영수증 출력
         this.showDamageText(monster, dmg, "#ffff66");
-        
+
         // 몬스터 피격 sound
         this.SoundManager.playMonsterHit();
 
@@ -978,7 +978,7 @@ s
             if (s && s.stop) s.stop();
             this.activeHoldSkill = null;
         }
-        
+
         if (!player._lastHitAt) player._lastHitAt = 0; // ?? 0일 때 0으로 초기화를 진행
 
         const now = this.time.now;
@@ -995,7 +995,7 @@ s
         // 피격 데미지 출력 (빨간색)
         this.showDamageText(player, dmg, "#ff3333");
         this.player.play("player_hit", true);
-        
+
         // 마지막으로 피격된 시간 저장
         player._lastHitAt = now;
 
@@ -1043,7 +1043,7 @@ s
             this.onPlayerDeath();
             return;
         }
-        
+
         // === Incendiary(hold 스킬) 강제 중지 이벤트 ===
         this.events.emit("playerHit", {
             x: monster.x,
@@ -1130,23 +1130,23 @@ s
         🧊 몬스터 어그로 초기화
         ------------------------------ */
         if (this.monsters) {
-        this.monsters.children.iterate(mon => {
-            if (!mon) return;
+            this.monsters.children.iterate(mon => {
+                if (!mon) return;
 
-            // 가장 흔한 방식: 타겟 초기화
-            mon.target = null;
+                // 가장 흔한 방식: 타겟 초기화
+                mon.target = null;
 
-            // 추적/공격 상태를 초기화
-            if (mon.state) mon.state = "idle";
+                // 추적/공격 상태를 초기화
+                if (mon.state) mon.state = "idle";
 
-            // 이동 정지
-            if (mon.body) {
-            mon.setVelocity(0, 0);
-            }
+                // 이동 정지
+                if (mon.body) {
+                    mon.setVelocity(0, 0);
+                }
 
-            // 어그로 플래그 방식일 때
-            if (mon.isAggro !== undefined) mon.isAggro = false;
-        });
+                // 어그로 플래그 방식일 때
+                if (mon.isAggro !== undefined) mon.isAggro = false;
+            });
         }
 
         // 사망 애니가 끝났을 때
@@ -1401,7 +1401,7 @@ s
         }
 
         // 속도 상향 (테스트용)
-        const speed = monster.wanderSpeed || 80;  
+        const speed = monster.wanderSpeed || 80;
         const vx = (dx / dist) * speed;
         const vy = (dy / dist) * speed;
 
@@ -1444,14 +1444,14 @@ s
         this.monsters.children.iterate((m) => {
             if (!m || !m.active) return;
             if (m.hp > 0) return;
-            
+
             // 몬스터 사망 사운드
             this.SoundManager.playMonsterDeath();
             // 플레이어 이전 레벨
             const prevLevel = this.playerStats.level;
 
             this.playerStats.addExp(m.expReward);
-            
+
             if (this.playerStats.level > prevLevel) {
                 this.SoundManager.playLevelUp();
             }
@@ -1496,7 +1496,7 @@ s
 
         let animKey = null;
 
-        switch(type) {
+        switch (type) {
             case "small": // fireball, firebomb, napalm, incendiary start
                 animKey = "player_cast_small";
                 break;
@@ -1728,7 +1728,7 @@ s
 
         // 필요 시 해당 씬을 미리 add() (존재하지 않을 경우)
         if (!this.scene.get(nextScene)) {
-            this.scene.add(nextScene, window[nextScene]); 
+            this.scene.add(nextScene, window[nextScene]);
             // 🔥 주의: TestScene2, TestScene3 같은 씬들은 전역에 등록되어 있어야 함
         }
 
@@ -1767,12 +1767,12 @@ s
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
-        .then(res => res.json())
-        .then(() => {
-            console.log("게임 저장 완료!");
-            this.textBar = "게임이 저장되었습니다!";
-        })
-        .catch(err => console.error(err));
+            .then(res => res.json())
+            .then(() => {
+                console.log("게임 저장 완료!");
+                this.textBar = "게임이 저장되었습니다!";
+            })
+            .catch(err => console.error(err));
     }
 
 }
