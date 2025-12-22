@@ -148,10 +148,10 @@ export function spawnMonsters(scene) {
   };
 
   const monsterName = {
+    arrow_skeleton: "많이 썩은 시체",
     bat: "박쥐",
     bird: "시체 먹이 새",
     butterfly: "황혼 나비",
-    coffin: "스산한 관",
     colossus: "수호 거인",
     dwarf: "노움",
     eyeball: "눈알",
@@ -179,7 +179,6 @@ export function spawnMonsters(scene) {
     snake: "독사",
     squirrel: "다람쥐",
     stingsnake: "변이한 독사",
-    vampire: "콘스탄티나 갈테리우스 마르카디에 오더릭 폰 세노", // 보스 ㅋ
     weapon: "귀신 들린 검",
     wolf: "산 늑대",
   }

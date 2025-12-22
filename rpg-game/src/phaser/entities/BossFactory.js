@@ -35,6 +35,11 @@ export function spawnBoss(scene, boss) {
         vampire: { w: 0.42, h: 0.95, ox: 0.29, oy: 0.04 }, // 보스 ㅋ
     };
 
+    const monsterName = {
+        coffin: "스산한 관",
+        vampire: "블라드 체페슈 드 제패르", // 보스 ㅋ
+    }
+
     fetch("http://121.162.159.56:8000/api/monsters/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,7 +88,7 @@ export function spawnBoss(scene, boss) {
                     isKnockback: false,
                     knockbackVel: new Phaser.Math.Vector2(0, 0),
                     hpBar: scene.add.graphics(),
-                    label: scene.add.text(0, 0, `Lv${stats.level} ${def.name}`, {
+                    label: scene.add.text(0, 0, `Lv${stats.level} ${monsterName[def.name]}`, {
                         fontSize: "12px",
                         fill: "#fff",
                     }),
