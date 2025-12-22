@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-1@m3&hg(jgxjjn=2i4o3ae44829!a7)rnmza#49&%)opnt!4j)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*'] # for test
+ALLOWED_HOSTS = ["*"]  # for test
 
 
 # Application definition
@@ -75,8 +75,8 @@ WSGI_APPLICATION = "HalloweenParty.wsgi.application"
 
 # 이메일 검증
 AUTHENTICATION_BACKENDS = [
-    'accounts.backends.EmailBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    "accounts.backends.EmailBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 # Database
@@ -141,7 +141,7 @@ REST_FRAMEWORK = {
 }
 
 # CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5173", "http://localhost:5173"]
-CORS_ALLOW_ALL_ORIGINS = True   # for test
+CORS_ALLOW_ALL_ORIGINS = True  # for test
 CORS_ALLOWED_METHODS = [
     "GET",
     "POST",
@@ -151,12 +151,12 @@ CORS_ALLOWED_METHODS = [
 AUTH_USER_MODEL = "accounts.CustomUser"
 
 # 개발 환경용 이메일 백엔드
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = 'dragon7776097@gmail.com'
-EMAIL_HOST_PASSWORD = 'bqed palx xmoz irvf'
+EMAIL_HOST_USER = "HOST"
+EMAIL_HOST_PASSWORD = "PW"
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

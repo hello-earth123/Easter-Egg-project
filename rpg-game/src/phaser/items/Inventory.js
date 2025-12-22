@@ -1,32 +1,32 @@
 // 전체 item DB 가져온 뒤, 싱글톤으로 따로 가지고 다니다가 습득 시 해당 아이템에 맞춰 가져옴
 const items = {
-        hpPotion: 'HP 포션',
-        mpPotion: 'MP 포션',
-        damageGemLow: '하급 보석 (데미지)',
-        damageGemMid: '중급 보석 (데미지)',
-        damageGemHigh: '상급 보석 (데미지)',
-        damageGemSuper: '특급 보석 (데미지)',
-        cooldownGemLow: '하급 보석 (쿨타임)',
-        cooldownGemMid: '중급 보석 (쿨타임)',
-        cooldownGemHigh: '상급 보석 (쿨타임)',
-        cooldownGemSuper: '특급 보석 (쿨타임)',
-        manaCostGemLow: '하급 보석 (마나 소모)',
-        manaCostGemMid: '중급 보석 (마나 소모)',
-        manaCostGemHigh: '상급 보석 (마나 소모)',
-        manaCostGemSuper: '특급 보석 (마나 소모)',
-        defenseGemLow: '하급 보석 (방어력)',
-        defenseGemMid: '중급 보석 (방어력)',
-        defenseGemHigh: '상급 보석 (방어력)',
-        defenseGemSuper: '특급 보석 (방어력)',
-        luckGemLow: '하급 보석 (행운)',
-        luckGemMid: '중급 보석 (행운)',
-        luckGemHigh: '상급 보석 (행운)',
-        luckGemSuper: '특급 보석 (행운)',
+  hpPotion: 'HP 포션',
+  mpPotion: 'MP 포션',
+  damageGemLow: '하급 보석 (데미지)',
+  damageGemMid: '중급 보석 (데미지)',
+  damageGemHigh: '상급 보석 (데미지)',
+  damageGemSuper: '특급 보석 (데미지)',
+  cooldownGemLow: '하급 보석 (쿨타임)',
+  cooldownGemMid: '중급 보석 (쿨타임)',
+  cooldownGemHigh: '상급 보석 (쿨타임)',
+  cooldownGemSuper: '특급 보석 (쿨타임)',
+  manaCostGemLow: '하급 보석 (마나 소모)',
+  manaCostGemMid: '중급 보석 (마나 소모)',
+  manaCostGemHigh: '상급 보석 (마나 소모)',
+  manaCostGemSuper: '특급 보석 (마나 소모)',
+  defenseGemLow: '하급 보석 (방어력)',
+  defenseGemMid: '중급 보석 (방어력)',
+  defenseGemHigh: '상급 보석 (방어력)',
+  defenseGemSuper: '특급 보석 (방어력)',
+  luckGemLow: '하급 보석 (행운)',
+  luckGemMid: '중급 보석 (행운)',
+  luckGemHigh: '상급 보석 (행운)',
+  luckGemSuper: '특급 보석 (행운)',
 }
 
 /** Item ID에 맞춰 Item 정보 반환 - TODO */
 export function resolveDropItem(drop) {
-  return fetch(`http://127.0.0.1:8000/api/item/${drop.itemName}/`)
+  return fetch(`http://121.162.159.56:8000/api/item/${drop.itemName}/`)
     .then(res => { return res.json(); })
     .then(data => {
       const { name, effect } = data;
@@ -53,26 +53,26 @@ export function useItemFromInventory(state, invIndex) {
   else if (item.name == 'mpPotion') {
     state.playerStats.consume('mp', item.effect);
   }
-  else if (item.name.includes('Gem')){
+  else if (item.name.includes('Gem')) {
     console.log(state.playerStats.totalGem);
-    if (state.playerStats.totalGem < state.playerStats.maxGem){
-      if (item.name.includes('damage')){
+    if (state.playerStats.totalGem < state.playerStats.maxGem) {
+      if (item.name.includes('damage')) {
         state.playerStats.consume('damageGem', item.effect);
       }
-      else if (item.name.includes('cooldown')){
+      else if (item.name.includes('cooldown')) {
         state.playerStats.consume('cooldownGem', item.effect);
       }
-      else if (item.name.includes('manaCost')){
+      else if (item.name.includes('manaCost')) {
         state.playerStats.consume('manaCostGem', item.effect);
       }
-      else if (item.name.includes('defense')){
+      else if (item.name.includes('defense')) {
         state.playerStats.consume('defenseGem', item.effect);
       }
-      else{
+      else {
         state.playerStats.consume('luckGem', item.effect);
       }
     }
-    else{
+    else {
       item.count += 1;
       state.textBar = `최대 추가 스탯 초과! 사용 불가!`;
       return;
@@ -118,7 +118,7 @@ class InventoryData {
 }
 
 async function fetchInvenData(userId) {
-  const res = await fetch(`http://127.0.0.1:8000/api/inventory/${userId}/`);
+  const res = await fetch(`http://121.162.159.56:8000/api/inventory/${userId}/`);
   if (!res.ok) throw new Error("Failed to fetch inventory data");
   return await res.json();
 }

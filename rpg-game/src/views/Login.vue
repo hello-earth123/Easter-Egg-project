@@ -123,7 +123,7 @@ export default {
       this.isLoading = true;
 
       try {
-        const response = await fetch("http://localhost:8000/api/accounts/login/", {
+        const response = await fetch("http://121.162.159.56:8000/api/accounts/login/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

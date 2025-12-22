@@ -54,7 +54,7 @@ export default {
         this.currentIndex += 1;
       } else {
         this.visible = false;
-        await fetch(`http://127.0.0.1:8000/api/accounts/first-scene/${this.userId}/`, {
+        await fetch(`http://121.162.159.56:8000/api/accounts/first-scene/${this.userId}/`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({}), // body 없어도 됨

@@ -1004,7 +1004,7 @@ export default {
     // 여기서 firstScene 여부 먼저 확인
     // 아래 API는 네가 만든 firstScene 조회 endpoint로 바꿔서 쓰면 됨.
     // 예시: /accounts/first-scene/<userId>/ 같은 형태
-    const API_BASE = "http://127.0.0.1:8000";
+    const API_BASE = "http://121.162.159.56:8000";
 
     const firstRes = await fetch(`${API_BASE}/api/accounts/first-scene/${this.userId}/`);
     // const ct = firstRes.headers.get("content-type") || "";
@@ -1031,7 +1031,7 @@ export default {
       // Phaser 게임 구동
       let lastScene = "CastleLobby";
 
-      const skillRes = await fetch(`http://127.0.0.1:8000/api/skill/${this.userId}/`);
+      const skillRes = await fetch(`http://121.162.159.56:8000/api/skill/${this.userId}/`);
       const skillData = await skillRes.json();
       this.skillState = skillData.skillLev;
       const count = this.skillNodes.length;
@@ -1048,7 +1048,7 @@ export default {
         }
       }
 
-      const res = await fetch(`http://127.0.0.1:8000/api/nowLocation/${this.userId}/`);
+      const res = await fetch(`http://121.162.159.56:8000/api/nowLocation/${this.userId}/`);
       const data = await res.json();
       lastScene = data.nowLocation;
 
