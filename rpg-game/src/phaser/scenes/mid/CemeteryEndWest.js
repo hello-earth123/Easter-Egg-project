@@ -75,11 +75,9 @@ export default class CemeteryEndWest extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            moai_b: 5,
+            moai_s: 5,
+            moai_g: 5,
         };
 
         this.minLevel = 1;

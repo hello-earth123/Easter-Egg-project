@@ -45,15 +45,15 @@ export default class SpookyMountain extends Phaser.Scene {
             // east: { x: 70, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
             south: { x: 800, y: 200 },
             // west: { x: 1530, y: 600 },
-            north: { x: 800, y: 910},
+            north: { x: 800, y: 1000},
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
             this.spawnX = portalSpawnPoints[fromPortal].x;
             this.spawnY = portalSpawnPoints[fromPortal].y;
         } else {
-            this.spawnX = 400;
-            this.spawnY = 300;
+            this.spawnX = 800;
+            this.spawnY = 600;
         }
     }
 
@@ -76,11 +76,10 @@ export default class SpookyMountain extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            bat: 5,
+            wolf: 5,
+            bird: 1,
+            // hidden: 15,
         };
 
         this.minLevel = 1;
@@ -387,8 +386,8 @@ export default class SpookyMountain extends Phaser.Scene {
 
         // 포탈 4개 생성
         this.portals = {
-            south: this.physics.add.sprite(800, 910, "portal"),
-            north: this.physics.add.sprite(800, 100, "portal")
+            south: this.physics.add.sprite(800, 1000, "portal"),
+            north: this.physics.add.sprite(800, 200, "portal")
         };
 
         for (const key in this.portals) {

@@ -43,7 +43,7 @@ export default class Fountain extends Phaser.Scene {
 
         const portalSpawnPoints = {
             // east: { x: 70, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
-            south: { x: 800, y: 200 },
+            south: { x: 858, y: 100 },
             // west: { x: 1530, y: 600 },
             // north: { x: 800, y: 910},
         };
@@ -76,11 +76,7 @@ export default class Fountain extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            hidden: 1,
         };
 
         this.minLevel = 1;
@@ -390,7 +386,7 @@ export default class Fountain extends Phaser.Scene {
             // east:  this.physics.add.sprite(1530, 600, "portal"),
             // west:  this.physics.add.sprite(70, 600, "portal"),
             // south: this.physics.add.sprite(800, 910, "portal"),
-            north: this.physics.add.sprite(800, 100, "portal")
+            north: this.physics.add.sprite(858, 100, "portal")
         };
 
         for (const key in this.portals) {

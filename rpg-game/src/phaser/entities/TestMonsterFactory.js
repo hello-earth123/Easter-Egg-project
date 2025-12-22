@@ -63,12 +63,12 @@ export function spawnMonsters(scene) {
     skull_w: 2.6,
     slime: 2.8,
     snail: 2.7,
-    snake: 3.3,
+    snake: 2.5,
     squirrel: 2.2,
     stingsnake: 3.5,
     vampire: 10.0,
     weapon: 3.5,
-    wolf: 2.5,
+    wolf: 3.4,
     // 필요한 만큼 계속 추가 가능
   };
 
@@ -126,7 +126,9 @@ export function spawnMonsters(scene) {
     lich: { w: 0.50, h: 0.90, ox: 0.20, oy: 0.05 },
     mask: { w: 0.50, h: 0.85, ox: 0.25, oy: 0.08 },
     mimic: { w: 0.60, h: 0.75, ox: 0.20, oy: 0.12 },
-    moai: { w: 0.55, h: 0.95, ox: 0.225, oy: 0.04 },
+    moai_b: { w: 0.55, h: 0.95, ox: 0.225, oy: 0.04 },
+    moai_s: { w: 0.55, h: 0.95, ox: 0.225, oy: 0.04 },
+    moai_g: { w: 0.55, h: 0.95, ox: 0.225, oy: 0.04 },
     mummy: { w: 0.55, h: 0.90, ox: 0.225, oy: 0.06 },
     mushroom: { w: 0.55, h: 0.80, ox: 0.225, oy: 0.10 },
     rabbit: { w: 0.40, h: 0.90, ox: 0.20, oy: 0.05 },
@@ -193,8 +195,8 @@ export function spawnMonsters(scene) {
             const hb = MONSTER_HITBOX[def.name] ?? { w: 0.55, h: 0.85, ox: 0.225, oy: 0.08 };
 
             // 최종 히트박스 크기
-            const hitW = w * hb.w;
-            const hitH = h * hb.h;
+            let hitW = w * hb.w;
+            let hitH = h * hb.h;
 
             // Body 적용 (sprite에서 벗어나지 않게)
             m.body.setSize(hitW, hitH);
@@ -204,6 +206,16 @@ export function spawnMonsters(scene) {
               (w - hitW) * 0.5,  // 기존: w * hb.ox
               (h - hitH) * 0.5   // 기존: h * hb.oy
             );
+
+            if (def.name.includes('moai')) {
+              hitW *= 0.5;
+              hitH *= 0.5;
+              m.body.setSize(hitW, hitH);
+              m.body.setOffset(
+                w * hb.ox,
+                h * hb.oy
+              );
+            }
 
             // m.setDisplaySize(64, 64);
 
