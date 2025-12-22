@@ -36,6 +36,7 @@ import ThroneRoom from "../scenes/super/ThroneRoom";
 import CenterEntrance from "../scenes/super/CenterEntrance";
 import Center1 from "../scenes/super/Center1";
 import Center2 from "../scenes/super/Center2";
+import Center3 from "../scenes/super/Center3";
 
 export const sceneMap = {
   // low =======================
@@ -81,7 +82,8 @@ export const sceneMap = {
   ThroneRoom,
   CenterEntrance,
   Center1,
-  Center2
+  Center2,
+  Center3
 };
 
 export let currentScene = null;

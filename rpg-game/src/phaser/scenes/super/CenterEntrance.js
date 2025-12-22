@@ -80,7 +80,7 @@ export default class CenterEntrance extends Phaser.Scene {
         this.monsterData = {
             reaper: 5,
             lich: 5,
-            hidden: 2,
+            // hidden: 2,
         };
 
         this.minLevel = 44;

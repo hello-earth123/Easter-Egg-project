@@ -37,7 +37,7 @@ import { createMonsterAnims } from "../../preload/createMonsterAnims.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
-export default class Center2 extends Phaser.Scene {
+export default class Center3 extends Phaser.Scene {
 
     init(data) {
         this.userId = data.userId;
@@ -63,7 +63,7 @@ export default class Center2 extends Phaser.Scene {
 
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
-        super({ key: "Center2" });
+        super({ key: "Center3" });
 
         this.mapKey = "Center";
 
@@ -479,11 +479,9 @@ export default class Center2 extends Phaser.Scene {
 
         // 게임 시작 자동 컷씬 스크립트
         const introScript = [
-            { cmd: "say", text: "블라드 체페슈 드 제페르: \"..............\"" },
-            { cmd: "say", text: "블라드 체페슈 드 제페르: \"..............\"" },
-            { cmd: "say", text: "블라드 체페슈 드 제페르: \"나의 긴 잠을 깨운 자가 누구인가....\"" },
-            { cmd: "say", text: "블라드 체페슈 드 제페르: \"냄새가 난다.. 프라가라흐의 냄새가..\"" },
-            { cmd: "say", text: "블라드 체페슈 드 제페르: \"나를 이 성에 유배시킨 프라가라흐의 냄새가!!!\"" },
+            { cmd: "say", text: "프라가라흐: \"드디어.. 봉인이 풀린다..!!\"" },
+            { cmd: "say", text: "프라가라흐: \"TO BE CONTINUE...\"" },
+            { cmd: "wait", time: 10000 },
 
             { cmd: "end" }
         ];
