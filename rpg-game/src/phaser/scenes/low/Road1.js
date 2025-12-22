@@ -42,10 +42,10 @@ export default class Road1 extends Phaser.Scene {
         }
 
         const portalSpawnPoints = {
-            east: { x: 70, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
+            east: { x: 70, y: 550 },   // Scene의 east 포탈을 타면 여기서 등장
             // south: { x: 800, y: 200 },
-            west: { x: 1530, y: 600 },
-            north: { x: 800, y: 910},
+            west: { x: 1530, y: 550 },
+            north: { x: 800, y: 1100},
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
@@ -76,11 +76,10 @@ export default class Road1 extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
+            snake: 2,
             rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            squirrel: 4,
+            // hidden: 15,
         };
 
         this.minLevel = 1;
@@ -387,9 +386,9 @@ export default class Road1 extends Phaser.Scene {
 
         // 포탈 4개 생성
         this.portals = {
-            east:  this.physics.add.sprite(1530, 600, "portal"),
-            west:  this.physics.add.sprite(70, 600, "portal"),
-            south: this.physics.add.sprite(800, 910, "portal"),
+            east:  this.physics.add.sprite(1530, 550, "portal"),
+            west:  this.physics.add.sprite(70, 550, "portal"),
+            south: this.physics.add.sprite(800, 1100, "portal"),
         };
 
         for (const key in this.portals) {

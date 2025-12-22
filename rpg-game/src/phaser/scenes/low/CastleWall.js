@@ -44,7 +44,7 @@ export default class CastleWall extends Phaser.Scene {
         const portalSpawnPoints = {
             // east: { x: 70, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
             // south: { x: 800, y: 200 },
-            west: { x: 1530, y: 600 },
+            west: { x: 1530, y: 490 },
             // north: { x: 800, y: 910},
         };
 
@@ -75,10 +75,11 @@ export default class CastleWall extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            snake: 2,
-            wolf: 1,
-            rabbit: 3,
-            hidden: 1,
+            // snake: 2,
+            // wolf: 1,
+            rabbit: 4,
+            squirrel: 5,
+            // hidden: 1,
         };
 
         this.minLevel = 1;
@@ -931,7 +932,7 @@ export default class CastleWall extends Phaser.Scene {
 
         // 포탈 4개 생성
         this.portals = {
-            east:  this.physics.add.sprite(1530, 600, "portal"),
+            east:  this.physics.add.sprite(1530, 490, "portal"),
 
         };
 
