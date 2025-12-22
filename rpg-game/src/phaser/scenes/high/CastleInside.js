@@ -82,8 +82,8 @@ export default class CastleInside extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 22;
+        this.maxLevel = 24;
 
         this.count = 0;
 

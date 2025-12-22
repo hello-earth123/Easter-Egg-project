@@ -80,8 +80,8 @@ export default class RitualRoom extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 26;
+        this.maxLevel = 28;
 
         this.count = 0;
 

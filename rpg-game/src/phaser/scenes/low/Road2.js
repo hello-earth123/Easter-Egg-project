@@ -82,8 +82,8 @@ export default class Road2 extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 2;
+        this.maxLevel = 4;
 
         this.count = 0;
 

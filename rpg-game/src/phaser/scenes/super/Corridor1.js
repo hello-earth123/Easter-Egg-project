@@ -80,8 +80,8 @@ export default class Corridor1 extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 31;
+        this.maxLevel = 34;
 
         this.count = 0;
 

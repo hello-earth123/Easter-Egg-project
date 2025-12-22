@@ -83,8 +83,8 @@ export default class CenterEntrance extends Phaser.Scene {
             hidden: 2,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 44;
+        this.maxLevel = 47;
 
         this.count = 0;
 

@@ -81,8 +81,8 @@ export default class BanquetHall extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 29;
+        this.maxLevel = 30;
 
         this.count = 0;
 

@@ -80,8 +80,8 @@ export default class Hall2 extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 24;
+        this.maxLevel = 25;
 
         this.count = 0;
 

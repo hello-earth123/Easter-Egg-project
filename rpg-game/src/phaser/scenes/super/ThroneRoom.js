@@ -82,8 +82,8 @@ export default class ThroneRoom extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 38;
+        this.maxLevel = 40;
 
         this.count = 0;
 
