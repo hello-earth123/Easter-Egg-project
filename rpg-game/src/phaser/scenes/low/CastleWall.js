@@ -83,7 +83,7 @@ export default class CastleWall extends Phaser.Scene {
         };
 
         this.minLevel = 1;
-        this.maxLevel = 1;
+        this.maxLevel = 2;
 
         this.count = 0;
 

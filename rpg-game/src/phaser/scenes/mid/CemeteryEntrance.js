@@ -81,8 +81,8 @@ export default class CemeteryEntrance extends Phaser.Scene {
             // hidden:15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 11;
+        this.maxLevel = 13;
 
         this.count = 0;
 

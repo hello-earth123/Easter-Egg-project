@@ -82,8 +82,8 @@ export default class MountainEntrance extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 5;
+        this.maxLevel = 7;
 
         this.count = 0;
 

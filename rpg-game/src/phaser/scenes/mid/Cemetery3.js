@@ -81,8 +81,8 @@ export default class Cemetery3 extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 15;
+        this.maxLevel = 16;
 
         this.count = 0;
 

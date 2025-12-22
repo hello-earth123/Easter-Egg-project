@@ -81,8 +81,8 @@ export default class Valcony extends Phaser.Scene {
             // hidden: 1,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 26;
+        this.maxLevel = 28;
 
         this.count = 0;
 

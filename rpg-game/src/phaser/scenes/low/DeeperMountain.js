@@ -81,8 +81,8 @@ export default class DeeperMountain extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 7;
+        this.maxLevel = 8;
 
         this.count = 0;
 

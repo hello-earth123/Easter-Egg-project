@@ -82,8 +82,8 @@ export default class SpookyMountain extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 8;
+        this.maxLevel = 10;
 
         this.count = 0;
 

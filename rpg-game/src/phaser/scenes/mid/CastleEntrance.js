@@ -82,8 +82,8 @@ export default class CastleEntrance extends Phaser.Scene {
             // hidden: 15,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 18;
+        this.maxLevel = 20;
 
         this.count = 0;
 
