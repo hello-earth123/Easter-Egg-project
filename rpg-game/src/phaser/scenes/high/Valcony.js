@@ -42,10 +42,10 @@ export default class Valcony extends Phaser.Scene {
         }
 
         const portalSpawnPoints = {
-            // east: { x: 70, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
+            east: { x: 100, y: 200 },   // Scene의 east 포탈을 타면 여기서 등장
             // south: { x: 800, y: 200 },
             // west: { x: 1530, y: 600 },
-            north: { x: 800, y: 910},
+            // north: { x: 100, y: 200},
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
@@ -53,7 +53,7 @@ export default class Valcony extends Phaser.Scene {
             this.spawnY = portalSpawnPoints[fromPortal].y;
         } else {
             this.spawnX = 400;
-            this.spawnY = 300;
+            this.spawnY = 600;
         }
     }
 
@@ -75,11 +75,10 @@ export default class Valcony extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 1,
-            lich: 5,
-            skull_b: 3,
+            weapon: 1,
+            scorpion: 3,
+            stingsnake: 3,
+            // hidden: 1,
         };
 
         this.minLevel = 1;
@@ -389,7 +388,7 @@ export default class Valcony extends Phaser.Scene {
 
         // 포탈 4개 생성
         this.portals = {
-            west:  this.physics.add.sprite(70, 600, "portal"),
+            west:  this.physics.add.sprite(100, 210, "portal"),
         };
 
         for (const key in this.portals) {
@@ -1718,7 +1717,7 @@ export default class Valcony extends Phaser.Scene {
 
         // ⭐ 포탈 → 목적지 씬 매핑 테이블
         const portalToScene = {
-            north: "Hall1"
+            west: "Hall1"
         };
 
         const nextScene = portalToScene[portalId];

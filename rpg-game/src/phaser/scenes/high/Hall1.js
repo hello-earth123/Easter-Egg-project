@@ -43,8 +43,8 @@ export default class Hall1 extends Phaser.Scene {
 
         const portalSpawnPoints = {
             east: { x: 70, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
-            south: { x: 800, y: 200 },
-            west: { x: 1530, y: 600 },
+            south: { x: 850, y: 100 },
+            west: { x: 1530, y: 500 },
             north: { x: 800, y: 910},
         };
 
@@ -52,8 +52,8 @@ export default class Hall1 extends Phaser.Scene {
             this.spawnX = portalSpawnPoints[fromPortal].x;
             this.spawnY = portalSpawnPoints[fromPortal].y;
         } else {
-            this.spawnX = 400;
-            this.spawnY = 300;
+            this.spawnX = 800;
+            this.spawnY = 600;
         }
     }
 
@@ -75,11 +75,10 @@ export default class Hall1 extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            scorpion: 4,
+            dwarf: 5,
+            stingsnake: 7,
+            // hidden: 15,
         };
 
         this.minLevel = 1;
@@ -386,8 +385,8 @@ export default class Hall1 extends Phaser.Scene {
 
         // 포탈 4개 생성
         this.portals = {
-            east:  this.physics.add.sprite(1530, 600, "portal"),
-            north: this.physics.add.sprite(800, 100, "portal")
+            east:  this.physics.add.sprite(1530, 500, "portal"),
+            north: this.physics.add.sprite(850, 100, "portal")
         };
 
         for (const key in this.portals) {

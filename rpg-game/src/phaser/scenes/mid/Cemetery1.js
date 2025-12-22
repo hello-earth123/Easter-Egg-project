@@ -1718,7 +1718,7 @@ export default class Cemetery1 extends Phaser.Scene {
 
         // ⭐ 포탈 → 목적지 씬 매핑 테이블
         const portalToScene = {
-            west: "CemeteryEndWest",
+            // west: "CemeteryEndWest",
             south: "CemeteryEntrance",
             north: "Cemetery2"
         };

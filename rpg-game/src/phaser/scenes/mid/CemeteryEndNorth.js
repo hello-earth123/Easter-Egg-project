@@ -52,8 +52,8 @@ export default class CemeteryEndNorth extends Phaser.Scene {
             this.spawnX = portalSpawnPoints[fromPortal].x;
             this.spawnY = portalSpawnPoints[fromPortal].y;
         } else {
-            this.spawnX = 400;
-            this.spawnY = 300;
+            this.spawnX = 800;
+            this.spawnY = 600;
         }
     }
 
@@ -75,11 +75,8 @@ export default class CemeteryEndNorth extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            eyebat: 9,
+            // hidden: 15,
         };
 
         this.minLevel = 1;
@@ -386,7 +383,7 @@ export default class CemeteryEndNorth extends Phaser.Scene {
 
         // 포탈 4개 생성
         this.portals = {
-            south: this.physics.add.sprite(800, 910, "portal"),
+            south: this.physics.add.sprite(830, 1100, "portal"),
         };
 
         for (const key in this.portals) {

@@ -77,7 +77,7 @@ export default class CemeteryEndWest extends Phaser.Scene {
         this.monsterData = {
             moai_b: 5,
             moai_s: 5,
-            moai_g: 5,
+            moai_g: 1,
         };
 
         this.minLevel = 1;
@@ -1713,7 +1713,7 @@ export default class CemeteryEndWest extends Phaser.Scene {
 
         // ⭐ 포탈 → 목적지 씬 매핑 테이블
         const portalToScene = {
-            east:  "Cemetery1",
+            east:  "Cemetery2",
         };
 
         const nextScene = portalToScene[portalId];

@@ -42,9 +42,9 @@ export default class CastleEntrance extends Phaser.Scene {
         }
 
         const portalSpawnPoints = {
-            east: { x: 70, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
+            east: { x: 70, y: 550 },   // Scene의 east 포탈을 타면 여기서 등장
             // south: { x: 800, y: 200 },
-            west: { x: 1530, y: 600 },
+            west: { x: 1280, y: 380 },
             // north: { x: 800, y: 910},
         };
 
@@ -52,8 +52,8 @@ export default class CastleEntrance extends Phaser.Scene {
             this.spawnX = portalSpawnPoints[fromPortal].x;
             this.spawnY = portalSpawnPoints[fromPortal].y;
         } else {
-            this.spawnX = 400;
-            this.spawnY = 300;
+            this.spawnX = 800;
+            this.spawnY = 600;
         }
     }
 
@@ -76,11 +76,10 @@ export default class CastleEntrance extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            eyebat: 4,
+            ghost: 4,
+            moai_g: 1,
+            // hidden: 15,
         };
 
         this.minLevel = 1;
@@ -387,8 +386,8 @@ export default class CastleEntrance extends Phaser.Scene {
 
         // 포탈 4개 생성
         this.portals = {
-            east:  this.physics.add.sprite(1530, 600, "portal"),
-            west:  this.physics.add.sprite(70, 600, "portal"),
+            east:  this.physics.add.sprite(1280, 380, "portal"),
+            west:  this.physics.add.sprite(70, 550, "portal"),
         };
 
         for (const key in this.portals) {

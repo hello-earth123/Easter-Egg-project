@@ -44,15 +44,15 @@ export default class RitualRoom extends Phaser.Scene {
         const portalSpawnPoints = {
             // east: { x: 200, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
             south: { x: 800, y: 100 },
-            north: { x: 800, y: 850},
+            north: { x: 800, y: 1100},
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
             this.spawnX = portalSpawnPoints[fromPortal].x;
             this.spawnY = portalSpawnPoints[fromPortal].y;
         } else {
-            this.spawnX = 400;
-            this.spawnY = 300;
+            this.spawnX = 800;
+            this.spawnY = 600;
         }
     }
 
@@ -74,11 +74,10 @@ export default class RitualRoom extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            skull_w: 4,
+            skull_b: 5,
+            eyeball: 1, 
+            // hidden: 15,
         };
 
         this.minLevel = 1;
@@ -385,7 +384,7 @@ export default class RitualRoom extends Phaser.Scene {
 
         // 포탈 4개 생성
         this.portals = {
-            south: this.physics.add.sprite(800, 910, "portal"),
+            south: this.physics.add.sprite(800, 1100, "portal"),
         };
 
         for (const key in this.portals) {

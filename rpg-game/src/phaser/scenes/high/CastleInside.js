@@ -43,9 +43,9 @@ export default class CastleInside extends Phaser.Scene {
 
         const portalSpawnPoints = {
             east: { x: 200, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
-            south: { x: 700, y: 1000 },
+            south: { x: 810, y: 100 },
             west: { x: 1400, y: 600 },
-            north: { x: 700, y: 200},
+            north: { x: 810, y: 1100},
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
@@ -75,11 +75,11 @@ export default class CastleInside extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            bat: 10,
-            rabbit: 3,
-            hidden: 15,
-            lich: 5,
-            skull_b: 3,
+            mask: 2,
+            scorpion: 3,
+            dwarf: 3,
+            stingsnake: 3,
+            // hidden: 15,
         };
 
         this.minLevel = 1;
@@ -387,8 +387,8 @@ export default class CastleInside extends Phaser.Scene {
 
         // 포탈 4개 생성
         this.portals = {
-            south: this.physics.add.sprite(800, 910, "portal"),
-            north: this.physics.add.sprite(800, 100, "portal")
+            south: this.physics.add.sprite(810, 1100, "portal"),
+            north: this.physics.add.sprite(810 , 100, "portal")
         };
 
         for (const key in this.portals) {
