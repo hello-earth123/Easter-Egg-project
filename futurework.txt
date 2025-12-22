@@ -17,7 +17,10 @@ python manage.py migrate
 python manage.py runserver 0.0.0.0:8000 (모든 네트워크 인터페이스 허용)
 
 
-
+/* 배포(Vue 빌드) */
+cd src
+npm run build
+※ 빌드 시, 기존의 dist 디렉토리를 알아서 최신화 해주며 서버측에서는 별도로 재시작할 필요 없이 클라이언트가 새로고침 하는 것만으로도 적용됨
 
 
 컷 씬 생성하는 방법
