@@ -16,7 +16,7 @@ import { preloadFireSkillAssets } from "../../preload/preloadFireSkills.js";
 import { createFireSkillAnims } from "../../preload/createFireSkillAnims.js";
 import { setCurrentScene } from "../../manager/sceneRegistry.js";
 import SoundManager from "../../manager/SoundManager.js";
-import { saveGame } from "../../manager/saveManager.js"; 
+import { saveGame } from "../../manager/saveManager.js";
 import { loadGame } from "../../manager/saveManager.js";
 import { preloadMonsterAnims } from "../../preload/preloadMonsterAnims.js";
 import { preloadGameSet } from "../../preload/preloadGameSet.js";
@@ -40,7 +40,7 @@ export default class CenterEntrance extends Phaser.Scene {
         this.registry.set('userId', this.userId);
 
         let fromPortal = null;
-        if (data){
+        if (data) {
             fromPortal = data.fromPortal;
         }
 
@@ -80,6 +80,7 @@ export default class CenterEntrance extends Phaser.Scene {
         this.monsterData = {
             reaper: 5,
             lich: 5,
+            hidden: 2,
         };
 
         this.minLevel = 44;
@@ -100,31 +101,31 @@ export default class CenterEntrance extends Phaser.Scene {
         this.skills;
 
         this.itemShow = {
-        hpPotion: 'HP 포션',
-        mpPotion: 'MP 포션',
-        damageGemLow: '하급 보석 (데미지)',
-        damageGemMid: '중급 보석 (데미지)',
-        damageGemHigh: '상급 보석 (데미지)',
-        damageGemSuper: '특급 보석 (데미지)',
-        cooldownGemLow: '하급 보석 (쿨타임)',
-        cooldownGemMid: '중급 보석 (쿨타임)',
-        cooldownGemHigh: '상급 보석 (쿨타임)',
-        cooldownGemSuper: '특급 보석 (쿨타임)',
-        manaCostGemLow: '하급 보석 (마나 소모)',
-        manaCostGemMid: '중급 보석 (마나 소모)',
-        manaCostGemHigh: '상급 보석 (마나 소모)',
-        manaCostGemSuper: '특급 보석 (마나 소모)',
-        defenseGemLow: '하급 보석 (방어력)',
-        defenseGemMid: '중급 보석 (방어력)',
-        defenseGemHigh: '상급 보석 (방어력)',
-        defenseGemSuper: '특급 보석 (방어력)',
-        luckGemLow: '하급 보석 (행운)',
-        luckGemMid: '중급 보석 (행운)',
-        luckGemHigh: '상급 보석 (행운)',
-        luckGemSuper: '특급 보석 (행운)',
+            hpPotion: 'HP 포션',
+            mpPotion: 'MP 포션',
+            damageGemLow: '하급 보석 (데미지)',
+            damageGemMid: '중급 보석 (데미지)',
+            damageGemHigh: '상급 보석 (데미지)',
+            damageGemSuper: '특급 보석 (데미지)',
+            cooldownGemLow: '하급 보석 (쿨타임)',
+            cooldownGemMid: '중급 보석 (쿨타임)',
+            cooldownGemHigh: '상급 보석 (쿨타임)',
+            cooldownGemSuper: '특급 보석 (쿨타임)',
+            manaCostGemLow: '하급 보석 (마나 소모)',
+            manaCostGemMid: '중급 보석 (마나 소모)',
+            manaCostGemHigh: '상급 보석 (마나 소모)',
+            manaCostGemSuper: '특급 보석 (마나 소모)',
+            defenseGemLow: '하급 보석 (방어력)',
+            defenseGemMid: '중급 보석 (방어력)',
+            defenseGemHigh: '상급 보석 (방어력)',
+            defenseGemSuper: '특급 보석 (방어력)',
+            luckGemLow: '하급 보석 (행운)',
+            luckGemMid: '중급 보석 (행운)',
+            luckGemHigh: '상급 보석 (행운)',
+            luckGemSuper: '특급 보석 (행운)',
         };
 
-        this.safeSpawnPoints = [[500, 600]];
+        this.safeSpawnPoints = [[400, 900], [1200, 300], [400, 300], [1200, 900], [800, 600]];
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -149,7 +150,7 @@ export default class CenterEntrance extends Phaser.Scene {
         setCurrentScene(this);
         if (this.game.vue?.setMapTitle) {
             this.game.vue.setMapTitle(this.mapName);
-        }        
+        }
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;
@@ -180,7 +181,7 @@ export default class CenterEntrance extends Phaser.Scene {
             flameB: "big",
             flameC: "big",
         };
-        
+
         // ======================= UI =============================
         this.uiState = {
             inventory: false,   // 인벤토리 창
@@ -201,7 +202,7 @@ export default class CenterEntrance extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
         const map = this.add.image(0, 0, "center_entrance").setOrigin(0);
-        const tile = this.make.tilemap({key: 'center_entranceTile'});
+        const tile = this.make.tilemap({ key: 'center_entranceTile' });
         const collisionObjects = tile.getObjectLayer("collider");
 
 
@@ -352,11 +353,11 @@ export default class CenterEntrance extends Phaser.Scene {
 
         // ======================= 단축키 ===========================
         // 입력 가능한 키에 대한 객체 생성
-        this.keys = this.input.keyboard.addKeys("Q,W,E,R");  
-        const pageUp = this.input.keyboard.addKey(           
+        this.keys = this.input.keyboard.addKeys("Q,W,E,R");
+        const pageUp = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.PAGE_UP
         );
-        const pageDown = this.input.keyboard.addKey(        
+        const pageDown = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN
         );
 
@@ -391,7 +392,7 @@ export default class CenterEntrance extends Phaser.Scene {
         // 포탈 4개 생성
         this.portals = {
             // east:  this.physics.add.sprite(1530, 600, "portal"),
-            west:  this.physics.add.sprite(70, 600, "portal"),
+            west: this.physics.add.sprite(70, 600, "portal"),
             // south: this.physics.add.sprite(800, 910, "portal"),
             north: this.physics.add.sprite(815, 300, "portal")
         };
@@ -421,9 +422,9 @@ export default class CenterEntrance extends Phaser.Scene {
             backgroundColor: "rgba(0,0,0,0.45)",
             padding: { x: 8, y: 4 }
         })
-        .setOrigin(0.5)
-        .setVisible(false)
-        .setDepth(9999);
+            .setOrigin(0.5)
+            .setVisible(false)
+            .setDepth(9999);
 
         // 플레이어가 어떤 포탈이든 밟으면 감지
         for (const key in this.portals) {
@@ -457,7 +458,7 @@ export default class CenterEntrance extends Phaser.Scene {
         });
 
         this.cutscene = new CutscenePlayer(this);
-     
+
         // 게임 시작 자동 컷씬 스크립트
         const introScript = [
             // { cmd: "say", text: "…여긴 어디지?" },
@@ -548,7 +549,6 @@ export default class CenterEntrance extends Phaser.Scene {
 
         // 시스템 메세지 출력
         this.textBar = `${skillName} 스킬 레벨업! (Lv${skill.level})`;
-        console.log(skill.level)
 
         return true;
     }
@@ -613,8 +613,6 @@ export default class CenterEntrance extends Phaser.Scene {
     useItemShortcut(idx) {
         const slot = this.slotData.itemSlots[idx];
 
-        console.log(slot)
-
         // slot이 빈 경우, 시스템 메세지 출력 및 미동작
         if (!slot) return (this.textBar = "단축키에 아이템 없음");
 
@@ -631,24 +629,9 @@ export default class CenterEntrance extends Phaser.Scene {
 
 
 
-    
+
     // update() : 유니티의 update()와 동일 (프레임 단위 호출)
     update(time, delta) {
-        
-        this.time.delayedCall(3000, () => {
-            if (!this.activate){
-                this.activate = true;
-                let test = this.add.sprite(this.player.x, this.player.y, 'void');
-                test.setScale(2);
-                test.play('void');
-                this.time.delayedCall(2000, () => {
-                    test.destroy();
-                    this.activate = false;
-                })
-            }
-            
-            
-        })
         // 컷씬 중에는 모든 조작 차단 + 몬스터도 멈춤
         if (this.cutsceneLock) {
 
@@ -675,7 +658,7 @@ export default class CenterEntrance extends Phaser.Scene {
 
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
         if (this.player?.isDead) return;// 플레이어 죽으면 return
-        
+
         const now = this.time.now;
 
         // 발소리 사운드 쿨타임
@@ -764,7 +747,7 @@ export default class CenterEntrance extends Phaser.Scene {
             const portals = [];
             if (this.portals) {
                 Object.values(this.portals).forEach(p => {
-                if (p) portals.push({ x: p.x, y: p.y });
+                    if (p) portals.push({ x: p.x, y: p.y });
                 });
             }
 
@@ -835,7 +818,7 @@ export default class CenterEntrance extends Phaser.Scene {
             if (!this.player.isCasting) {
                 this.player.anims.stop();
                 this.player.setFrame(0);  // 기본 프레임 유지
-                
+
             }
             // 멈춘 순간 쿨타임 리셋 → 다시 움직이면 바로 발소리 나게
             this.footstepCooldown = 0;
@@ -963,7 +946,7 @@ export default class CenterEntrance extends Phaser.Scene {
 
         // 영수증 출력
         this.showDamageText(monster, dmg, "#ffff66");
-        
+
         // 몬스터 피격 sound
         this.SoundManager.playMonsterHit();
 
@@ -999,7 +982,7 @@ export default class CenterEntrance extends Phaser.Scene {
             if (s && s.stop) s.stop();
             this.activeHoldSkill = null;
         }
-        
+
         if (!player._lastHitAt) player._lastHitAt = 0; // ?? 0일 때 0으로 초기화를 진행
 
         const now = this.time.now;
@@ -1016,7 +999,7 @@ export default class CenterEntrance extends Phaser.Scene {
         // 피격 데미지 출력 (빨간색)
         this.showDamageText(player, dmg, "#ff3333");
         this.player.play("player_hit", true);
-        
+
         // 마지막으로 피격된 시간 저장
         player._lastHitAt = now;
 
@@ -1064,7 +1047,7 @@ export default class CenterEntrance extends Phaser.Scene {
             this.onPlayerDeath();
             return;
         }
-        
+
         // === Incendiary(hold 스킬) 강제 중지 이벤트 ===
         this.events.emit("playerHit", {
             x: monster.x,
@@ -1151,23 +1134,23 @@ export default class CenterEntrance extends Phaser.Scene {
         🧊 몬스터 어그로 초기화
         ------------------------------ */
         if (this.monsters) {
-        this.monsters.children.iterate(mon => {
-            if (!mon) return;
+            this.monsters.children.iterate(mon => {
+                if (!mon) return;
 
-            // 가장 흔한 방식: 타겟 초기화
-            mon.target = null;
+                // 가장 흔한 방식: 타겟 초기화
+                mon.target = null;
 
-            // 추적/공격 상태를 초기화
-            if (mon.state) mon.state = "idle";
+                // 추적/공격 상태를 초기화
+                if (mon.state) mon.state = "idle";
 
-            // 이동 정지
-            if (mon.body) {
-            mon.setVelocity(0, 0);
-            }
+                // 이동 정지
+                if (mon.body) {
+                    mon.setVelocity(0, 0);
+                }
 
-            // 어그로 플래그 방식일 때
-            if (mon.isAggro !== undefined) mon.isAggro = false;
-        });
+                // 어그로 플래그 방식일 때
+                if (mon.isAggro !== undefined) mon.isAggro = false;
+            });
         }
 
         // 사망 애니가 끝났을 때
@@ -1422,7 +1405,7 @@ export default class CenterEntrance extends Phaser.Scene {
         }
 
         // 속도 상향 (테스트용)
-        const speed = monster.wanderSpeed || 80;  
+        const speed = monster.wanderSpeed || 80;
         const vx = (dx / dist) * speed;
         const vy = (dy / dist) * speed;
 
@@ -1465,14 +1448,14 @@ export default class CenterEntrance extends Phaser.Scene {
         this.monsters.children.iterate((m) => {
             if (!m || !m.active) return;
             if (m.hp > 0) return;
-            
+
             // 몬스터 사망 사운드
             this.SoundManager.playMonsterDeath();
             // 플레이어 이전 레벨
             const prevLevel = this.playerStats.level;
 
             this.playerStats.addExp(m.expReward);
-            
+
             if (this.playerStats.level > prevLevel) {
                 this.SoundManager.playLevelUp();
             }
@@ -1488,7 +1471,6 @@ export default class CenterEntrance extends Phaser.Scene {
                         it.setTexture(def.name)
                         // 아이템 드랍 사운드
                         this.SoundManager.playItemDrop();
-                        console.log(it.getData('pickDef'))
                     })
 
                 }
@@ -1517,7 +1499,7 @@ export default class CenterEntrance extends Phaser.Scene {
 
         let animKey = null;
 
-        switch(type) {
+        switch (type) {
             case "small": // fireball, firebomb, napalm, incendiary start
                 animKey = "player_cast_small";
                 break;
@@ -1737,8 +1719,8 @@ export default class CenterEntrance extends Phaser.Scene {
 
         // ⭐ 포탈 → 목적지 씬 매핑 테이블
         const portalToScene = {
-            north:  "Center",
-            west:  "Corridor3",
+            north: "Center1",
+            west: "Corridor3",
         };
 
         const nextScene = portalToScene[portalId];
@@ -1749,7 +1731,7 @@ export default class CenterEntrance extends Phaser.Scene {
 
         // 필요 시 해당 씬을 미리 add() (존재하지 않을 경우)
         if (!this.scene.get(nextScene)) {
-            this.scene.add(nextScene, window[nextScene]); 
+            this.scene.add(nextScene, window[nextScene]);
             // 🔥 주의: TestScene2, TestScene3 같은 씬들은 전역에 등록되어 있어야 함
         }
 
@@ -1788,12 +1770,11 @@ export default class CenterEntrance extends Phaser.Scene {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
-        .then(res => res.json())
-        .then(() => {
-            console.log("게임 저장 완료!");
-            this.textBar = "게임이 저장되었습니다!";
-        })
-        .catch(err => console.error(err));
+            .then(res => res.json())
+            .then(() => {
+                this.textBar = "게임이 저장되었습니다!";
+            })
+            .catch(err => console.error(err));
     }
 
 }

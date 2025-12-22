@@ -1,15 +1,15 @@
 import { BossPatternBase } from "./BossPatternBase";
 
 export class WindAoe extends BossPatternBase {
-    gridPattern(scene, caster){
-        for(let i=200; i<1600; i+=200){
-            for(let j=200; j<1200; j+=200){
+    gridPattern(scene, caster) {
+        for (let i = 200; i < 1600; i += 200) {
+            for (let j = 200; j < 1200; j += 200) {
                 // 예고 이펙트
                 const spacing = 16 * 3;   // path width: 15, wind scaling: 1.5 (여러 마리가 한 폭을 담당하므로 좀 더 크게)
                 const maxDistance = 1600;
 
                 const paths = [];
-                for (let p=spacing; p<maxDistance; p+=spacing){
+                for (let p = spacing; p < maxDistance; p += spacing) {
                     const imgv = scene.add.sprite(i, p, 'path');
                     const imgh = scene.add.sprite(p, j, 'path');
                     imgv.setOrigin(0, 0.5);
@@ -18,8 +18,8 @@ export class WindAoe extends BossPatternBase {
                     imgh.setScale(3);
                     imgv.setRotation(Phaser.Math.DegToRad(90));
                     imgh.setRotation(0);
-                    imgv.setTint(0xa30000);
-                    imgh.setTint(0xa30000);
+                    imgv.setTint(0x6ed953);
+                    imgh.setTint(0x6ed953);
                     imgv.play('path');
                     imgh.play('path');
 
@@ -32,7 +32,7 @@ export class WindAoe extends BossPatternBase {
                     paths.forEach(img => img.destroy());
 
                     // 10개의 바람 발사
-                    for (let pass=0; pass<20; pass++){
+                    for (let pass = 0; pass < 20; pass++) {
                         // 연이어 가는 연출
                         scene.time.delayedCall(100 * pass, () => {
                             const bv = scene.pattern.create(i, 0, "windAoe");
@@ -46,7 +46,7 @@ export class WindAoe extends BossPatternBase {
 
                             bv.play("windAoe");
                             bh.play("windAoe");
-                                
+
                             const speed = this.base.speed ?? 500;
                             bv.setVelocity(0, speed * 1.875);
                             bh.setVelocity(speed * 2.5, 0);
@@ -68,19 +68,19 @@ export class WindAoe extends BossPatternBase {
             caster.isAttack = false;
             caster.isFrozen = false;
         })
-    } 
-    
-    shootPattern(scene, caster){
+    }
+
+    shootPattern(scene, caster) {
         // 발사 시작 위치
         const sx = caster.x;
         const sy = caster.y;
 
-        for(let i=0; i<4; i++){
+        for (let i = 0; i < 4; i++) {
             // 십자, 엑스자 2회 반복 (전환 1초)
             scene.time.delayedCall(i * 1000, () => {
                 let startAngle = (i % 2) * 45;
                 // 현재 방향을 기준으로 90도 각도로 시전
-                for(let j=startAngle; j<360; j+=90){
+                for (let j = startAngle; j < 360; j += 90) {
                     const angle = Phaser.Math.DegToRad(j);
                     const dx = Math.cos(angle);
                     const dy = Math.sin(angle);
@@ -90,7 +90,7 @@ export class WindAoe extends BossPatternBase {
                     const maxDistance = 1600;
 
                     const paths = [];
-                    for (let i=spacing; i<maxDistance; i+=spacing){
+                    for (let i = spacing; i < maxDistance; i += spacing) {
                         const x = sx + dx * i;
                         const y = sy + dy * i;
 
@@ -110,7 +110,7 @@ export class WindAoe extends BossPatternBase {
 
                         // 실 패턴 사용
                         // 10개의 바람 발사
-                        for (let pass=0; pass<10; pass++){
+                        for (let pass = 0; pass < 10; pass++) {
                             // 연이어 가는 연출
                             scene.time.delayedCall(100 * pass, () => {
                                 const b = scene.pattern.create(sx, sy, "windAoe");
@@ -122,10 +122,10 @@ export class WindAoe extends BossPatternBase {
                                 b.play("windAoe");
 
                                 // 방향에 맞춰 사진 뒤집기
-                                if (dx < 0){
+                                if (dx < 0) {
                                     b.flipX = true;
                                 }
-                                    
+
                                 const speed = this.base.speed ?? 500;
                                 b.setVelocity(dx * speed, dy * speed);
 
@@ -150,7 +150,7 @@ export class WindAoe extends BossPatternBase {
     cast(scene, caster) {
         const patternType = Phaser.Math.Between(0, 1);
         scene.time.delayedCall(600, () => {
-            switch (patternType){
+            switch (patternType) {
                 case 0:
                     this.gridPattern(scene, caster);
                     break;

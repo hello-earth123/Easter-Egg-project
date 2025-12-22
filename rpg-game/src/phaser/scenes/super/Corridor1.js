@@ -121,6 +121,8 @@ export default class Corridor1 extends Phaser.Scene {
             luckGemHigh: '상급 보석 (행운)',
             luckGemSuper: '특급 보석 (행운)',
         }
+
+        this.safeSpawnPoints = [[300, 600], [600, 650], [900, 600], [1200, 650]];
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -288,8 +290,6 @@ export default class Corridor1 extends Phaser.Scene {
         this.bullets = this.physics.add.group();
         this.items = this.physics.add.group();
 
-        spawnMonsters(this);
-
         // 충돌 이벤트 정의
         this.physics.add.collider(this.monsters, this.monsters);
         this.physics.add.collider(
@@ -317,24 +317,26 @@ export default class Corridor1 extends Phaser.Scene {
             this
         );
 
-
-        // 충돌 보정
+        this.wallGroup = this.physics.add.staticGroup();
         if (collisionObjects && collisionObjects.objects) {
             collisionObjects.objects.forEach(obj => {
                 const x = obj.x + obj.width / 2;
                 const y = obj.y + obj.height / 2; // Tiled y 기준 보정
 
-                const collider = this.add.rectangle(x, y, obj.width, obj.height)
-                    .setOrigin(0.5, 0.5);
-
-                // Arcade Physics body 추가
-                this.physics.add.existing(collider, true); // true = static body
-                this.physics.add.collider(this.monsters, collider);
-                this.physics.add.collider(this.player, collider);
-                this.physics.add.collider(this.items, collider);
-                this.physics.add.collider(this.bullets, collider);
+                const collider = this.wallGroup.create(x, y)
+                    .setSize(obj.width, obj.height)
+                    .setOrigin(0.5, 0.5)
+                    .setVisible(false);
             });
         }
+        this.physics.add.collider(this.monsters, this.wallGroup);
+        this.physics.add.collider(this.player, this.wallGroup);
+        this.physics.add.collider(this.items, this.wallGroup);
+        this.physics.add.collider(this.bullets, this.wallGroup, (bullet, wall) => {
+            bullet.destroy();
+        });
+
+        spawnMonsters(this);
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -375,7 +377,6 @@ export default class Corridor1 extends Phaser.Scene {
             spawnLightning(this, x, y, radius, dmg);
         this.spawnHitFlash = (x, y) => spawnHitFlash(this, x, y);
 
-        console.log(6)
         createFireSkillAnims(this);
 
         this.count = 0;
@@ -542,7 +543,6 @@ export default class Corridor1 extends Phaser.Scene {
 
         // 시스템 메세지 출력
         this.textBar = `${skillName} 스킬 레벨업! (Lv${skill.level})`;
-        console.log(skill.level)
 
         return true;
     }
@@ -606,8 +606,6 @@ export default class Corridor1 extends Phaser.Scene {
     // ============================= 아이템 사용 =====================================
     useItemShortcut(idx) {
         const slot = this.slotData.itemSlots[idx];
-
-        console.log(slot)
 
         // slot이 빈 경우, 시스템 메세지 출력 및 미동작
         if (!slot) return (this.textBar = "단축키에 아이템 없음");
@@ -1467,7 +1465,6 @@ export default class Corridor1 extends Phaser.Scene {
                         it.setTexture(def.name)
                         // 아이템 드랍 사운드
                         this.SoundManager.playItemDrop();
-                        console.log(it.getData('pickDef'))
                     })
 
                 }
@@ -1769,7 +1766,6 @@ export default class Corridor1 extends Phaser.Scene {
         })
             .then(res => res.json())
             .then(() => {
-                console.log("게임 저장 완료!");
                 this.textBar = "게임이 저장되었습니다!";
             })
             .catch(err => console.error(err));

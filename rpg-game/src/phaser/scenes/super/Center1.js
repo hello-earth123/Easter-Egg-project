@@ -37,7 +37,7 @@ import { createMonsterAnims } from "../../preload/createMonsterAnims.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
-export default class Center extends Phaser.Scene {
+export default class Center1 extends Phaser.Scene {
 
     init(data) {
         this.userId = data.userId;
@@ -66,7 +66,7 @@ export default class Center extends Phaser.Scene {
 
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
-        super({ key: "Center" });
+        super({ key: "Center1" });
 
         this.mapKey = "Center";
 
@@ -132,7 +132,7 @@ export default class Center extends Phaser.Scene {
             luckGemSuper: '특급 보석 (행운)',
         };
 
-        this.safeSpawnPoints = [[500, 600]];
+        this.safeSpawnPoints = [[400, 300], [1200, 900], [400, 900], [1200, 300]];
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -484,10 +484,10 @@ export default class Center extends Phaser.Scene {
         const introScript = [
             // { cmd: "say", text: "…여긴 어디지?" },
             // { cmd: "say", text: "아… 맞다. 난 이제 막 시골에서 도시로 올라왔지." },
-            // { cmd: "say", text: "이름은 이프리트. 마법사가 되고 싶었던 평범한 소녀다." },
+            // { cmd: "say", text: "이름은 이프리트. 마법사가 되고 싶었던 평범한 청년이다." },
 
             // { cmd: "say", text: "하지만 현실은… 생각보다 잔혹했다." },
-            // { cmd: "say", text: "도시 학교의 마법사들은 나를 비웃었고, 제대로 상대해 주지도 않았다." },
+            // { cmd: "say", text: "도시의 마법사들은 나를 비웃었고, 제대로 상대해 주지도 않았다." },
             // { cmd: "wait", time: 400 },
 
             // { cmd: "say", text: "“그따위 실력으로 마법사를 꿈꾼다고?” 라는 말은 하루에도 열 번 넘게 들었다." },
@@ -662,15 +662,21 @@ export default class Center extends Phaser.Scene {
         const boss = this.boss.getFirstAlive();
         ChooseNextSkill(this);
 
-        // 특수 기믹 발동
-        if (boss && !boss.doAvatar && boss.hp <= boss.maxHp * 0.3) {
-            console.log('12315213441');
-            boss.doAvatar = true;
-            cooltime(this, 0, 1);
-        }
-        // 특수 기믹 재사용 가능
-        if (boss && boss.doAvatar && boss.hp > boss.maxHp * 0.69) {
-            boss.doAvatar = false;
+        if (boss && boss.hp <= 0) {
+            if (!this.scene.get('Center2')) this.scene.add('Center2', Center2);
+
+            this.cameras.main.fadeOut(300, 0, 0, 0);
+
+            this.time.delayedCall(300, () => {
+                this.scene.start("Center2", {
+                    playerStats: this.playerStats,
+                    inventoryData: this.inventoryData,
+                    slotData: this.slotData,
+                    fromPortal: "east",
+                    spawnX: this.player.x,
+                    spawnY: this.player.y
+                });
+            });
         }
 
         // 🔥 이동 중일 때 일정 간격으로 발소리 재생
