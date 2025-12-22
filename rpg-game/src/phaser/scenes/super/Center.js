@@ -484,10 +484,10 @@ export default class Center extends Phaser.Scene {
         const introScript = [
             // { cmd: "say", text: "…여긴 어디지?" },
             // { cmd: "say", text: "아… 맞다. 난 이제 막 시골에서 도시로 올라왔지." },
-            // { cmd: "say", text: "이름은 이프리트. 마법사가 되고 싶었던 평범한 청년이다." },
+            // { cmd: "say", text: "이름은 이프리트. 마법사가 되고 싶었던 평범한 소녀다." },
 
             // { cmd: "say", text: "하지만 현실은… 생각보다 잔혹했다." },
-            // { cmd: "say", text: "도시의 마법사들은 나를 비웃었고, 제대로 상대해 주지도 않았다." },
+            // { cmd: "say", text: "도시 학교의 마법사들은 나를 비웃었고, 제대로 상대해 주지도 않았다." },
             // { cmd: "wait", time: 400 },
 
             // { cmd: "say", text: "“그따위 실력으로 마법사를 꿈꾼다고?” 라는 말은 하루에도 열 번 넘게 들었다." },
