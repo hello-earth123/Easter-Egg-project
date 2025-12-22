@@ -34,9 +34,8 @@ import Corridor3 from "../scenes/super/Corridor3";
 import Threeway from "../scenes/super/Threeway";
 import ThroneRoom from "../scenes/super/ThroneRoom";
 import CenterEntrance from "../scenes/super/CenterEntrance";
-import Center from "../scenes/super/Center";
-
-import BossScene from "../scenes/BossScene";
+import Center1 from "../scenes/super/Center1";
+import Center2 from "../scenes/super/Center2";
 
 export const sceneMap = {
   // low =======================
@@ -81,17 +80,16 @@ export const sceneMap = {
   Threeway,
   ThroneRoom,
   CenterEntrance,
-  Center,
-
-  BossScene
+  Center1,
+  Center2
 };
 
 export let currentScene = null;
 
-export function setCurrentScene(scene){
-    currentScene = scene;
+export function setCurrentScene(scene) {
+  currentScene = scene;
 }
 
-export function getCurrentScene(scene){
-    return currentScene;
+export function getCurrentScene(scene) {
+  return currentScene;
 }

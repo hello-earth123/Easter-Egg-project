@@ -16,7 +16,7 @@ import { preloadFireSkillAssets } from "../../preload/preloadFireSkills.js";
 import { createFireSkillAnims } from "../../preload/createFireSkillAnims.js";
 import { setCurrentScene } from "../../manager/sceneRegistry.js";
 import SoundManager from "../../manager/SoundManager.js";
-import { saveGame } from "../../manager/saveManager.js"; 
+import { saveGame } from "../../manager/saveManager.js";
 import { loadGame } from "../../manager/saveManager.js";
 import { preloadMonsterAnims } from "../../preload/preloadMonsterAnims.js";
 import { preloadGameSet } from "../../preload/preloadGameSet.js";
@@ -37,7 +37,7 @@ export default class CastleLobby extends Phaser.Scene {
         this.registry.set('userId', this.userId);
 
         let fromPortal = null;
-        if (data){
+        if (data) {
             fromPortal = data.fromPortal;
         }
 
@@ -45,7 +45,7 @@ export default class CastleLobby extends Phaser.Scene {
             east: { x: 150, y: 620 },   // Scene의 east 포탈을 타면 여기서 등장
             south: { x: 820, y: 280 },
             west: { x: 1450, y: 620 },
-            north: { x: 820, y: 1100},
+            north: { x: 820, y: 1100 },
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
@@ -102,29 +102,31 @@ export default class CastleLobby extends Phaser.Scene {
         this.skills;
 
         this.itemShow = {
-        hpPotion: 'HP 포션',
-        mpPotion: 'MP 포션',
-        damageGemLow: '하급 보석 (데미지)',
-        damageGemMid: '중급 보석 (데미지)',
-        damageGemHigh: '상급 보석 (데미지)',
-        damageGemSuper: '특급 보석 (데미지)',
-        cooldownGemLow: '하급 보석 (쿨타임)',
-        cooldownGemMid: '중급 보석 (쿨타임)',
-        cooldownGemHigh: '상급 보석 (쿨타임)',
-        cooldownGemSuper: '특급 보석 (쿨타임)',
-        manaCostGemLow: '하급 보석 (마나 소모)',
-        manaCostGemMid: '중급 보석 (마나 소모)',
-        manaCostGemHigh: '상급 보석 (마나 소모)',
-        manaCostGemSuper: '특급 보석 (마나 소모)',
-        defenseGemLow: '하급 보석 (방어력)',
-        defenseGemMid: '중급 보석 (방어력)',
-        defenseGemHigh: '상급 보석 (방어력)',
-        defenseGemSuper: '특급 보석 (방어력)',
-        luckGemLow: '하급 보석 (행운)',
-        luckGemMid: '중급 보석 (행운)',
-        luckGemHigh: '상급 보석 (행운)',
-        luckGemSuper: '특급 보석 (행운)',
+            hpPotion: 'HP 포션',
+            mpPotion: 'MP 포션',
+            damageGemLow: '하급 보석 (데미지)',
+            damageGemMid: '중급 보석 (데미지)',
+            damageGemHigh: '상급 보석 (데미지)',
+            damageGemSuper: '특급 보석 (데미지)',
+            cooldownGemLow: '하급 보석 (쿨타임)',
+            cooldownGemMid: '중급 보석 (쿨타임)',
+            cooldownGemHigh: '상급 보석 (쿨타임)',
+            cooldownGemSuper: '특급 보석 (쿨타임)',
+            manaCostGemLow: '하급 보석 (마나 소모)',
+            manaCostGemMid: '중급 보석 (마나 소모)',
+            manaCostGemHigh: '상급 보석 (마나 소모)',
+            manaCostGemSuper: '특급 보석 (마나 소모)',
+            defenseGemLow: '하급 보석 (방어력)',
+            defenseGemMid: '중급 보석 (방어력)',
+            defenseGemHigh: '상급 보석 (방어력)',
+            defenseGemSuper: '특급 보석 (방어력)',
+            luckGemLow: '하급 보석 (행운)',
+            luckGemMid: '중급 보석 (행운)',
+            luckGemHigh: '상급 보석 (행운)',
+            luckGemSuper: '특급 보석 (행운)',
         }
+
+        this.safeSpawnPoints = [[400, 900], [1200, 300], [400, 300], [1200, 900], [800, 600]];
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -146,14 +148,14 @@ export default class CastleLobby extends Phaser.Scene {
         setCurrentScene(this);
         if (this.game.vue?.setMapTitle) {
             this.game.vue.setMapTitle(this.mapName);
-        }        
+        }
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;
         this.FOOTSTEP_INTERVAL = 315; // 발소리 사운드 간격 (ms)
         this.isMoving = false;        // 이동 여부 flag
         this.showMapName = true;      // ← 맵 도착 시 한 번 표시해야 함
-        
+
         // 1. 씬 BGM
         this.SoundManager.playBgm("bgm_field")
 
@@ -178,7 +180,7 @@ export default class CastleLobby extends Phaser.Scene {
             flameB: "big",
             flameC: "big",
         };
-        
+
         // ======================= UI =============================
         this.uiState = {
             inventory: false,   // 인벤토리 창
@@ -199,7 +201,7 @@ export default class CastleLobby extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
         const map = this.add.image(0, 0, "castle_lobby").setOrigin(0);
-        const tile = this.make.tilemap({key: 'castle_lobbyTile'});
+        const tile = this.make.tilemap({ key: 'castle_lobbyTile' });
         const collisionObjects = tile.getObjectLayer("collider");
 
 
@@ -293,8 +295,6 @@ export default class CastleLobby extends Phaser.Scene {
         this.bullets = this.physics.add.group();
         this.items = this.physics.add.group();
 
-        spawnMonsters(this);
-
         // 충돌 이벤트 정의
         this.physics.add.collider(this.monsters, this.monsters);
         this.physics.add.collider(
@@ -322,24 +322,26 @@ export default class CastleLobby extends Phaser.Scene {
             this
         );
 
-
-        // 충돌 보정
+        this.wallGroup = this.physics.add.staticGroup();
         if (collisionObjects && collisionObjects.objects) {
             collisionObjects.objects.forEach(obj => {
                 const x = obj.x + obj.width / 2;
                 const y = obj.y + obj.height / 2; // Tiled y 기준 보정
 
-                const collider = this.add.rectangle(x, y, obj.width, obj.height)
-                    .setOrigin(0.5, 0.5);
-
-                // Arcade Physics body 추가
-                this.physics.add.existing(collider, true); // true = static body
-                this.physics.add.collider(this.monsters, collider);
-                this.physics.add.collider(this.player, collider);
-                this.physics.add.collider(this.items, collider);
-                this.physics.add.collider(this.bullets, collider);
+                const collider = this.wallGroup.create(x, y)
+                    .setSize(obj.width, obj.height)
+                    .setOrigin(0.5, 0.5)
+                    .setVisible(false);
             });
         }
+        this.physics.add.collider(this.monsters, this.wallGroup);
+        this.physics.add.collider(this.player, this.wallGroup);
+        this.physics.add.collider(this.items, this.wallGroup);
+        this.physics.add.collider(this.bullets, this.wallGroup, (bullet, wall) => {
+            bullet.destroy();
+        });
+
+        spawnMonsters(this);
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -350,11 +352,11 @@ export default class CastleLobby extends Phaser.Scene {
 
         // ======================= 단축키 ===========================
         // 입력 가능한 키에 대한 객체 생성
-        this.keys = this.input.keyboard.addKeys("Q,W,E,R");  
-        const pageUp = this.input.keyboard.addKey(           
+        this.keys = this.input.keyboard.addKeys("Q,W,E,R");
+        const pageUp = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.PAGE_UP
         );
-        const pageDown = this.input.keyboard.addKey(        
+        const pageDown = this.input.keyboard.addKey(
             Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN
         );
 
@@ -380,7 +382,6 @@ export default class CastleLobby extends Phaser.Scene {
             spawnLightning(this, x, y, radius, dmg);
         this.spawnHitFlash = (x, y) => spawnHitFlash(this, x, y);
 
-        console.log(6)
         createFireSkillAnims(this);
 
         this.count = 0;
@@ -389,8 +390,8 @@ export default class CastleLobby extends Phaser.Scene {
 
         // 포탈 4개 생성
         this.portals = {
-            east:  this.physics.add.sprite(1450, 620, "portal"),
-            west:  this.physics.add.sprite(150, 620, "portal"),
+            east: this.physics.add.sprite(1450, 620, "portal"),
+            west: this.physics.add.sprite(150, 620, "portal"),
             south: this.physics.add.sprite(810, 1100, "portal"),
             north: this.physics.add.sprite(810, 280, "portal")
         };
@@ -420,9 +421,9 @@ export default class CastleLobby extends Phaser.Scene {
             backgroundColor: "rgba(0,0,0,0.45)",
             padding: { x: 8, y: 4 }
         })
-        .setOrigin(0.5)
-        .setVisible(false)
-        .setDepth(9999);
+            .setOrigin(0.5)
+            .setVisible(false)
+            .setDepth(9999);
 
         // 플레이어가 어떤 포탈이든 밟으면 감지
         for (const key in this.portals) {
@@ -456,7 +457,7 @@ export default class CastleLobby extends Phaser.Scene {
         });
 
         this.cutscene = new CutscenePlayer(this);
-     
+
         // 게임 시작 자동 컷씬 스크립트
         const introScript = [
             // { cmd: "say", text: "…여긴 어디지?" },
@@ -547,7 +548,6 @@ export default class CastleLobby extends Phaser.Scene {
 
         // 시스템 메세지 출력
         this.textBar = `${skillName} 스킬 레벨업! (Lv${skill.level})`;
-        console.log(skill.level)
 
         return true;
     }
@@ -612,8 +612,6 @@ export default class CastleLobby extends Phaser.Scene {
     useItemShortcut(idx) {
         const slot = this.slotData.itemSlots[idx];
 
-        console.log(slot)
-
         // slot이 빈 경우, 시스템 메세지 출력 및 미동작
         if (!slot) return (this.textBar = "단축키에 아이템 없음");
 
@@ -630,7 +628,7 @@ export default class CastleLobby extends Phaser.Scene {
 
 
 
-    
+
     // update() : 유니티의 update()와 동일 (프레임 단위 호출)
     update(time, delta) {
         // 컷씬 중에는 모든 조작 차단 + 몬스터도 멈춤
@@ -659,7 +657,7 @@ export default class CastleLobby extends Phaser.Scene {
 
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
         if (this.player?.isDead) return;// 플레이어 죽으면 return
-        
+
         const now = this.time.now;
 
         // 발소리 사운드 쿨타임
@@ -747,7 +745,7 @@ export default class CastleLobby extends Phaser.Scene {
             const portals = [];
             if (this.portals) {
                 Object.values(this.portals).forEach(p => {
-                if (p) portals.push({ x: p.x, y: p.y });
+                    if (p) portals.push({ x: p.x, y: p.y });
                 });
             }
 
@@ -818,7 +816,7 @@ export default class CastleLobby extends Phaser.Scene {
             if (!this.player.isCasting) {
                 this.player.anims.stop();
                 this.player.setFrame(0);  // 기본 프레임 유지
-                
+
             }
             // 멈춘 순간 쿨타임 리셋 → 다시 움직이면 바로 발소리 나게
             this.footstepCooldown = 0;
@@ -946,7 +944,7 @@ export default class CastleLobby extends Phaser.Scene {
 
         // 영수증 출력
         this.showDamageText(monster, dmg, "#ffff66");
-        
+
         // 몬스터 피격 sound
         this.SoundManager.playMonsterHit();
 
@@ -982,7 +980,7 @@ export default class CastleLobby extends Phaser.Scene {
             if (s && s.stop) s.stop();
             this.activeHoldSkill = null;
         }
-        
+
         if (!player._lastHitAt) player._lastHitAt = 0; // ?? 0일 때 0으로 초기화를 진행
 
         const now = this.time.now;
@@ -999,7 +997,7 @@ export default class CastleLobby extends Phaser.Scene {
         // 피격 데미지 출력 (빨간색)
         this.showDamageText(player, dmg, "#ff3333");
         this.player.play("player_hit", true);
-        
+
         // 마지막으로 피격된 시간 저장
         player._lastHitAt = now;
 
@@ -1047,7 +1045,7 @@ export default class CastleLobby extends Phaser.Scene {
             this.onPlayerDeath();
             return;
         }
-        
+
         // === Incendiary(hold 스킬) 강제 중지 이벤트 ===
         this.events.emit("playerHit", {
             x: monster.x,
@@ -1134,23 +1132,23 @@ export default class CastleLobby extends Phaser.Scene {
         🧊 몬스터 어그로 초기화
         ------------------------------ */
         if (this.monsters) {
-        this.monsters.children.iterate(mon => {
-            if (!mon) return;
+            this.monsters.children.iterate(mon => {
+                if (!mon) return;
 
-            // 가장 흔한 방식: 타겟 초기화
-            mon.target = null;
+                // 가장 흔한 방식: 타겟 초기화
+                mon.target = null;
 
-            // 추적/공격 상태를 초기화
-            if (mon.state) mon.state = "idle";
+                // 추적/공격 상태를 초기화
+                if (mon.state) mon.state = "idle";
 
-            // 이동 정지
-            if (mon.body) {
-            mon.setVelocity(0, 0);
-            }
+                // 이동 정지
+                if (mon.body) {
+                    mon.setVelocity(0, 0);
+                }
 
-            // 어그로 플래그 방식일 때
-            if (mon.isAggro !== undefined) mon.isAggro = false;
-        });
+                // 어그로 플래그 방식일 때
+                if (mon.isAggro !== undefined) mon.isAggro = false;
+            });
         }
 
         // 사망 애니가 끝났을 때
@@ -1405,7 +1403,7 @@ export default class CastleLobby extends Phaser.Scene {
         }
 
         // 속도 상향 (테스트용)
-        const speed = monster.wanderSpeed || 80;  
+        const speed = monster.wanderSpeed || 80;
         const vx = (dx / dist) * speed;
         const vy = (dy / dist) * speed;
 
@@ -1448,14 +1446,14 @@ export default class CastleLobby extends Phaser.Scene {
         this.monsters.children.iterate((m) => {
             if (!m || !m.active) return;
             if (m.hp > 0) return;
-            
+
             // 몬스터 사망 사운드
             this.SoundManager.playMonsterDeath();
             // 플레이어 이전 레벨
             const prevLevel = this.playerStats.level;
 
             this.playerStats.addExp(m.expReward);
-            
+
             if (this.playerStats.level > prevLevel) {
                 this.SoundManager.playLevelUp();
             }
@@ -1471,7 +1469,6 @@ export default class CastleLobby extends Phaser.Scene {
                         it.setTexture(def.name)
                         // 아이템 드랍 사운드
                         this.SoundManager.playItemDrop();
-                        console.log(it.getData('pickDef'))
                     })
 
                 }
@@ -1500,7 +1497,7 @@ export default class CastleLobby extends Phaser.Scene {
 
         let animKey = null;
 
-        switch(type) {
+        switch (type) {
             case "small": // fireball, firebomb, napalm, incendiary start
                 animKey = "player_cast_small";
                 break;
@@ -1720,8 +1717,8 @@ export default class CastleLobby extends Phaser.Scene {
 
         // ⭐ 포탈 → 목적지 씬 매핑 테이블
         const portalToScene = {
-            east:  "BanquetHall",
-            west:  "CastleEntrance",
+            east: "BanquetHall",
+            west: "CastleEntrance",
             south: "CastleInside",
             north: "Hall2"
         };
@@ -1734,7 +1731,7 @@ export default class CastleLobby extends Phaser.Scene {
 
         // 필요 시 해당 씬을 미리 add() (존재하지 않을 경우)
         if (!this.scene.get(nextScene)) {
-            this.scene.add(nextScene, window[nextScene]); 
+            this.scene.add(nextScene, window[nextScene]);
             // 🔥 주의: TestScene2, TestScene3 같은 씬들은 전역에 등록되어 있어야 함
         }
 
@@ -1773,12 +1770,11 @@ export default class CastleLobby extends Phaser.Scene {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
-        .then(res => res.json())
-        .then(() => {
-            console.log("게임 저장 완료!");
-            this.textBar = "게임이 저장되었습니다!";
-        })
-        .catch(err => console.error(err));
+            .then(res => res.json())
+            .then(() => {
+                this.textBar = "게임이 저장되었습니다!";
+            })
+            .catch(err => console.error(err));
     }
 
 }

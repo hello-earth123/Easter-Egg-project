@@ -12,20 +12,11 @@ export function makeMonsterStats(def, scene) {
 
 function relocateMonster(scene, monster) {
   const safePoints = scene.safeSpawnPoints; // 미리 정의
+  const len = safePoints.length;
+  const locate = Phaser.Math.Between(0, len - 1);
 
-  for (const p of safePoints) {
-    console.log(p);
-    monster.setPosition(p[0], p[1]);
-    monster.body.updateFromGameObject();
-
-    if (!scene.physics.overlap(monster, scene.wallGroup)) {
-      return;
-    }
-  }
-
-  console.log('destroy');
-  // 그래도 못 찾으면 제거
-  monster.destroy();
+  monster.setPosition(safePoints[locate][0], safePoints[locate][1]);
+  monster.body.updateFromGameObject();
 }
 
 /** 몬스터 객체 생성 및 scene에 추가 - TODO */
@@ -192,14 +183,19 @@ export function spawnMonsters(scene) {
     .then(data => {
       data.forEach((def) => {
         for (let i = 0; i < scene.monsterData[def.name]; i++) {
-          const sx = Phaser.Math.Between(200, CFG.world.width - 200);
-          const sy = Phaser.Math.Between(200, CFG.world.height - 200);
+          let sx = Phaser.Math.Between(200, CFG.world.width - 200);
+          let sy = Phaser.Math.Between(200, CFG.world.height - 200);
           let createTime = 0;
+
+          if (!scene.boss && def.name == 'colossus') {
+            sx = 800;
+            sy = 608;
+          }
 
           if (scene.boss) {
             // 예고 이펙트
             const radius = MONSTER_SCALE[def.name] * 1.3;
-            const g = scene.add.circle(sx, sy, 6, 0xa30000, 0.9);
+            const g = scene.add.circle(sx, sy, 6, 0x6ed953, 0.9);
             g.setScale(1);
             scene.tweens.add({
               targets: g,
@@ -209,6 +205,8 @@ export function spawnMonsters(scene) {
               onComplete: () => g.destroy(),
             });
             createTime = 700;
+
+            def.maxHp *= 0.3;
           }
 
           scene.time.delayedCall(createTime, () => {

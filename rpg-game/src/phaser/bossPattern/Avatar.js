@@ -1,18 +1,18 @@
 import { BossPatternBase } from "./BossPatternBase";
 
-function attacked(){
+function attacked() {
     const caster = this.caster;
     const scene = this.scene;
 
-    if (this.real){
+    if (this.real) {
         caster.setVisible(true);
         caster.body.enable = true;
 
         const boss = [...scene.boss.getChildren()];
         boss.forEach((b) => {
             if (!b) return
-            
-            if (b.isAvatar){
+
+            if (b.isAvatar) {
                 b.destroy();
             }
         })
@@ -25,7 +25,7 @@ function attacked(){
             caster.isFrozen = false;
         })
     }
-    else{
+    else {
         caster.hp += (caster.maxHp * 0.2);
     }
 
@@ -39,10 +39,10 @@ export class Avatar extends BossPatternBase {
         caster.isAttack = true;
         caster.isFrozen = true;
 
-        const delta = [[200, 608], [1400, 608], [800, 152], [800, 1064]];
+        const delta = [[300, 608], [1300, 608], [800, 250], [800, 950]];
         const real = Phaser.Math.Between(0, 3);
 
-        for (const [i, [x, y]] of delta.entries()){
+        for (const [i, [x, y]] of delta.entries()) {
             const avatar = scene.boss.create(x, y, 'vampire');
             avatar.setScale(5);
             avatar.caster = caster;
@@ -52,7 +52,7 @@ export class Avatar extends BossPatternBase {
             avatar.real = (i === real);
             avatar.attacked = attacked;
 
-            if (i != real){
+            if (i != real) {
                 const bat = scene.add.sprite(x + 50, y - 50, 'batswarm');
                 bat.setOrigin(0.5);
                 bat.setScale(1);

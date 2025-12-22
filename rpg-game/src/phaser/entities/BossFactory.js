@@ -48,7 +48,7 @@ export function spawnBoss(scene, boss) {
         .then(res => res.json())
         .then(data => {
             data.forEach((def) => {
-                BossInstance = scene.boss.create(806, 590, def.name);
+                BossInstance = scene.boss.create(830, 700, def.name);
 
                 const scale = MONSTER_SCALE[def.name] ?? 1.5;
                 BossInstance.setScale(scale);
@@ -129,7 +129,7 @@ function CastSkill(skill, scene) {
             // 잡몹 소환 (마리당 10% 데미지 감소)
             case 1:
                 BossInstance.patternSet['summons'].tryCast(scene, BossInstance);
-                cooltime(scene, 1, 10);
+                cooltime(scene, 1, 90);
                 break;
             // 탄막 슈팅
             case 2:

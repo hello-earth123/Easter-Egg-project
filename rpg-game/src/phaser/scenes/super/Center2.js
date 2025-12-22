@@ -37,7 +37,7 @@ import { createMonsterAnims } from "../../preload/createMonsterAnims.js";
 
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
-export default class Center extends Phaser.Scene {
+export default class Center2 extends Phaser.Scene {
 
     init(data) {
         this.userId = data.userId;
@@ -49,10 +49,7 @@ export default class Center extends Phaser.Scene {
         }
 
         const portalSpawnPoints = {
-            east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
-            south: { x: 700, y: 1000 },
-            west: { x: 1400, y: 600 },
-            north: { x: 800, y: 1100 },
+            east: { x: data.spawnX, y: data.spawnY },   // TestScene2의 east 포탈을 타면 여기서 등장
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
@@ -66,7 +63,7 @@ export default class Center extends Phaser.Scene {
 
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
-        super({ key: "Center" });
+        super({ key: "Center2" });
 
         this.mapKey = "Center";
 
@@ -132,7 +129,7 @@ export default class Center extends Phaser.Scene {
             luckGemSuper: '특급 보석 (행운)',
         };
 
-        this.safeSpawnPoints = [[500, 600]];
+        this.safeSpawnPoints = [[400, 300], [1200, 900], [400, 900], [1200, 300]];
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -664,7 +661,6 @@ export default class Center extends Phaser.Scene {
 
         // 특수 기믹 발동
         if (boss && !boss.doAvatar && boss.hp <= boss.maxHp * 0.3) {
-            console.log('12315213441');
             boss.doAvatar = true;
             cooltime(this, 0, 1);
         }

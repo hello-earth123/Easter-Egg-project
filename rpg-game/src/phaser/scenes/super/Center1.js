@@ -14,23 +14,30 @@ import { spawnMonsters } from "../../entities/TestMonsterFactory.js";
 import { FloatingText } from "../../effects/FloatingText.js";
 import { preloadFireSkillAssets } from "../../preload/preloadFireSkills.js";
 import { createFireSkillAnims } from "../../preload/createFireSkillAnims.js";
+
+// import TestScene3 from "./TestScene3.js";
 import { setCurrentScene } from "../../manager/sceneRegistry.js";
 import SoundManager from "../../manager/SoundManager.js";
 import { saveGame } from "../../manager/saveManager.js";
 import { loadGame } from "../../manager/saveManager.js";
 import { preloadMonsterAnims } from "../../preload/preloadMonsterAnims.js";
+
+// 컷씬
+import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
+
+// testing
+import { spawnBoss, ChooseNextSkill, cooltime } from "../../entities/BossFactory.js";
+import { preloadBossPattern } from "../../preload/preloadBossPattern.js";
+import { createBossPattern } from "../../preload/createBossPattern.js";
 import { preloadGameSet } from "../../preload/preloadGameSet.js";
 import { preloadSound } from "../../preload/preloadSound.js";
 import { createPotalAnims } from "../../preload/createPotalAnims.js";
 import { createPlayerAnims } from "../../preload/createPlayerAnims.js";
 import { createMonsterAnims } from "../../preload/createMonsterAnims.js";
 
-// 컷씬
-import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
-
 // export default : 모듈로써 외부 접근을 허용하는 코드
 // Scene : 화면 구성 및 논리 처리 요소
-export default class Cemetery2 extends Phaser.Scene {
+export default class Center1 extends Phaser.Scene {
 
     init(data) {
         this.userId = data.userId;
@@ -42,28 +49,28 @@ export default class Cemetery2 extends Phaser.Scene {
         }
 
         const portalSpawnPoints = {
-            east: { x: 70, y: 600 },   // Scene의 east 포탈을 타면 여기서 등장
-            south: { x: 825, y: 100 },
-            west: { x: 1530, y: 570 },
-            north: { x: 825, y: 1100 },
+            east: { x: 200, y: 600 },   // TestScene2의 east 포탈을 타면 여기서 등장
+            south: { x: 700, y: 1000 },
+            west: { x: 1400, y: 600 },
+            north: { x: 800, y: 1100 },
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
             this.spawnX = portalSpawnPoints[fromPortal].x;
             this.spawnY = portalSpawnPoints[fromPortal].y;
         } else {
-            this.spawnX = 800;
-            this.spawnY = 600;
+            this.spawnX = 400;
+            this.spawnY = 300;
         }
     }
 
     // constructor() : 클래스 생성자 함수로 Scene 객체 생성
     constructor() {
-        super({ key: "Cemetery2" });
+        super({ key: "Center1" });
 
-        this.mapKey = "Cemetery2";
+        this.mapKey = "Center";
 
-        this.mapName = "공동 묘지2";   // 맵 이름
+        this.mapName = "성 중앙";      // 맵 이름
 
         this.textBar = "";
         this.lastArrowTap = {
@@ -75,15 +82,16 @@ export default class Cemetery2 extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            slime: 3,
-            mushroom: 3,
-            eyebat: 2,
-            snail: 2,
-            // hidden: 15,
+            // lich: 3,
+            // reaper: 4,
+            arrow_skeleton: 2,
+            butterfly: 2,
+            colossus: 1,
+            skeleton: 2,
         };
 
-        this.minLevel = 1;
-        this.maxLevel = 1;
+        this.minLevel = 50;
+        this.maxLevel = 50;
 
         this.count = 0;
 
@@ -122,19 +130,22 @@ export default class Cemetery2 extends Phaser.Scene {
             luckGemMid: '중급 보석 (행운)',
             luckGemHigh: '상급 보석 (행운)',
             luckGemSuper: '특급 보석 (행운)',
-        }
+        };
 
-        this.safeSpawnPoints = [[400, 900], [1200, 300], [400, 300], [1200, 400], [800, 600]];
+        this.safeSpawnPoints = [[400, 300], [1200, 900], [400, 900], [1200, 300]];
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
     preload() {
-        this.load.image("cemetery2", "/static/assets/map/cemetery2.png");
-        this.load.tilemapTiledJSON('cemetery2Tile', '/static/assets/map/cemetery2.json');
+        // this.load.image("center", "/static/assets/map/center.png");
+        // this.load.tilemapTiledJSON('centerTile', '/static/assets/map/center.json');
+        this.load.image("center", "/static/assets/map/center.png");
+        this.load.tilemapTiledJSON('centerTile', '/static/assets/map/center.json');
         // BGM
-        this.load.audio("bgm_cemetery", "/static/assets/sound/background/bgm_cemetery.wav");
+        this.load.audio("bgm_center", "/static/assets/sound/background/bgm_center.wav");
 
         preloadFireSkillAssets(this);
+        preloadBossPattern(this);
         preloadMonsterAnims(this);
         preloadGameSet(this);
         preloadSound(this);
@@ -150,11 +161,12 @@ export default class Cemetery2 extends Phaser.Scene {
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;
-        this.FOOTSTEP_INTERVAL = 315; // 발소리 사운드 간격 (ms)
+        this.FOOTSTEP_INTERVAL = 315; // 발소리 간격 (ms)
         this.isMoving = false;        // 이동 여부 flag
         this.showMapName = true;      // ← 맵 도착 시 한 번 표시해야 함
+
         // 1. 씬 BGM
-        this.SoundManager.playBgm("bgm_cemetery")
+        this.SoundManager.playBgm("bgm_center")
 
         createPotalAnims(this);
         createPlayerAnims(this);
@@ -165,7 +177,8 @@ export default class Cemetery2 extends Phaser.Scene {
             fireball: "small",
             firebomb: "small",
             napalm: "small",
-            incendiary: "small",
+            incendiary: "small",      // 시작 애니메이션
+            // incendiary_hold: "incendiary-hold",
 
             buff: "buff",
 
@@ -178,18 +191,15 @@ export default class Cemetery2 extends Phaser.Scene {
             flameC: "big",
         };
 
-        // ======================= UI =============================
         this.uiState = {
-            inventory: false,   // 인벤토리 창
-            skill: false,       // 스킬 창
-            stat: false,        // 스탯 창
-            menu: false,        // 메뉴 창
-            sound: false,       // 사운드 창
+            inventory: false,
+            skill: false,
+            stat: false,
+            menu: false,
+            sound: false,   // ⭐ 추가
 
         };
 
-
-        // ===================== 맵 및 카메라 =======================
         // 맵 크기 설정 (물리적 공간 범위 설정)
         this.physics.world.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
@@ -197,19 +207,15 @@ export default class Cemetery2 extends Phaser.Scene {
         // 카메라의 범위는 게임의 비율과 줌 수준으로 결정
         this.cameras.main.setBounds(0, 0, CFG.world.width, CFG.world.height);
 
-        const map = this.add.image(0, 0, "cemetery2").setOrigin(0);
-        const tile = this.make.tilemap({ key: 'cemetery2Tile' });
+        const map = this.add.image(0, 0, "center").setOrigin(0);
+        const tile = this.make.tilemap({ key: 'centerTile' });
         const collisionObjects = tile.getObjectLayer("collider");
-
+        const collisionObjects2 = tile.getObjectLayer("collider2");
 
         // 맵 이미지를 맵 크기에 맞춰 변경
         map.displayWidth = CFG.world.width;
         map.displayHeight = CFG.world.height;
-        // ===================== 맵 및 카메라 =======================
 
-
-
-        // ====================== 플레이어 ==========================
         // Player(gameObject) 생성 및 rigid body 추가
         this.player = this.physics.add.sprite(this.spawnX, this.spawnY, "playerSheet");
         this.player.setCollideWorldBounds(true);
@@ -240,11 +246,8 @@ export default class Cemetery2 extends Phaser.Scene {
             (ph - hitH) * 0.5
         );
 
-        // 캐스팅 플래그 (홀딩 스킬 여부 판별 때문)
+        // 🔥 추가: 캐스팅 플래그
         this.player.isCasting = false;
-
-        // 컷씬 때 움직이지 못하게 하기
-        this.cutsceneLock = false;
 
         // 넉백 변수
         this.player.isKnockback = false;
@@ -258,21 +261,6 @@ export default class Cemetery2 extends Phaser.Scene {
             v0: 0,
         };
 
-        // 시간 경과에 따른 함수 추가  (플레이어 mp 자동 회복:  1초에 6씩 회복)
-        this.time.addEvent({
-            delay: 1000,
-            loop: true,
-            callback: () => {
-                if (this.playerStats.mp < this.playerStats.maxMp) {
-                    this.playerStats.mp = Math.min(
-                        this.playerStats.maxMp,
-                        this.playerStats.mp + 6
-                    );
-                }
-            },
-        });
-
-        // 플레이어 데이터 불러오기 (스탯, 인벤토리, 슬롯)
         this.isPlayerLoad = false;
         initPlayer(this.userId).then(player => {
             this.playerStats = player;
@@ -285,12 +273,38 @@ export default class Cemetery2 extends Phaser.Scene {
             this.isPlayerLoad = true;
         })
 
-        // 카메라가 Player(gameObject)를 추적하도록 설정 (카메라 시점 고정)
+        // 카메라가 Player(gameObject)를 추적하도록 설정
         this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
 
         this.monsters = this.physics.add.group();
         this.bullets = this.physics.add.group();
         this.items = this.physics.add.group();
+        this.boss = this.physics.add.group();
+
+        this.isHassle = false;
+
+        this.pattern = this.physics.add.group();
+        this.physics.add.overlap(
+            this.player,
+            this.pattern,
+            this.onPlayerHitByPattern,
+            null,
+            this
+        );
+        this.physics.add.collider(
+            this.player,
+            this.boss,
+            this.onPlayerHitByMonster,
+            null,
+            this
+        );
+        this.physics.add.overlap(
+            this.bullets,
+            this.boss,
+            this.onBulletHitB,
+            null,
+            this
+        );
 
         // 충돌 이벤트 정의
         this.physics.add.collider(this.monsters, this.monsters);
@@ -302,19 +316,17 @@ export default class Cemetery2 extends Phaser.Scene {
             this
         );
         // 겹침 이벤트 정의
-        // 플레이어가 아이템과 충돌한 경우 (아이템을 먹은 경우)
-        this.physics.add.overlap(
-            this.player,
-            this.items,
-            this.onPickupItem,
-            null,
-            this
-        );
-        // 몬스터가 맞은 경우 (fireball의 경우) =========================== > 이 경우는 플레이어 아니고 몬스터임
         this.physics.add.overlap(
             this.bullets,
             this.monsters,
             this.onBulletHit,
+            null,
+            this
+        );
+        this.physics.add.overlap(
+            this.player,
+            this.items,
+            this.onPickupItem,
             null,
             this
         );
@@ -337,17 +349,31 @@ export default class Cemetery2 extends Phaser.Scene {
         this.physics.add.collider(this.bullets, this.wallGroup, (bullet, wall) => {
             bullet.destroy();
         });
+        this.physics.add.collider(this.boss, this.wallGroup);
 
-        spawnMonsters(this);
+        this.wallGroup2 = this.physics.add.staticGroup();
+        if (collisionObjects2 && collisionObjects2.objects) {
+            collisionObjects2.objects.forEach(obj => {
+                const x = obj.x + obj.width / 2;
+                const y = obj.y + obj.height / 2; // Tiled y 기준 보정
+
+                const collider = this.wallGroup2.create(x, y)
+                    .setSize(obj.width, obj.height)
+                    .setOrigin(0.5, 0.5)
+                    .setVisible(false);
+            });
+        }
+        this.physics.add.collider(this.monsters, this.wallGroup2);
+        this.physics.add.collider(this.player, this.wallGroup2);
+        this.physics.add.collider(this.items, this.wallGroup2);
+        this.physics.add.collider(this.boss, this.wallGroup2);
+
+        // spawnMonsters(this);
+        spawnBoss(this, ['coffin']);
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
-        // =========================================================
 
-
-
-
-        // ======================= 단축키 ===========================
         // 입력 가능한 키에 대한 객체 생성
         this.keys = this.input.keyboard.addKeys("Q,W,E,R");
         const pageUp = this.input.keyboard.addKey(
@@ -363,13 +389,24 @@ export default class Cemetery2 extends Phaser.Scene {
         // 모든 키의 입력이 이벤트 객체(e)로써 연결된 함수로 전달
         this.input.keyboard.on("keydown", (e) => this.handleArrowDoubleTap(e));
 
+        // 시간 경과에 따른 함수 추가
+        this.time.addEvent({
+            delay: 1000,
+            loop: true,
+            callback: () => {
+                if (this.playerStats.mp < this.playerStats.maxMp) {
+                    this.playerStats.mp = Math.min(
+                        this.playerStats.maxMp,
+                        this.playerStats.mp + 2
+                    );
+                }
+            },
+        });
+
+
         this.skills = createDefaultSkills(this);
-        // ==========================================================
 
-
-
-
-        // ================ 시스템 메세지 창 (로그창) ==================
+        // 시스템 메세지 창
         this.textBar = "게임 시작!";
 
         // 이펙트 출력 함수 바인딩
@@ -379,18 +416,22 @@ export default class Cemetery2 extends Phaser.Scene {
             spawnLightning(this, x, y, radius, dmg);
         this.spawnHitFlash = (x, y) => spawnHitFlash(this, x, y);
 
+        console.log(6)
         createFireSkillAnims(this);
+        createBossPattern(this);
 
         this.count = 0;
+        // === 보스 HP UI 생성 ===
+        this.initBossHpUI();
 
         // === 포탈 생성(애니메이션) ===
 
         // 포탈 4개 생성
         this.portals = {
-            east: this.physics.add.sprite(1530, 570, "portal"),
-            west: this.physics.add.sprite(70, 570, "portal"),
-            south: this.physics.add.sprite(825, 1100, "portal"),
-            north: this.physics.add.sprite(825, 100, "portal")
+            // east:  this.physics.add.sprite(1530, 600, "portal"),
+            // west:  this.physics.add.sprite(70, 600, "portal"),
+            // south: this.physics.add.sprite(800, 910, "portal"),
+            // north: this.physics.add.sprite(800, 100, "portal")
         };
 
         for (const key in this.portals) {
@@ -404,7 +445,6 @@ export default class Cemetery2 extends Phaser.Scene {
 
         }
         // ======================================================================
-
 
 
         // ==================== 포탈 상호작용 ==========================
@@ -439,21 +479,6 @@ export default class Cemetery2 extends Phaser.Scene {
         this.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         // ======================================================================
 
-
-
-        // =================== 컷씬, 대화창 =======================================
-        // Vue Dialogue UI 가져오기
-        this.dialogueUI = this.game.vue.$refs.dialogue;
-
-        // SPACE 입력 받을 때 Vue로 전달
-        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.keySpace.on("down", () => {
-            if (this.dialogueActive) {
-                this.dialogueUI.skip();
-            }
-        });
-
-        this.cutscene = new CutscenePlayer(this);
 
         // 게임 시작 자동 컷씬 스크립트
         const introScript = [
@@ -496,22 +521,15 @@ export default class Cemetery2 extends Phaser.Scene {
 
             // { cmd: "wait", time: 300 },
 
+            // // 🔥 복선
             // { cmd: "say", text: "프라가라흐: '후후… 그래. 나를 완전히 해방시켜준다면…'" },
             // { cmd: "say", text: "프라가라흐: '이 세계도… 너도… 모든 것이 바뀔 것이다.'" },
 
             // { cmd: "end" }
         ];
 
-        // 씬 로딩 0.5초 후 자동 실행
-        this.time.delayedCall(500, () => {
-            this.cutscene.play(introScript);
-        });
     }
-    // ===========================================================================
 
-
-
-    // ======================= 스킬, 아이템 슬롯 (단축키) ===========================
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
     setSkillSlots(slots) {
         this.slotData.skillSlots = (slots || [])
@@ -519,17 +537,15 @@ export default class Cemetery2 extends Phaser.Scene {
             .map((s) => (s ? s.name : null));
     }
 
+
     /** itemSlots에 최대 2개의 아이템을 추가 */
     setItemSlots(itemSlots) {
         this.slotData.itemSlots = (itemSlots || [])
             .slice(0, 2)
             .map((i) => (i ? i : null));
     }
-    // ===========================================================================
 
-
-
-    // ============================ 스킬 레벨업 ====================================
+    /** skill upgrade */
     upgradeSkillByName(skillName) {
         const skill = this.skills[skillName];
 
@@ -545,20 +561,15 @@ export default class Cemetery2 extends Phaser.Scene {
 
         // 시스템 메세지 출력
         this.textBar = `${skillName} 스킬 레벨업! (Lv${skill.level})`;
+        console.log(skill.level)
 
         return true;
     }
-    // ===========================================================================
 
-
-
-    // ============================= 스킬 사용 =====================================
     useSkill(slotIdx) {
-        // 슬롯에 스킬 없으면 return
         const name = this.slotData.skillSlots[slotIdx];
         if (!name) return;
 
-        // 스킬 없으면 return
         const skill = this.skills[name];
         if (!skill) return;
 
@@ -567,7 +578,7 @@ export default class Cemetery2 extends Phaser.Scene {
         const prevLastCastAt = skill.lastCastAt;
         const prevActive = skill.active;
 
-        //  실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
+        // 🔥 실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
         skill.tryCast(this, this.player);
 
         // --- 진짜로 "시전이 된 건지" 판별 ---
@@ -589,10 +600,10 @@ export default class Cemetery2 extends Phaser.Scene {
         // ❌ 쿨타임, 마나부족, 기타 조건 실패 → 아무 모션도 내보내지 말고 종료
         if (!castSuccess) return;
 
-        // 스킬 캐스팅 사운드 (스킬에 성공했을 경우에만 시전) -> (윗 줄(1080줄)에서 넘어왔다면 확실히 casting된 것으로 판단)
+        // 스킬 캐스팅 사운드
         this.SoundManager.playSkillCast(name);
 
-        // 여기까지 왔으면 "실제로 스킬이 발동된 것"만 남음
+        // 🔥 여기까지 왔으면 "실제로 스킬이 발동된 것"만 남음
         const motionType = this.skillMotionType[name];
         if (motionType) {
             this.playPlayerSkillMotion(motionType, skill.isHoldSkill === true);
@@ -605,7 +616,7 @@ export default class Cemetery2 extends Phaser.Scene {
     }
 
 
-    // ============================= 아이템 사용 =====================================
+    /** use item */
     useItemShortcut(idx) {
         const slot = this.slotData.itemSlots[idx];
 
@@ -621,53 +632,54 @@ export default class Cemetery2 extends Phaser.Scene {
         // 아이템 사용 사운드
         this.SoundManager.playItemUse();
     }
-    // =============================================================================
 
-
-
-
-    // update() : 유니티의 update()와 동일 (프레임 단위 호출)
+    // update() : 유니티의 update()와 동일 (프레임 단위 호출) - TODO
     update(time, delta) {
-        // 컷씬 중에는 모든 조작 차단 + 몬스터도 멈춤
+        // 컷씬 중에는 모든 조작 차단
         if (this.cutsceneLock) {
-
-            // 플레이어 정지
-            if (this.player?.body) {
-                this.player.setVelocity(0, 0);
-                this.player.body.setAcceleration(0, 0);
-                this.player.body.moves = false;
-                if (this.player.anims) this.player.anims.stop();
-            }
-
-            // 몬스터 정지
-            this.updateMonsters(this.time.now);
-
+            this.player.setVelocity(0);
             return;
         }
 
-        // 컷씬 종료 → 이동 허용
-        if (this.player?.body) this.player.body.moves = true;
-        this.monsters.children.iterate(m => {
-            if (m?.body) m.body.moves = true;
-        });
-
-
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
-        if (this.player?.isDead) return;// 플레이어 죽으면 return
+        if (this.player?.isDead) return;
 
         const now = this.time.now;
 
         // 발소리 사운드 쿨타임
         this.footstepCooldown -= delta;
 
+        // TODO: 넉백 확인 >> 피격 함수로 이전
         this.handlePlayerKnockback();
+        // TODO: 시간에 따른 대쉬 감속/정지 >> coroutine으로 대쉬 함수에 편입 가능한지 확인
         this.handleDash(now);
         this.handleMovement();
         this.updateMonsters(now);
+        // TODO: 몬스터 사망 및 아이템 드롭 >> 몬스터 피격 함수로 이전
         this.checkMonstersDeath();
         this.updateMonsterHud();
 
-        // 이동 중일 때 일정 간격으로 발소리 재생
+        const boss = this.boss.getFirstAlive();
+        ChooseNextSkill(this);
+
+        if (boss && boss.hp <= 0) {
+            if (!this.scene.get('Center2')) this.scene.add('Center2', Center2);
+
+            this.cameras.main.fadeOut(300, 0, 0, 0);
+
+            this.time.delayedCall(300, () => {
+                this.scene.start("Center2", {
+                    playerStats: this.playerStats,
+                    inventoryData: this.inventoryData,
+                    slotData: this.slotData,
+                    fromPortal: "east",
+                    spawnX: this.player.x,
+                    spawnY: this.player.y
+                });
+            });
+        }
+
+        // 🔥 이동 중일 때 일정 간격으로 발소리 재생
         if (this.isMoving && this.footstepCooldown <= 0) {
             this.SoundManager.playFootstep();
             this.footstepCooldown = this.FOOTSTEP_INTERVAL;
@@ -680,7 +692,7 @@ export default class Cemetery2 extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(this.keys.R)) this.useSkill(3);
 
         //---------------------------------------------------------------
-        // Hold(키다운) 스킬 처리 — incendiary 전용
+        // 🔥 Hold(키다운) 스킬 처리 — incendiary 전용
         //---------------------------------------------------------------
         const slotKeys = ["Q", "W", "E", "R"];
 
@@ -696,18 +708,18 @@ export default class Cemetery2 extends Phaser.Scene {
             // 이 스킬이 키다운 스킬인지 확인
             if (!skill.isHoldSkill) continue;
 
-            // 키를 누르고 있는 동안 지속 발사
+            // 🔥 키를 누르고 있는 동안 지속 발사
             if (phaserKey.isDown) {
                 if (!skill.active) {
                     skill.tryCast(this, this.player);
                 }
             }
 
-            //  키에서 손 떼면 종료
+            // 🔥 키에서 손 떼면 종료
             if (Phaser.Input.Keyboard.JustUp(phaserKey)) {
                 if (skill.stop) skill.stop();
 
-                //  hold 스킬 끝났으니 캐스팅 플래그 및 애니 정리
+                // 🔥 hold 스킬 끝났으니 캐스팅 플래그 및 애니 정리
                 this.player.isCasting = false;
                 this.player.anims.stop();
                 this.player.setFrame(0);
@@ -716,30 +728,42 @@ export default class Cemetery2 extends Phaser.Scene {
 
 
         // === 포탈 상호작용 체크 ===
-        if (this.canInteract && this.currentPortal) {
+        if (this.canInteract) {
 
+            // F 누르면 이동
             if (Phaser.Input.Keyboard.JustDown(this.keyF)) {
-                this.moveToNextScene(this.currentPortal.portalId);
+                this.moveToNextScene();
             }
 
+            // 포탈에서 벗어나면 상호작용 불가 처리
             const dist = Phaser.Math.Distance.Between(
                 this.player.x, this.player.y,
-                this.currentPortal.x, this.currentPortal.y
+                this.portal.x, this.portal.y
             );
 
-            if (dist > 150) {
+            if (dist > 160) {  // 포탈 범위 밖
                 this.canInteract = false;
-                this.currentPortal = null;
                 this.interactText.setVisible(false);
             }
         }
 
+        this.updateBossHpUI();
+
         if (this.game.vue?.updateMiniMap) {
+            // 몬스터
             const monsters = [];
             this.monsters.children.iterate(m => {
                 if (m && m.active) monsters.push({ x: m.x, y: m.y });
             });
 
+            // 보스 
+            this.boss.children.iterate(b => {
+                if (b && b.active) {
+                    monsters.push({ x: b.x, y: b.y });
+                }
+            });
+
+            // 포탈
             const portals = [];
             if (this.portals) {
                 Object.values(this.portals).forEach(p => {
@@ -756,7 +780,6 @@ export default class Cemetery2 extends Phaser.Scene {
         }
     }
 
-    // 플레이어 이동 벡터 관리 
     handleMovement() {
         if (this.activeHoldSkill) {
             this.player.setVelocity(0, 0);
@@ -769,54 +792,61 @@ export default class Cemetery2 extends Phaser.Scene {
 
         let moving = false;
 
+        let hassle = 1;
+        let flip = true;
+        if (this.isHassle) {
+            hassle *= -1;
+            flip = !flip;
+        }
+
         // 좌
         if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-CFG.moveSpeed);
-            this.player.flipX = true;
-            this.player.facing.set(-1, 0);
+            this.player.setVelocityX(CFG.moveSpeed * -hassle);
+            this.player.flipX = flip;
+            this.player.facing.set(-hassle, 0);
             moving = true;
         }
 
         // 우
         if (this.cursors.right.isDown) {
-            this.player.setVelocityX(CFG.moveSpeed);
-            this.player.flipX = false;
-            this.player.facing.set(1, 0);
+            this.player.setVelocityX(CFG.moveSpeed * hassle);
+            this.player.flipX = !flip;
+            this.player.facing.set(hassle, 0);
             moving = true;
         }
 
         // 하
         if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-CFG.moveSpeed);
-            this.player.facing.set(0, -1);
+            this.player.setVelocityY(CFG.moveSpeed * -hassle);
+            this.player.facing.set(0, -hassle);
             moving = true;
         }
 
         // 상
         if (this.cursors.down.isDown) {
-            this.player.setVelocityY(CFG.moveSpeed);
-            this.player.facing.set(0, 1);
+            this.player.setVelocityY(CFG.moveSpeed * hassle);
+            this.player.facing.set(0, hassle);
             moving = true;
         }
 
-        // 이동 여부 플래그 갱신
+        // 🔥 이동 여부 플래그 갱신
         this.isMoving = moving;
 
         if (moving) {
-            // 스킬 캐스팅 중이면 walk 애니로 덮어쓰지 않음
+            // 캐스팅 중이면 walk 애니로 덮어쓰지 않음
             if (!this.player.isCasting) {
                 if (!this.player.anims.isPlaying || this.player.anims.currentAnim.key !== "player_walk") {
                     this.player.play("player_walk", true);
                 }
             }
         } else {
-            // 스킬 캐스팅 중이면 애니 stop 하지 않음
+            // 캐스팅 중이면 애니 stop 하지 않음
             if (!this.player.isCasting) {
                 this.player.anims.stop();
                 this.player.setFrame(0);  // 기본 프레임 유지
 
             }
-            // 멈춘 순간 쿨타임 리셋 → 다시 움직이면 바로 발소리 나게
+            // 🔥 멈춘 순간 쿨타임 리셋 → 다시 움직이면 바로 소리 나게
             this.footstepCooldown = 0;
         }
     }
@@ -833,19 +863,24 @@ export default class Cemetery2 extends Phaser.Scene {
         const code = e.code;
         if (!this.lastArrowTap.hasOwnProperty(code)) return;
 
+        let hassle = 1;
+        if (this.isHassle) {
+            hassle *= -1;
+        }
+
         // 연속으로 입력 받은 시간이 대쉬를 사용하기 위한 최소 시간 내라면, 대쉬 발동
         const last = this.lastArrowTap[code] || 0;
         this.lastArrowTap[code] = now;
         if (now - last <= CFG.dash.doubleTapWindowMs) {
             const dir =
                 code === "ArrowLeft"
-                    ? new Phaser.Math.Vector2(-1, 0)
+                    ? new Phaser.Math.Vector2(-hassle, 0)
                     : code === "ArrowRight"
-                        ? new Phaser.Math.Vector2(1, 0)
+                        ? new Phaser.Math.Vector2(hassle, 0)
                         : code === "ArrowUp"
-                            ? new Phaser.Math.Vector2(0, -1)
+                            ? new Phaser.Math.Vector2(0, -hassle)
                             : code === "ArrowDown"
-                                ? new Phaser.Math.Vector2(0, 1)
+                                ? new Phaser.Math.Vector2(0, hassle)
                                 : null;
             if (!dir) return;
             this.doDash(dir);
@@ -893,7 +928,7 @@ export default class Cemetery2 extends Phaser.Scene {
         this.player.setVelocity(d.dir.x * speed, d.dir.y * speed);
     }
 
-    /** 데미지 출력 (영수증) */
+    /** 데미지 출력 */
     showDamageText(target, damage, color = "#ffff66") {
         if (!target || !target.x || !target.y) return;
 
@@ -928,7 +963,65 @@ export default class Cemetery2 extends Phaser.Scene {
         }
     }
 
-    /** 몬스터 피격 구현 (fireball bullet) */
+    // 보스용
+    onBulletHitB = (bullet, monster) => {
+        if (!bullet || !bullet.active || !monster || !monster.active) return;
+
+        // 중복 히트/재귀 방지를 위해 먼저 비활성화
+        if (bullet.body) bullet.body.enable = false;
+
+        const surventC = this.monsters.getLength();
+        console.log(surventC, '1111111111111111');
+
+        // 몬스터 체력 감소 및 피격 이펙트 출력
+        let dmg = Math.round(bullet.damage - (bullet.damage * surventC / 10));
+        if (monster.doReflect) {
+            dmg = Math.round(dmg - (dmg / 2));
+
+            // 반사딜로 죽지 않음
+            if (this.playerStats.hp > dmg) {
+                this.playerStats.hp -= dmg;
+                // 플레이어 피격 sound
+                this.SoundManager.playMonsterAttack();
+                // 피격 데미지 출력 (빨간색)
+                this.showDamageText(this.player, dmg, "#ff3333");
+                // 피격 효과 (카메라, 색상)
+                this.cameras.main.shake(
+                    CFG.playerKB.shake.duration,
+                    CFG.playerKB.shake.intensity
+                );
+                this.player.setTint(0xff6666);
+                this.time.delayedCall(CFG.playerKB.invulMs, () => {
+                    if (this.player) this.player.clearTint();
+                });
+            }
+        }
+        monster.hp -= dmg;
+        this.spawnHitFlash(monster.x, monster.y);
+
+        this.showDamageText(monster, dmg, "#ffff66");
+        // 몬스터 피격 sound
+        this.SoundManager.playMonsterHit();
+
+        // 몬스터 어그로
+        this.onMonsterAggro(monster);
+
+        // Defensive Code of onHit function
+        try {
+            // 공격의 onHit 함수 실행
+            if (typeof bullet.onHit === "function") bullet.onHit(monster);  // 왜 monster? scene 아니고?
+        } catch (err) {
+            // onHit 함수 실행 중 오류가 발생해도 게임 정지 대신 오류 메세지만 출력
+            console.error("[onHit error]", err);
+        }
+
+        // 도트 데미지
+        if (bullet.dot) this.applyDot(monster, bullet.dot);
+
+        bullet.destroy();
+    };
+
+    /** 몬스터 피격 구현 */
     onBulletHit = (bullet, monster) => {
         if (!bullet || !bullet.active || !monster || !monster.active) return;
 
@@ -940,14 +1033,31 @@ export default class Cemetery2 extends Phaser.Scene {
         monster.hp -= dmg;
         this.spawnHitFlash(monster.x, monster.y);
 
-        // 영수증 출력
+        // 데미지 출력
+        // (크리티컬 판정 로직이 있는 경우에)
+        // if (isCritical) {
+        //   this.showDamageText(monster, damage, "#ffff66"); // 노란색
+        // } else {
+        //   this.showDamageText(monster, damage, "#ffffff");
+        // }
         this.showDamageText(monster, dmg, "#ffff66");
-
         // 몬스터 피격 sound
         this.SoundManager.playMonsterHit();
 
         // 몬스터 어그로
         this.onMonsterAggro(monster);
+
+        // Defensive Code of onHit function
+        try {
+            // 공격의 onHit 함수 실행
+            if (typeof bullet.onHit === "function") bullet.onHit(monster);  // 왜 monster? scene 아니고?
+        } catch (err) {
+            // onHit 함수 실행 중 오류가 발생해도 게임 정지 대신 오류 메세지만 출력
+            console.error("[onHit error]", err);
+        }
+
+        // 도트 데미지
+        if (bullet.dot) this.applyDot(monster, bullet.dot);
 
         bullet.destroy();
     };
@@ -965,14 +1075,12 @@ export default class Cemetery2 extends Phaser.Scene {
         itemSprite.destroy();
         // 아이템 획득 사운드
         this.SoundManager.playItemPickup();
-        this.textBar = `${this.itemShow[def.name]} 획득`;
+        this.textBar = `${def.name} 획득`;
     };
 
-    /* 플레이어 피격 */
-    onPlayerHitByMonster = (player, monster) => {
-        if (!player || !monster) return;
+    onPlayerHitByPattern = (player, pattern) => {
+        if (!player || !pattern) return;
 
-        // 🔥 키다운 스킬(incendiary) 사용 중이면 즉시 끊기
         if (this.activeHoldSkill) {
             const s = this.skills[this.activeHoldSkill];
             if (s && s.stop) s.stop();
@@ -986,9 +1094,75 @@ export default class Cemetery2 extends Phaser.Scene {
         // 피격 무적 시간이 지나지 않았을 경우, 피격 무시
         if (now - player._lastHitAt < CFG.playerKB.invulMs) return;
 
-        const dmg = monster.atk - (monster.atk * (this.playerStats.defense + this.playerStats.defenseGem) / 100);
-        this.playerStats.hp -= dmg
+        const dmg = pattern.damage;
+        this.playerStats.hp -= pattern.damage;
+        this.SoundManager.playMonsterAttack();
+        this.showDamageText(player, dmg, "#ff3333");
+        this.player.play("player_hit", true);
+        player._lastHitAt = now;
 
+        this.cameras.main.shake(
+            CFG.playerKB.shake.duration,
+            CFG.playerKB.shake.intensity
+        );
+        player.setTint(0xff6666);
+        this.time.delayedCall(CFG.playerKB.invulMs, () => {
+            if (player) player.clearTint();
+        });
+
+        this.textBar = "적에게 피격!";
+
+        // 사망 체크
+        if (this.playerStats.hp <= 0) {
+
+            //  1) 플레이어 physics 충돌 완전 비활성화
+            player.body.enable = false;
+
+            //  2) 반동을 전혀 주지 않도록 속도 제거
+            player.setVelocity(0, 0);
+
+            // 몬스터들이 플레이어에 의해 밀리지 않도록 충돌 반응 차단
+            this.monsters.children.iterate(m => {
+                if (!m || !m.body) return;
+
+                m.setVelocity(0, 0);   // 즉시 멈춤
+                m.body.immovable = true;  // 반발력 제거
+            });
+
+            //  4) 사망 루틴 실행
+            this.onPlayerDeath();
+            return;
+        }
+
+        // === Incendiary(hold 스킬) 강제 중지 이벤트 ===
+        this.events.emit("playerHit", {
+            x: pattern.x,
+            y: pattern.y,
+            knockback: CFG.playerKB.power
+        });
+    }
+
+    /** 플레이어 피격 - TODO */
+    onPlayerHitByMonster = (player, monster) => {
+        if (!player || !monster) return;
+
+        // 🔥 키다운 스킬(incendiary) 사용 중이면 즉시 끊기
+        if (this.activeHoldSkill) {
+            const s = this.skills[this.activeHoldSkill];
+            if (s && s.stop) s.stop();
+            this.activeHoldSkill = null;
+        }
+
+        // TODO: 존재 이유 확인
+        if (!player._lastHitAt) player._lastHitAt = 0; // ?? 0일 때 0으로 초기화를 진행
+
+        const now = this.time.now;
+
+        // 피격 무적 시간이 지나지 않았을 경우, 피격 무시
+        if (now - player._lastHitAt < CFG.playerKB.invulMs) return;
+
+        const dmg = monster.atk - (monster.atk * (this.playerStats.defense + this.playerStats.defenseGem) / 100);
+        this.playerStats.hp -= dmg;
         // 플레이어 피격 sound
         this.SoundManager.playMonsterAttack();
 
@@ -1022,16 +1196,23 @@ export default class Cemetery2 extends Phaser.Scene {
 
         this.textBar = "적에게 피격!";
 
+        if (this.boss) {
+            this.boss.children.iterate(m => {
+                m.setVelocity(0, 0);
+                m.body.immovable = true;
+            })
+        }
+
         // 사망 체크
         if (this.playerStats.hp <= 0) {
 
-            //  1) 플레이어 physics 충돌 완전 비활성화
+            // 🔥 1) 플레이어 physics 충돌 완전 비활성화
             player.body.enable = false;
 
-            //  2) 반동을 전혀 주지 않도록 속도 제거
+            // 🔥 2) 반동을 전혀 주지 않도록 속도 제거
             player.setVelocity(0, 0);
 
-            // 몬스터들이 플레이어에 의해 밀리지 않도록 충돌 반응 차단
+            // 🔥 몬스터들이 플레이어에 의해 밀리지 않도록 충돌 반응 차단
             this.monsters.children.iterate(m => {
                 if (!m || !m.body) return;
 
@@ -1039,7 +1220,7 @@ export default class Cemetery2 extends Phaser.Scene {
                 m.body.immovable = true;  // 반발력 제거
             });
 
-            //  4) 사망 루틴 실행
+            // 🔥 4) 사망 루틴 실행
             this.onPlayerDeath();
             return;
         }
@@ -1152,7 +1333,7 @@ export default class Cemetery2 extends Phaser.Scene {
         // 사망 애니가 끝났을 때
         this.player.once("animationcomplete-player_death", () => {
 
-            // GAME OVER 화면이 켜진 상태로 0.4초 유지
+            // GAME OVER 화면이 켜진 상태로 0.5초 유지
             this.time.delayedCall(4000, () => {
                 // 🔥 마지막 저장 지점에서 부활 처리
                 this.respawnFromLastSave();
@@ -1290,8 +1471,146 @@ export default class Cemetery2 extends Phaser.Scene {
     }
 
 
+    /** 도트 데미지 스킬 적용 */
+    applyDot(monster, dot) {
+        // 틱 수 설정
+        const ticks = Math.max(1, Math.floor(dot.duration / dot.interval));
 
-    // ============================= 몬스터 어그로, 배회, 피격 등등 ===============================
+        for (let i = 1; i <= ticks; i++) {
+            // 설정한 interval에 따라 지연 동작
+            this.time.delayedCall(dot.interval * i, () => {
+                if (!monster || !monster.active) return;
+
+                monster.hp -= dot.damage;
+                this.showDamageText(monster, dot.damage, "#ffff66");
+                this.spawnHitFlash(monster.x, monster.y);
+                this.onMonsterAggro(monster);
+            });
+        }
+    }
+
+    /** 보스 HP UI */
+    initBossHpUI() {
+        this.bossHpUI = {};
+
+        // === 배경판 (짙은 남색, 도트게임 감성) ===
+        this.bossHpUI.bg = this.add.rectangle(
+            this.cameras.main.width / 2,
+            26,
+            240,
+            18,
+            0x1a1c2c, // 도트 rpg 감성 남색
+            1
+        )
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(9999);
+
+        // === 테두리 (연한 회색 픽셀 느낌 라인) ===
+        this.bossHpUI.border = this.add.rectangle(
+            this.cameras.main.width / 2,
+            26,
+            244,
+            22,
+            0x000000,
+            0 // 색 없음 → stroke만 사용
+        )
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setStrokeStyle(2, 0x737373) // 픽셀 UI 라인 느낌
+            .setDepth(9999);
+
+        // === HP 바 (OLD RPG 레드) ===
+        this.bossHpUI.bar = this.add.rectangle(
+            this.cameras.main.width / 2 - 118,
+            26,
+            236,
+            10,
+            0xff3b30 // 레트로 레드
+        )
+            .setOrigin(0, 0.5)
+            .setScrollFactor(0)
+            .setDepth(10000);
+
+        // === 보스 이름 (작고 도트 느낌 폰트) ===
+        this.bossHpUI.nameText = this.add.text(
+            this.cameras.main.width / 2,
+            12,
+            "???",
+            {
+                fontFamily: "Courier, monospace", // 도트 느낌
+                fontSize: "14px",
+                color: "#ffffff",
+                stroke: "#000000",
+                strokeThickness: 3
+            }
+        )
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(10000);
+
+        // === HP 숫자 (HP바 바로 밑에 붙여 넣기) ===
+        this.bossHpUI.hpText = this.add.text(
+            this.cameras.main.width / 2,
+            38,
+            "0 / 0",
+            {
+                fontFamily: "Courier, monospace",
+                fontSize: "13px",
+                color: "#e8e8e8",
+                stroke: "#000000",
+                strokeThickness: 3
+            }
+        )
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(10000);
+
+        // 초기에는 숨겨놓기
+        this.toggleBossHpUI(false);
+    }
+
+    /** UI 숨김/표시 */
+    toggleBossHpUI(visible) {
+        const ui = this.bossHpUI;
+        ui.bg.setVisible(visible);
+        ui.border.setVisible(visible);
+        ui.bar.setVisible(visible);
+        ui.hpText.setVisible(visible);
+        ui.nameText.setVisible(visible);
+    }
+
+    /** 매 프레임 보스 HP UI 갱신 */
+    updateBossHpUI() {
+        if (!this.boss) {
+            this.toggleBossHpUI(false);
+            return;
+        }
+
+        const boss = this.boss.getFirstAlive();
+        if (!boss) {
+            this.toggleBossHpUI(false);
+            return;
+        }
+
+        // --- 표시 ---
+        this.toggleBossHpUI(true);
+
+        const hp = Math.max(0, boss.hp);
+        const maxHp = boss.maxHp || 1;
+
+        // HP bar 길이 갱신
+        const ratio = Phaser.Math.Clamp(hp / maxHp, 0, 1);
+        this.bossHpUI.bar.width = 236 * ratio;
+
+        // 이름
+        this.bossHpUI.nameText.setText(boss.displayName || boss.name || "BOSS");
+
+        // 숫자 (30 / 100)
+        this.bossHpUI.hpText.setText(`${hp} / ${maxHp}`);
+    }
+
+
     /** 어그로 생성 */
     onMonsterAggro(monster) {
         monster.isAggro = true;
@@ -1299,20 +1618,6 @@ export default class Cemetery2 extends Phaser.Scene {
 
     /** 몬스터 동작 */
     updateMonsters(now) {
-        // 컷씬/대화 중이면 모든 몬스터 정지
-        if (this.cutsceneLock) {
-            this.monsters.children.iterate((m) => {
-                if (!m || !m.active || !m.body) return;
-
-                // 이동 관련 모든 물리 속성 초기화
-                m.body.setVelocity(0, 0);
-                m.body.setAcceleration(0, 0);
-                m.body.setDrag(1000, 1000);   // 급정지 효과
-                m.body.moves = false;         // 이동 자체 비활성화
-            });
-            return;
-        }
-
         // 몬스터 그룹 순회
         this.monsters.children.iterate((m) => {
             if (!m || !m.active) return;
@@ -1328,7 +1633,13 @@ export default class Cemetery2 extends Phaser.Scene {
                 return;
             }
 
-            // 2) 어그로 상태면 플레이어 추격 (기존 로직 유지)
+            // 2) 얼음(빙결) 상태면 멈춤
+            if (m.isFrozen) {
+                m.setVelocity(0);
+                return;
+            }
+
+            // 3) 어그로 상태면 플레이어 추격 (기존 로직 유지)
             if (m.isAggro) {
                 this.physics.moveToObject(m, this.player, 95);
 
@@ -1340,9 +1651,35 @@ export default class Cemetery2 extends Phaser.Scene {
                 return;
             }
 
-            // 3) 그 외에는 “짧게 왔다갔다” 배회
+            // 4) 그 외에는 “짧게 왔다갔다” 배회
             this.updateMonsterWander(m, now);
         });
+
+        if (this.boss) {
+            this.boss.children.iterate((m) => {
+                if (!m || !m.active) return;
+                // 2) 얼음(빙결) 상태면 멈춤
+                if (m.isFrozen) {
+                    m.setVelocity(0);
+                    return;
+                }
+
+                // 3) 어그로 상태면 플레이어 추격 (기존 로직 유지)
+                if (m.isAggro) {
+                    this.physics.moveToObject(m, this.player, 95);
+
+                    // 🔥 추격 방향에 따라 좌우 반전
+                    const vx = m.body?.velocity?.x ?? 0;
+                    if (vx < 0) m.flipX = false;
+                    else if (vx > 0) m.flipX = true;
+
+                    return;
+                }
+
+                // 4) 그 외에는 “짧게 왔다갔다” 배회
+                this.updateMonsterWander(m, now);
+            });
+        }
     }
 
     /** 배회 타겟 좌표 새로 지정 */
@@ -1370,7 +1707,7 @@ export default class Cemetery2 extends Phaser.Scene {
     updateMonsterWander(monster, now) {
         if (!monster) return;
 
-        // 🔥 몬스터별 walk 애니메이션 선택
+        // 몬스터별 walk 애니메이션 선택
         const animKey = this.monsterWalkAnim[monster.name];
         if (animKey) {
             if (!monster.anims.isPlaying || monster.anims.currentAnim.key !== animKey) {
@@ -1400,17 +1737,21 @@ export default class Cemetery2 extends Phaser.Scene {
             return;
         }
 
-        // 속도 상향 (테스트용)
+        // 🔥 속도 상향 (테스트용)
         const speed = monster.wanderSpeed || 80;
         const vx = (dx / dist) * speed;
         const vy = (dy / dist) * speed;
 
         monster.setVelocity(vx, vy);
 
-        // 확실한 sprite flip 처리
+        // 🔥 확실한 flip 처리
         if (vx < -0.1) monster.flipX = false;
         else if (vx > 0.1) monster.flipX = true;
     }
+
+
+
+
 
     /** 몬스터 체력바, 이름 출력 */
     updateMonsterHud() {
@@ -1423,7 +1764,7 @@ export default class Cemetery2 extends Phaser.Scene {
             // 이전 프레임의 체력바를 지움
             g.clear();
 
-            // 활동 중인 몬스터인 경우에만 아래 출력
+            // 활동 중인 몬스터인 경우에만 아래 출력 - TODO: 몬스터 동작 함수 쪽으로 편입
             if (!m.active) return;
 
             // 체력바 출력
@@ -1437,6 +1778,31 @@ export default class Cemetery2 extends Phaser.Scene {
             // 이름 출력
             if (m.label) m.label.setPosition(m.x - w / 2, y - 14);
         });
+
+        if (this.boss) {
+            this.boss.children.iterate((m) => {
+                if (!m) return;
+
+                const g = m.hpBar;
+                if (!g) return;
+                // 이전 프레임의 체력바를 지움
+                g.clear();
+
+                // 활동 중인 몬스터인 경우에만 아래 출력 - TODO: 몬스터 동작 함수 쪽으로 편입
+                if (!m.active) return;
+
+                // 체력바 출력
+                const w = 56,
+                    h = 6;
+                const x = m.x - w / 2,
+                    y = m.y - 34;
+                g.fillStyle(0x000000, 0.6).fillRect(x, y, w, h);
+                const pct = clamp01(m.hp / m.maxHp);
+                g.fillStyle(0xff3333, 1).fillRect(x + 1, y + 1, (w - 2) * pct, h - 2);
+                // 이름 출력
+                if (m.label) m.label.setPosition(m.x - w / 2, y - 14);
+            });
+        }
     }
 
     /** 몬스터 사망 */
@@ -1445,7 +1811,7 @@ export default class Cemetery2 extends Phaser.Scene {
             if (!m || !m.active) return;
             if (m.hp > 0) return;
 
-            // 몬스터 사망 사운드
+            // 🔥 몬스터 사망 사운드
             this.SoundManager.playMonsterDeath();
             // 플레이어 이전 레벨
             const prevLevel = this.playerStats.level;
@@ -1467,6 +1833,7 @@ export default class Cemetery2 extends Phaser.Scene {
                         it.setTexture(def.name)
                         // 아이템 드랍 사운드
                         this.SoundManager.playItemDrop();
+                        console.log(it.getData('pickDef'))
                     })
 
                 }
@@ -1479,12 +1846,20 @@ export default class Cemetery2 extends Phaser.Scene {
             // 죽는 애니메이션 추가 및 해당 애니메이션 종료 시점에 drop 함수 호출이 가능한지 확인
             m.destroy();
             this.count += 1
+            // this.time.delayedCall(400, () => {
+            //     if (m && m.destroy) m.destroy();
+            // });
+        });
+
+        this.boss.children.iterate((b) => {
+            if (!b || !b.active) return;
+            if (b.hp > 0) return;
+
+            if (b.isAvatar) {
+                b.attacked();
+            }
         });
     }
-    // ===========================================================================
-
-
-
 
     // 스킬 시전 시 애니메이션 실행
     playPlayerSkillMotion(type, isHold = false) {
@@ -1528,68 +1903,86 @@ export default class Cemetery2 extends Phaser.Scene {
         }
     }
 
-
-
-    // ========================= 스킬 피격 방식 메커니즘 ==========================
-    /** 도트 데미지 스킬 적용 */
-    applyDot(monster, dot) {
-        // 틱 수 설정
-        const ticks = Math.max(1, Math.floor(dot.duration / dot.interval));
-
-        for (let i = 1; i <= ticks; i++) {
-            // 설정한 interval에 따라 지연 동작
-            this.time.delayedCall(dot.interval * i, () => {
-                if (!monster || !monster.active) return;
-
-                monster.hp -= dot.damage;
-                this.showDamageText(monster, dot.damage, "#ffff66");
-                this.spawnHitFlash(monster.x, monster.y);
-                this.onMonsterAggro(monster);
-            });
-        }
-    }
-
     /**
      * 즉발 원형 광역 데미지
      * FireBomb, Meteor, Deathhand 등이 사용
      */
-    damageArea({ x, y, radius, dmg, collectTargets = false, onHit }) {
-        if (!this.monsters) return [];
+    damageArea({ x, y, radius, dmg, onHit }) {
+        if (!this.monsters || !this.boss) return;
 
-        const hitList = [];
+        let hitSomething = false;
 
-        this.monsters.children.iterate((monster) => {
-            if (!monster || !monster.active) return;
+        if (this.monsters) {
+            this.monsters.children.iterate((monster) => {
+                if (!monster || !monster.active) return;
 
-            const dx = monster.x - x;
-            const dy = monster.y - y;
-            if (dx * dx + dy * dy > radius * radius) return;
+                const dx = monster.x - x;
+                const dy = monster.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
 
-            // 즉발 피해
-            monster.hp -= dmg;
-            this.showDamageText(monster, dmg, "#ffff66");
-            if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
-            if (typeof this.onMonsterAggro === "function") {
-                this.onMonsterAggro(monster);
-            }
+                monster.hp -= dmg;
+                this.showDamageText(monster, dmg, "#ffff66");
+                if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
+                if (typeof this.onMonsterAggro === "function") {
+                    this.onMonsterAggro(monster);
+                }
 
-            if (collectTargets) hitList.push(monster);
-        });
+                hitSomething = true;
+            });
+        }
+        if (this.boss) {
+            this.boss.children.iterate((b) => {
+                if (!b || !b.active) return;
 
-        if (hitList.length > 0 && typeof onHit === "function") {
-            onHit();
+                const dx = b.x - x;
+                const dy = b.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
+
+                const servuntC = this.monsters.getLength();
+                dmg -= Math.round(dmg * servuntC / 10);
+                if (b.doReflect) {
+                    dmg = Math.round(dmg - (dmg / 2));
+
+                    // 반사딜로 죽지 않음
+                    if (this.playerStats.hp > dmg) {
+                        this.playerStats.hp -= dmg;
+                        // 플레이어 피격 sound
+                        this.SoundManager.playMonsterAttack();
+                        // 피격 데미지 출력 (빨간색)
+                        this.showDamageText(this.player, dmg, "#ff3333");
+                        // 피격 효과 (카메라, 색상)
+                        this.cameras.main.shake(
+                            CFG.playerKB.shake.duration,
+                            CFG.playerKB.shake.intensity
+                        );
+                        this.player.setTint(0xff6666);
+                        this.time.delayedCall(CFG.playerKB.invulMs, () => {
+                            if (this.player) this.player.clearTint();
+                        });
+                    }
+                }
+                b.hp -= dmg;
+                this.showDamageText(b, dmg, "#ffff66");
+                if (this.spawnHitFlash) this.spawnHitFlash(b.x, b.y);
+                if (typeof this.onMonsterAggro === "function") {
+                    this.onMonsterAggro(b);
+                }
+
+                hitSomething = true;
+            });
         }
 
-        return hitList;
+        if (hitSomething && typeof onHit === "function") {
+            onHit();
+        }
     }
-
 
     /**
      * 한 번에 장판 안의 몬스터들에게 DoT(지속 피해) 부여
      * FlameA / FlameB / FlameC 에서 사용
      */
     applyDotArea({ x, y, radius, tickDmg, duration, interval = 400 }) {
-        if (!this.monsters) return;
+        if (!this.monsters || !this.boss) return;
 
         const dot = {
             duration,
@@ -1597,15 +1990,55 @@ export default class Cemetery2 extends Phaser.Scene {
             damage: tickDmg,
         };
 
-        this.monsters.children.iterate((monster) => {
-            if (!monster || !monster.active) return;
+        if (this.monsters) {
+            this.monsters.children.iterate((monster) => {
+                if (!monster || !monster.active) return;
 
-            const dx = monster.x - x;
-            const dy = monster.y - y;
-            if (dx * dx + dy * dy > radius * radius) return;
+                const dx = monster.x - x;
+                const dy = monster.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
 
-            this.applyDot(monster, dot);
-        });
+                this.applyDot(monster, dot);
+            });
+        }
+
+        if (this.boss) {
+            this.boss.children.iterate((b) => {
+                if (!b || !b.active) return;
+
+                const dx = b.x - x;
+                const dy = b.y - y;
+                if (dx * dx + dy * dy > radius * radius) return;
+
+                const servuntC = this.monsters.getLength();
+                let dmg = dot.damage;
+                if (b.doReflect) {
+                    dmg = Math.round(dmg - (dmg / 2));
+
+                    // 반사딜로 죽지 않음
+                    if (this.playerStats.hp > dmg) {
+                        this.playerStats.hp -= dmg;
+                        // 플레이어 피격 sound
+                        this.SoundManager.playMonsterAttack();
+                        // 피격 데미지 출력 (빨간색)
+                        this.showDamageText(this.player, dmg, "#ff3333");
+                        // 피격 효과 (카메라, 색상)
+                        this.cameras.main.shake(
+                            CFG.playerKB.shake.duration,
+                            CFG.playerKB.shake.intensity
+                        );
+                        this.player.setTint(0xff6666);
+                        this.time.delayedCall(CFG.playerKB.invulMs, () => {
+                            if (this.player) this.player.clearTint();
+                        });
+                    }
+                }
+                dmg -= Math.round(dmg * servuntC / 10);
+                dot.damage = dmg;
+
+                this.applyDot(b, dot);
+            });
+        }
     }
 
     /**
@@ -1669,38 +2102,93 @@ export default class Cemetery2 extends Phaser.Scene {
      * length = 전방 거리(px)
      */
     damageRectangle({ originX, originY, dir, width, height, length, dmg, onHit }) {
-        if (!this.monsters) return;
+        if (!this.monsters || !this.boss) return;
 
         const nx = dir.x;
         const ny = dir.y;
 
         let hitSomething = false;
 
-        this.monsters.children.iterate((monster) => {
-            if (!monster || !monster.active) return;
+        if (this.monsters) {
+            this.monsters.children.iterate((monster) => {
+                if (!monster || !monster.active) return;
 
-            const vx = monster.x - originX;
-            const vy = monster.y - originY;
+                const vx = monster.x - originX;
+                const vy = monster.y - originY;
 
-            const t = vx * nx + vy * ny;
-            if (t < 0 || t > length) return;
+                const t = vx * nx + vy * ny;
+                if (t < 0 || t > length) return;
 
-            const px = nx * t;
-            const py = ny * t;
-            const lx = vx - px;
-            const ly = vy - py;
+                const px = nx * t;
+                const py = ny * t;
+                const lx = vx - px;
+                const ly = vy - py;
 
-            const halfW = width * 0.5;
-            if ((lx * lx + ly * ly) > (halfW * halfW)) return;
+                const halfW = width * 0.5;
+                if ((lx * lx + ly * ly) > (halfW * halfW)) return;
 
-            this.showDamageText(monster, dmg, "#ffff66");
-            // 🔥 데미지 적용
-            monster.hp -= dmg;
-            if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
-            this.onMonsterAggro(monster);
+                this.showDamageText(monster, dmg, "#ffff66");
+                // 🔥 데미지 적용
+                monster.hp -= dmg;
+                if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
+                this.onMonsterAggro(monster);
 
-            hitSomething = true;
-        });
+                hitSomething = true;
+            });
+        }
+
+        if (this.boss) {
+            this.boss.children.iterate((b) => {
+                if (!b || !b.active) return;
+
+                const vx = b.x - originX;
+                const vy = b.y - originY;
+
+                const t = vx * nx + vy * ny;
+                if (t < 0 || t > length) return;
+
+                const px = nx * t;
+                const py = ny * t;
+                const lx = vx - px;
+                const ly = vy - py;
+
+                const halfW = width * 0.5;
+                if ((lx * lx + ly * ly) > (halfW * halfW)) return;
+
+                const servuntC = this.monsters.getLength();
+                if (b.doReflect) {
+                    dmg = Math.round(dmg - (dmg / 2));
+
+                    // 반사딜로 죽지 않음
+                    if (this.playerStats.hp > dmg) {
+                        this.playerStats.hp -= dmg;
+                        // 플레이어 피격 sound
+                        this.SoundManager.playMonsterAttack();
+                        // 피격 데미지 출력 (빨간색)
+                        this.showDamageText(this.player, dmg, "#ff3333");
+                        // 피격 효과 (카메라, 색상)
+                        this.cameras.main.shake(
+                            CFG.playerKB.shake.duration,
+                            CFG.playerKB.shake.intensity
+                        );
+                        this.player.setTint(0xff6666);
+                        this.time.delayedCall(CFG.playerKB.invulMs, () => {
+                            if (this.player) this.player.clearTint();
+                        });
+                    }
+                }
+                dmg -= Math.round(dmg * servuntC / 10);
+
+                this.showDamageText(b, dmg, "#ffff66");
+                // 🔥 데미지 적용
+                b.hp -= dmg;
+                if (this.spawnHitFlash) this.spawnHitFlash(b.x, b.y);
+                this.onMonsterAggro(b);
+
+                hitSomething = true;
+            });
+        }
+
 
         // 🔥 명중했으면 onHit() 실행 (카메라 흔들림, 스킬 중단 등)
         if (hitSomething && typeof onHit === "function") {
@@ -1709,47 +2197,28 @@ export default class Cemetery2 extends Phaser.Scene {
     }
 
 
+
     /** F 키로 다음 Scene 이동 (데이터 유지됨) */
-    moveToNextScene(portalId) {
+    moveToNextScene() {
+        // 🔥 포탈 사운드 재생
         this.SoundManager.playPortal();
 
-        // ⭐ 포탈 → 목적지 씬 매핑 테이블
-        const portalToScene = {
-            west: "CemeteryEndWest",
-            east: "Cemetery4",
-            south: "Cemetery1",
-            north: "Cemetery3"
-        };
-
-        const nextScene = portalToScene[portalId];
-        if (!nextScene) {
-            console.warn("Unknown portalId:", portalId);
-            return;
-        }
-
-        // 필요 시 해당 씬을 미리 add() (존재하지 않을 경우)
-        if (!this.scene.get(nextScene)) {
-            this.scene.add(nextScene, window[nextScene]);
-            // 🔥 주의: TestScene2, TestScene3 같은 씬들은 전역에 등록되어 있어야 함
-        }
-
-        const p = this.currentPortal;
+        if (!this.scene.get('TestScene3')) this.scene.add('TestScene3', TestScene3);
 
         this.cameras.main.fadeOut(300, 0, 0, 0);
 
         this.time.delayedCall(300, () => {
-            this.scene.start(nextScene, {
+            this.scene.start("TestScene3", {
                 playerStats: this.playerStats,
                 inventoryData: this.inventoryData,
                 slotData: this.slotData,
-                fromPortal: portalId,
-                spawnX: p.x,
-                spawnY: p.y + 60
+                fromPortal: "east",
+                spawnX: this.portal.x,
+                spawnY: this.portal.y + 60
             });
         });
     }
 
-    // 저장중...
     collectPlayerData() {
         return {
             stats: this.playerStats,
@@ -1759,7 +2228,6 @@ export default class Cemetery2 extends Phaser.Scene {
         };
     }
 
-    // 게임 저장 완료
     saveGame() {
         const data = this.collectPlayerData();
 
@@ -1770,6 +2238,7 @@ export default class Cemetery2 extends Phaser.Scene {
         })
             .then(res => res.json())
             .then(() => {
+                console.log("게임 저장 완료!");
                 this.textBar = "게임이 저장되었습니다!";
             })
             .catch(err => console.error(err));
