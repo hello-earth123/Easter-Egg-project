@@ -88,7 +88,7 @@ export function spawnMonsters(scene) {
     ghost: "ghost_walk",
     lich: "lich_walk",
     mask: "mask_walk",
-    mimic: "mimic",
+    mimic: "mimic_walk",
     moai_b: "moai-b_walk",
     moai_s: "moai-s_walk",
     moai_g: "moai-g_walk",
