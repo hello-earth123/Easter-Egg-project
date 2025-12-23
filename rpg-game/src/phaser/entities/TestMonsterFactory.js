@@ -37,7 +37,7 @@ export function spawnMonsters(scene) {
     fire_skull1: 2.5,
     fire_skull2: 2.5,
     ghost: 2.5,
-    hidden: 1.4,
+    hidden: 4.0,
     lich: 4.0,
     mask: 2.5,
     mimic: 2.7,

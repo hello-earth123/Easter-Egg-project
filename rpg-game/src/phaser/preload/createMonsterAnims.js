@@ -4,7 +4,7 @@ export function createMonsterAnims(scene) {
         bat_walk: 2,
         bird_walk: 7,
         butterfly_walk: 2,
-        coffin_walk: 0, // 10
+        coffin_walk: 10, // 10
         colossus_walk: 6,
         dwarf_walk: 7,
         eyeball_walk: 14,
@@ -31,6 +31,7 @@ export function createMonsterAnims(scene) {
         vampire_walk: 11,
         weapon_walk: 5,
         wolf_walk: 3,
+        hidden_walk: 7,
     };
 
     Object.entries(frames).forEach(([key, max]) => {

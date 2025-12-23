@@ -46,16 +46,16 @@
           />
         </label>
 
-        <button class="btn primary" @click="login" :disabled="isLoading || !canSubmit">
+        <button class="btn primary" type="button" @click="onLoginClick" :disabled="isLoading || !canSubmit">
           <span class="btn-glow" aria-hidden="true"></span>
           {{ isLoading ? '로그인 중...' : '로그인' }}
         </button>
 
         <div class="row">
-          <button class="btn ghost" @click="$router.push('/register')" :disabled="isLoading">
+          <button class="btn ghost" type="button" @click="onGoRegister" :disabled="isLoading">
             새 캐릭터 생성(회원가입)
           </button>
-          <button class="btn ghost subtle" @click="fillDemo" :disabled="isLoading" title="개발/테스트용">
+          <button class="btn ghost subtle" type="button" @click="onFillDemo" :disabled="isLoading" title="개발/테스트용">
             데모 입력
           </button>
         </div>
@@ -66,7 +66,7 @@
 
         <div class="hint">
           <span class="hint-key">TIP</span>
-          <span class="hint-text">로그인 성공 시 아이디가 저장되고 모험이 사작됩니다.</span>
+          <span class="hint-text">로그인 성공 시 아이디가 저장되고 모험이 시작됩니다.</span>
         </div>
       </section>
 
@@ -78,6 +78,30 @@
 </template>
 
 <script>
+const AUTH_BGM_SRC = "/static/assets/sound/background/intro.wav";
+const UI_CLICK_SRC = "/static/assets/sound/effects/ui_click.wav";
+
+function getAuthBgm() {
+  if (!window.__AUTH_BGM__) {
+    const a = new Audio(AUTH_BGM_SRC);
+    a.loop = true;
+    a.preload = "auto";
+    a.volume = 0.7;
+    window.__AUTH_BGM__ = a;
+  } else {
+    const a = window.__AUTH_BGM__;
+    if (!a.src.includes(AUTH_BGM_SRC)) a.src = AUTH_BGM_SRC;
+  }
+  return window.__AUTH_BGM__;
+}
+
+function playClickSfx() {
+  const sfx = new Audio(UI_CLICK_SRC);
+  sfx.preload = "auto";
+  sfx.volume = 0.9;
+  sfx.play().catch(() => {});
+}
+
 export default {
   name: "Login",
   data() {
@@ -96,8 +120,64 @@ export default {
       return Boolean(this.form.email) && Boolean(this.form.password);
     }
   },
+
+  mounted() {
+    this.startAuthBgm();
+
+    // autoplay 막히는 케이스 대비: 첫 사용자 입력에서 BGM unlock
+    const unlock = () => {
+      this.startAuthBgm();
+      window.removeEventListener("pointerdown", unlock, true);
+      window.removeEventListener("keydown", unlock, true);
+    };
+
+    window.addEventListener("pointerdown", unlock, true);
+    window.addEventListener("keydown", unlock, true);
+  },
+  beforeUnmount() {
+    // 혹시 남아있을 수 있으니 안전하게 제거
+    // (이미 제거됐어도 removeEventListener는 안전)
+  },
+
+  beforeRouteLeave(to, from, next) {
+    if (to?.path === "/game") {
+      this.stopAuthBgm();
+    }
+    next();
+  },
   methods: {
-    fillDemo() {
+    
+    startAuthBgm() {
+      const bgm = getAuthBgm();
+      // 같은 BGM을 Login/Register에서 공유: 이미 재생중이면 이어서 유지
+      if (bgm.paused) {
+        bgm.play().catch(() => {});
+      }
+    },
+    stopAuthBgm() {
+      const bgm = window.__AUTH_BGM__;
+      if (!bgm) return;
+      bgm.pause();
+      // 다음에 다시 시작할 때 처음부터 재생
+      try { bgm.currentTime = 0; } catch (_) {}
+    },
+    playUiClick() {
+      playClickSfx();
+    },
+    onLoginClick() {
+      this.playUiClick();
+      return this.login();
+    },
+    onGoRegister() {
+      this.playUiClick();
+      // 기존 동작 복구: 회원가입 페이지로 이동
+      this.$router.push("/register");
+    },
+    onFillDemo() {
+      this.playUiClick();
+      this.fillDemo();
+    },
+fillDemo() {
       // 기능 누락 방지용: 자동입력은 기존 로직에 영향 없이 개발 편의만 제공합니다.
       this.form.email = this.form.email || "demo@pragarach.com";
       this.form.password = this.form.password || "demo1234";

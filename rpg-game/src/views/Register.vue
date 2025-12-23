@@ -17,7 +17,7 @@
       </header>
 
       <!-- ✅ form으로 감싸서 Enter/Click 중복 호출(이메일 중복 오류처럼 보이는 현상) 방지 -->
-      <form class="card" @submit.prevent="register">
+      <form class="card" @submit.prevent="onRegisterSubmit">
         <h2 class="card-title">회원가입</h2>
 
         <label class="field">
@@ -58,16 +58,16 @@
           />
         </label>
 
-        <button class="btn primary" type="submit" :disabled="isLoading || !canSubmit">
+        <button class="btn primary" type="submit" @click="playUiClick" :disabled="isLoading || !canSubmit">
           <span class="btn-glow" aria-hidden="true"></span>
           {{ isLoading ? '등록 중...' : '회원가입' }}
         </button>
 
         <div class="row">
-          <button class="btn ghost" type="button" @click="$router.push('/login')" :disabled="isLoading">
+          <button class="btn ghost" type="button" @click="onGoLogin" :disabled="isLoading">
             이미 계정이 있어요(로그인)
           </button>
-          <button class="btn ghost subtle" type="button" @click="clearForm" :disabled="isLoading">
+          <button class="btn ghost subtle" type="button" @click="onClearForm" :disabled="isLoading">
             초기화
           </button>
         </div>
@@ -90,6 +90,30 @@
 </template>
 
 <script>
+const AUTH_BGM_SRC = "/static/assets/sound/background/intro.wav";
+const UI_CLICK_SRC = "/static/assets/sound/effects/ui_click.wav";
+
+function getAuthBgm() {
+  if (!window.__AUTH_BGM__) {
+    const a = new Audio(AUTH_BGM_SRC);
+    a.loop = true;
+    a.preload = "auto";
+    a.volume = 0.7;
+    window.__AUTH_BGM__ = a;
+  } else {
+    const a = window.__AUTH_BGM__;
+    if (!a.src.includes(AUTH_BGM_SRC)) a.src = AUTH_BGM_SRC;
+  }
+  return window.__AUTH_BGM__;
+}
+
+function playClickSfx() {
+  const sfx = new Audio(UI_CLICK_SRC);
+  sfx.preload = "auto";
+  sfx.volume = 0.9;
+  sfx.play().catch(() => {});
+}
+
 export default {
   name: "Register",
   data() {
@@ -109,8 +133,45 @@ export default {
       return Boolean(this.form.username) && Boolean(this.form.email) && Boolean(this.form.password);
     }
   },
+  mounted() {
+    this.startAuthBgm();
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to?.path === "/game") {
+      this.stopAuthBgm();
+    }
+    next();
+  },
   methods: {
-    clearForm() {
+    
+    startAuthBgm() {
+      const bgm = getAuthBgm();
+      if (bgm.paused) {
+        bgm.play().catch(() => {});
+      }
+    },
+    stopAuthBgm() {
+      const bgm = window.__AUTH_BGM__;
+      if (!bgm) return;
+      bgm.pause();
+      try { bgm.currentTime = 0; } catch (_) {}
+    },
+    playUiClick() {
+      playClickSfx();
+    },
+    onRegisterSubmit() {
+      // form submit 핸들러: 기존 register 로직 그대로 호출
+      return this.register();
+    },
+    onGoLogin() {
+      this.playUiClick();
+      this.$router.push("/login");
+    },
+    onClearForm() {
+      this.playUiClick();
+      this.clearForm();
+    },
+clearForm() {
       this.form.username = "";
       this.form.email = "";
       this.form.password = "";
