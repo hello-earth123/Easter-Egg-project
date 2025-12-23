@@ -1176,6 +1176,8 @@ export default {
             i ? { name: i.name, icon: i.icon } : null
           );
         }
+
+        main.skillLevel = this.skillState;
       }, 100);
     }
 
@@ -2035,8 +2037,9 @@ export default {
     },
 
     skillLevel(skillName) {
+      const tmpId = this.skillNodes.filter(skill => skill.name === skillName);
       if (!this.scene || !this.scene.skills) return 1;
-      return this.scene.skills[skillName]?.level || 1;
+      return this.skillState[tmpId[0].id] || 0;
     },
 
     /* ===================

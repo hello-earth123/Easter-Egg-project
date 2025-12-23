@@ -13,11 +13,11 @@ export class Incendiary extends FireSkillBase {
     this.liveEffects = [];
   }
 
-  getDamage() {
-    return this.scaledDamage(this.base.tickDmg);
+  getDamage(level) {
+    return this.scaledDamage(this.base.tickDmg, level);
   }
 
-  cast(scene, caster) {
+  cast(scene, caster, level) {
     if (this.active) return;
 
     this.active = true;
@@ -90,11 +90,11 @@ export class Incendiary extends FireSkillBase {
 
   _getDirVector(direction) {
     switch (direction) {
-      case "right": return { x: 1,  y: 0 };
-      case "left":  return { x: -1, y: 0 };
-      case "up":    return { x: 0,  y: -1 };
-      case "down":  return { x: 0,  y: 1 };
-      default:      return { x: 1,  y: 0 };
+      case "right": return { x: 1, y: 0 };
+      case "left": return { x: -1, y: 0 };
+      case "up": return { x: 0, y: -1 };
+      case "down": return { x: 0, y: 1 };
+      default: return { x: 1, y: 0 };
     }
   }
 
@@ -121,7 +121,7 @@ export class Incendiary extends FireSkillBase {
       width,
       height,
       length: dist,
-      dmg: this.getDamage(),
+      dmg: this.getDamage(level),
     });
   }
 

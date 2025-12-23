@@ -4,7 +4,7 @@ import { applyVFX } from "../utils/SkillVFX.js";
 
 export class FlameC extends FireSkillBase {
 
-  cast(scene, caster) {
+  cast(scene, caster, level) {
 
     const dir = this.getDir(caster);
 
@@ -25,11 +25,11 @@ export class FlameC extends FireSkillBase {
     // 🔥 2) 중심 폭발 + 십자 주변 지점
     // ======================================================
     const positions = [
-      { x: centerX,             y: centerY             }, // 중심 폭발
-      { x: centerX - spread,    y: centerY             }, // 왼쪽
-      { x: centerX + spread,    y: centerY             }, // 오른쪽
-      { x: centerX,             y: centerY - spread    }, // 위
-      { x: centerX,             y: centerY + spread    }, // 아래
+      { x: centerX, y: centerY }, // 중심 폭발
+      { x: centerX - spread, y: centerY }, // 왼쪽
+      { x: centerX + spread, y: centerY }, // 오른쪽
+      { x: centerX, y: centerY - spread }, // 위
+      { x: centerX, y: centerY + spread }, // 아래
     ];
 
     // ======================================================
@@ -56,7 +56,7 @@ export class FlameC extends FireSkillBase {
         x: f.x,
         y: f.y,
         radius,
-        dmg: this.getDamage(),
+        dmg: this.getDamage(level),
         onHit: () => this.shakeCameraOnHit(scene),
       });
     }

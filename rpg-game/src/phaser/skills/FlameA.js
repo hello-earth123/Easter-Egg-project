@@ -4,7 +4,7 @@ import { applyVFX } from "../utils/SkillVFX.js";
 
 export class FlameA extends FireSkillBase {
 
-  cast(scene, caster) {
+  cast(scene, caster, level) {
 
     const dir = this.getDir(caster);
 
@@ -37,7 +37,7 @@ export class FlameA extends FireSkillBase {
       x: ox,
       y: oy,
       radius,
-      dmg: this.getDamage(),
+      dmg: this.getDamage(level),
       collectTargets: true,
       onHit: () => this.shakeCameraOnHit(scene)
     });
@@ -53,7 +53,7 @@ export class FlameA extends FireSkillBase {
     const interval = duration / 5; // 원본 로직 유지
     scene.applyDotArea({
       x: ox,
-      y: oy,  
+      y: oy,
       radius: radius,
       tickDmg: tickDmg,
       duration: duration,

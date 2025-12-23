@@ -81,10 +81,10 @@ export default class Center3 extends Phaser.Scene {
         this.monsterData = {
             // lich: 3,
             // reaper: 4,
-            arrow_skeleton: 2,
-            butterfly: 2,
-            colossus: 1,
-            skeleton: 2,
+            fire_skull1: 1,
+            fire_skull1: 1,
+            lich: 2,
+            reaper: 2,
         };
 
         this.minLevel = 50;
@@ -130,6 +130,23 @@ export default class Center3 extends Phaser.Scene {
         };
 
         this.safeSpawnPoints = [[400, 300], [1200, 900], [400, 900], [1200, 300]];
+
+        this.skillLevel;
+
+        this.skillState = {
+            fireball: "skill1",
+            buff: "skill2",
+            flameA: "skill3",
+            flameB: "skill4a",
+            firebomb: "skill4b",
+            flameC: "skill5a",
+            incendiary: "skill5b",
+            meteor_S: "skill6",
+            meteor_M: "skill7",
+            meteor_L: "skill8a",
+            napalm: "skill8b",
+            deathhand: "skill9",
+        };
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -245,6 +262,8 @@ export default class Center3 extends Phaser.Scene {
 
         // 🔥 추가: 캐스팅 플래그
         this.player.isCasting = false;
+
+        this.cutsceneLock = true;
 
         // 넉백 변수
         this.player.isKnockback = false;
@@ -366,7 +385,7 @@ export default class Center3 extends Phaser.Scene {
         this.physics.add.collider(this.boss, this.wallGroup2);
 
         // spawnMonsters(this);
-        spawnBoss(this, ['coffin']);
+        // spawnBoss(this, ['vampire']);
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -476,16 +495,39 @@ export default class Center3 extends Phaser.Scene {
         this.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         // ======================================================================
 
+        // =================== 컷씬, 대화창 =======================================
+        // Vue Dialogue UI 가져오기
+        this.dialogueUI = this.game.vue.$refs.dialogue;
+
+        // SPACE 입력 받을 때 Vue로 전달
+        this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.keySpace.on("down", () => {
+            if (this.dialogueActive) {
+                this.dialogueUI.skip();
+            }
+        });
+
+        this.cutscene = new CutscenePlayer(this);
 
         // 게임 시작 자동 컷씬 스크립트
         const introScript = [
-            { cmd: "say", text: "프라가라흐: \"드디어.. 봉인이 풀린다..!!\"" },
-            { cmd: "say", text: "프라가라흐: \"TO BE CONTINUE...\"" },
+            { cmd: "say", text: "프라가라흐: 드디어… 봉인이 풀린다…!!." },
+            { cmd: "say", text: "TO BE CONTINUE…." },
             { cmd: "wait", time: 10000 },
 
             { cmd: "end" }
         ];
 
+        // 씬 로딩 0.5초 후 자동 실행
+        this.time.delayedCall(500, () => {
+            if ((this.playerStats.cutScene & 1 << 9) == 0) {
+                this.cutscene.play(introScript);
+                this.playerStats.cutScene += (1 << 9);
+            }
+            else {
+                this.cutsceneLock = false;
+            }
+        });
     }
 
     /** skillSlots에 최대 4개의 스킬 이름을 추가 */
@@ -537,8 +579,7 @@ export default class Center3 extends Phaser.Scene {
         const prevActive = skill.active;
 
         // 🔥 실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
-        skill.tryCast(this, this.player);
-
+        skill.tryCast(this, this.player, this.skillLevel[this.skillState[name]]);
         // --- 진짜로 "시전이 된 건지" 판별 ---
         let castSuccess = false;
 
@@ -595,9 +636,25 @@ export default class Center3 extends Phaser.Scene {
     update(time, delta) {
         // 컷씬 중에는 모든 조작 차단
         if (this.cutsceneLock) {
-            this.player.setVelocity(0);
+            // 플레이어 정지
+            if (this.player?.body) {
+                this.player.setVelocity(0, 0);
+                this.player.body.setAcceleration(0, 0);
+                this.player.body.moves = false;
+                if (this.player.anims) this.player.anims.stop();
+            }
+
+            // 몬스터 정지
+            this.updateMonsters(this.time.now);
+
             return;
         }
+
+        // 컷씬 종료 → 이동 허용
+        if (this.player?.body) this.player.body.moves = true;
+        this.monsters.children.iterate(m => {
+            if (m?.body) m.body.moves = true;
+        });
 
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
         if (this.player?.isDead) return;
@@ -619,7 +676,7 @@ export default class Center3 extends Phaser.Scene {
 
         const boss = this.boss.getFirstAlive();
         ChooseNextSkill(this);
-        
+
         if (boss && boss.hp <= 0) {
             if (!this.scene.get('Center3')) this.scene.add('Center3', Center3);
 
@@ -679,7 +736,7 @@ export default class Center3 extends Phaser.Scene {
             // 🔥 키를 누르고 있는 동안 지속 발사
             if (phaserKey.isDown) {
                 if (!skill.active) {
-                    skill.tryCast(this, this.player);
+                    skill.tryCast(this, this.player, this.skillLevel[this.skillState[skillName]]);
                 }
             }
 
@@ -1586,6 +1643,30 @@ export default class Center3 extends Phaser.Scene {
 
     /** 몬스터 동작 */
     updateMonsters(now) {
+        if (this.cutsceneLock) {
+            this.monsters.children.iterate((m) => {
+                if (!m || !m.active || !m.body) return;
+
+                // 이동 관련 모든 물리 속성 초기화
+                m.body.setVelocity(0, 0);
+                m.body.setAcceleration(0, 0);
+                m.body.setDrag(1000, 1000);   // 급정지 효과
+                m.body.moves = false;         // 이동 자체 비활성화
+            });
+            if (this.boss) {
+                this.boss.children.iterate((b) => {
+                    if (!b || !b.active || !b.body) return;
+
+                    // 이동 관련 모든 물리 속성 초기화
+                    b.body.setVelocity(0, 0);
+                    b.body.setAcceleration(0, 0);
+                    b.body.setDrag(1000, 1000);   // 급정지 효과
+                    b.body.moves = false;         // 이동 자체 비활성화
+                });
+            }
+            return;
+        }
+
         // 몬스터 그룹 순회
         this.monsters.children.iterate((m) => {
             if (!m || !m.active) return;
@@ -1625,6 +1706,7 @@ export default class Center3 extends Phaser.Scene {
 
         if (this.boss) {
             this.boss.children.iterate((m) => {
+                if (m.body.moves == false) m.body.moves = true;
                 if (!m || !m.active) return;
                 // 2) 얼음(빙결) 상태면 멈춤
                 if (m.isFrozen) {

@@ -4,7 +4,7 @@ import { applyVFX } from "../utils/SkillVFX.js";
 
 export class FlameB extends FireSkillBase {
 
-  cast(scene, caster) {
+  cast(scene, caster, level) {
 
     const dir = this.getDir(caster);
 
@@ -35,7 +35,7 @@ export class FlameB extends FireSkillBase {
       x: ox1,
       y: oy1,
       radius,
-      dmg: this.getDamage(),
+      dmg: this.getDamage(level),
       onHit: () => this.shakeCameraOnHit(scene)
     });
 
@@ -56,31 +56,31 @@ export class FlameB extends FireSkillBase {
       x: ox2,
       y: oy2,
       radius,
-      dmg: this.getDamage(),
+      dmg: this.getDamage(level),
       onHit: () => this.shakeCameraOnHit(scene)
     });
 
     // ===== 🔥 도트 데미지 =====
-      // 1타 dot
-      const interval = duration / 6; // 원본 로직 유지
-      scene.applyDotArea({
-        x: ox1,
-        y: oy1,  
-        radius: radius,
-        tickDmg: tickDmg,
-        duration: duration,
-        interval: interval,
-      });
+    // 1타 dot
+    const interval = duration / 6; // 원본 로직 유지
+    scene.applyDotArea({
+      x: ox1,
+      y: oy1,
+      radius: radius,
+      tickDmg: tickDmg,
+      duration: duration,
+      interval: interval,
+    });
 
-      // 2타 dot
-      scene.applyDotArea({
-        x: ox2,
-        y: oy2,  
-        radius: radius,
-        tickDmg: tickDmg,
-        duration: duration,
-        interval: interval,
-      });
+    // 2타 dot
+    scene.applyDotArea({
+      x: ox2,
+      y: oy2,
+      radius: radius,
+      tickDmg: tickDmg,
+      duration: duration,
+      interval: interval,
+    });
 
 
     // ===== 🔥 애니메이션 종료 후 safe destroy =====

@@ -3,7 +3,7 @@ import { FireSkillBase } from "./FireSkillBase.js";
 import { applyVFX } from "../utils/SkillVFX.js";
 
 export class DeathHand extends FireSkillBase {
-  cast(scene, caster) {
+  cast(scene, caster, level) {
     const dir = this.getDir(caster);
 
     const dist = this.base.distance ?? 120;
@@ -48,7 +48,7 @@ export class DeathHand extends FireSkillBase {
           x: ox,
           y: oy,
           radius,
-          dmg: this.getDamage(),
+          dmg: this.getDamage(level),
           onHit: () => this.shakeCameraOnHit(scene)
         });
       }

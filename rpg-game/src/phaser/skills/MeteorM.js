@@ -3,7 +3,7 @@ import { FireSkillBase } from "./FireSkillBase.js";
 import { applyVFX } from "../utils/SkillVFX.js";
 
 export class MeteorM extends FireSkillBase {
-  cast(scene, caster) {
+  cast(scene, caster, level) {
     const dir = this.getDir(caster);
     const facingX = dir.x >= 0 ? 1 : -1;
 
@@ -55,7 +55,7 @@ export class MeteorM extends FireSkillBase {
               x: landX,
               y: landY,
               radius: this.getScaledRadius(radius),
-              dmg: this.getDamage(),
+              dmg: this.getDamage(level),
               onHit: () => this.shakeCameraOnHit(scene),
             });
           },

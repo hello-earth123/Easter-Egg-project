@@ -101,7 +101,7 @@ export const CFG = {
     cd: 60000,
 
     duration: 10000,
-    
+
     damageMultiplier: 1.2,
     manaCostMultiplier: 1.3,
 
@@ -122,7 +122,7 @@ export const CFG = {
     costScale: 0.1,
     cd: 900,
 
-    distance: 200,
+    distance: 150,
     radius: 60,
     tickDmg: 10,
     duration: 3000,
@@ -144,7 +144,7 @@ export const CFG = {
     costScale: 0.1,
     cd: 1200,
 
-    distance: 250,
+    distance: 150,
     radius: 60,
     tickDmg: 12,
     duration: 3500,
@@ -166,7 +166,7 @@ export const CFG = {
     costScale: 0.12,
     cd: 4800,
 
-    distance: 200,
+    distance: 150,
     radius: 70,
     tickDmg: 14,
     duration: 1200,

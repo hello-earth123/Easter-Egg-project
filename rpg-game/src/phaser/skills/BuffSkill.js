@@ -3,7 +3,7 @@ import { FireSkillBase } from "./FireSkillBase.js";
 import { applyVFX } from "../utils/SkillVFX.js";
 
 export class BuffSkill extends FireSkillBase {
-  cast(scene, caster) {
+  cast(scene, caster, level) {
 
     // === 버프 스프라이트 생성 ===
     const fx = scene.add.sprite(caster.x, caster.y - 30, "buff");
@@ -39,8 +39,8 @@ export class BuffSkill extends FireSkillBase {
     // ==================================
     // 버프 능력치 적용 (1분 지속)
     // ==================================
-    const damageMultiplier = 1.0 + (0.20 + (this.level) * 0.05);
-    const manaCostMultiplier = 1.0 + (0.30 + (this.level) * 0.01);
+    const damageMultiplier = 1.0 + (0.20 + (level) * 0.05);
+    const manaCostMultiplier = 1.0 + (0.30 + (level) * 0.01);
 
     const stats = scene.playerStats;
 
@@ -72,7 +72,7 @@ export class BuffSkill extends FireSkillBase {
     stats.buffDamageMultiplier = damageMultiplier;
     stats.buffManaCostMultiplier = manaCostMultiplier;
 
-        // ✅ 씬이 꺼질 때 버프가 영구로 남지 않게 강제 정리
+    // ✅ 씬이 꺼질 때 버프가 영구로 남지 않게 강제 정리
     const cleanupBuffOnSceneExit = () => {
       // 타이머 정리
       if (stats.buffTimer) {

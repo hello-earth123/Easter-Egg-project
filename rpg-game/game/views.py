@@ -98,7 +98,7 @@ def nowLocation(request, userId):
     return Response(serializer.data)
 
 
-@api_view(['PUT'])
+@api_view(["PUT"])
 def save(request, userId):
     data = request.data
 
@@ -106,51 +106,54 @@ def save(request, userId):
     user = User.objects.get(pk=userId)
 
     account = player.objects.get(user=user)
-    stats = data.get('stats', {})
+    stats = data.get("stats", {})
 
-    account.level = stats.get('level', account.level)
-    account.exp = stats.get('exp', account.exp)
+    account.level = stats.get("level", account.level)
+    account.exp = stats.get("exp", account.exp)
 
-    account.maxHP = stats.get('maxHp', account.maxHP)
-    account.currentHP = stats.get('hp', account.currentHP)
-    account.maxMP = stats.get('maxMp', account.maxMP)
-    account.currentMP = stats.get('mp', account.currentMP)
-    
-    account.staffDamage = stats.get('damage', account.staffDamage)
-    account.staffCoolReduce = stats.get('cooldown', account.staffCoolReduce)
-    account.staffManaReduce = stats.get('manaCost', account.staffManaReduce)
-    account.staffDefense = stats.get('defense', account.staffDefense)
-    account.staffLuk = stats.get('luck', account.staffLuk)
-    account.point = stats.get('point', account.point)
+    account.maxHP = stats.get("maxHp", account.maxHP)
+    account.currentHP = stats.get("hp", account.currentHP)
+    account.maxMP = stats.get("maxMp", account.maxMP)
+    account.currentMP = stats.get("mp", account.currentMP)
 
-    account.damageGem = stats.get('damageGem', account.damageGem)
-    account.coolReduceGem = stats.get('cooldownGem', account.coolReduceGem)
-    account.manaReduceGem = stats.get('manaCostGem', account.manaReduceGem)
-    account.defenseGem = stats.get('defenseGem', account.defenseGem)
-    account.lukGem = stats.get('luckGem', account.lukGem)
+    account.staffDamage = stats.get("damage", account.staffDamage)
+    account.staffCoolReduce = stats.get("cooldown", account.staffCoolReduce)
+    account.staffManaReduce = stats.get("manaCost", account.staffManaReduce)
+    account.staffDefense = stats.get("defense", account.staffDefense)
+    account.staffLuk = stats.get("luck", account.staffLuk)
+    # 스탯포인트 계산 방식 변경으로 잔류 포인트에서 컷씬 확인용 값으로 변경
+    account.point = stats.get("cutScene", account.point)
 
-    account.nowLocation = data.get('scene', account.nowLocation)
+    account.damageGem = stats.get("damageGem", account.damageGem)
+    account.coolReduceGem = stats.get("cooldownGem", account.coolReduceGem)
+    account.manaReduceGem = stats.get("manaCostGem", account.manaReduceGem)
+    account.defenseGem = stats.get("defenseGem", account.defenseGem)
+    account.lukGem = stats.get("luckGem", account.lukGem)
+
+    account.nowLocation = data.get("scene", account.nowLocation)
     account.save()
 
     inventory = Inventory.objects.get(user=user)
 
-    inventory.invenItem = data.get('inventory', {}).get('inventory').get('items', inventory.invenItem)
+    inventory.invenItem = (
+        data.get("inventory", {}).get("inventory").get("items", inventory.invenItem)
+    )
     inventory.save()
 
     slot = Slot.objects.get(user=user)
-    slot.skillSlots = data.get('slots', {}).get('skillSlots', slot.skillSlots)
+    slot.skillSlots = data.get("slots", {}).get("skillSlots", slot.skillSlots)
     print(slot.skillSlots)
-    slot.itemSlots = data.get('slots', {}).get('itemSlots', slot.itemSlots)
+    slot.itemSlots = data.get("slots", {}).get("itemSlots", slot.itemSlots)
     slot.save()
 
     skill = SkillLevel.objects.get(user=user)
-    skill.skillLev = data.get('skill', skill.skillLev)
+    skill.skillLev = data.get("skill", skill.skillLev)
     skill.save()
 
-    return Response({'status': 'saved'})
+    return Response({"status": "saved"})
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def skillLev(request, userId):
     User = get_user_model()
     user = User.objects.get(pk=userId)

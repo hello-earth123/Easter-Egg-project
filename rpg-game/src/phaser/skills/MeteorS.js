@@ -4,7 +4,7 @@ import { applyVFX } from "../utils/SkillVFX.js";
 
 export class MeteorS extends FireSkillBase {
 
-  cast(scene, caster) {
+  cast(scene, caster, level) {
 
     const dir = this.getDir(caster);
     const facingX = dir.x >= 0 ? 1 : -1;
@@ -58,7 +58,7 @@ export class MeteorS extends FireSkillBase {
               x: landX,
               y: landY,
               radius: this.getScaledRadius(radius),
-              dmg: this.getDamage(),
+              dmg: this.getDamage(level),
               onHit: () => this.shakeCameraOnHit(scene),
             });
           }

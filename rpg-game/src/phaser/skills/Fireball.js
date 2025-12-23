@@ -4,7 +4,7 @@ import { applyVFX } from "../utils/SkillVFX.js";
 
 export class Fireball extends FireSkillBase {
 
-  cast(scene, caster) {
+  cast(scene, caster, level) {
     const dir = this.getDir(caster);
 
     // 발사 시작 위치
@@ -34,7 +34,7 @@ export class Fireball extends FireSkillBase {
     b.setVelocity(dir.x * speed, dir.y * speed);
 
     // === 🔥 충돌 데미지 ===
-    b.damage = this.getDamage();
+    b.damage = this.getDamage(level);
 
     // === 🔥 카메라 흔들림 콜백 유지 ===
     b.onHit = () => this.shakeCameraOnHit(scene);

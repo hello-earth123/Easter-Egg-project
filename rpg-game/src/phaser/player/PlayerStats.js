@@ -65,6 +65,8 @@ export class PlayerStats {
 
     this.skillPoints = 0;
 
+    this.cutScene = data.point;
+
     playerInstance = this;
   }
 

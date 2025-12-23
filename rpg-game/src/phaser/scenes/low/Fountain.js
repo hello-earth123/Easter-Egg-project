@@ -120,6 +120,25 @@ export default class Fountain extends Phaser.Scene {
             luckGemHigh: '상급 보석 (행운)',
             luckGemSuper: '특급 보석 (행운)',
         }
+
+        this.safeSpawnPoints = [[800, 1100]];
+
+        this.skillLevel;
+
+        this.skillState = {
+            fireball: "skill1",
+            buff: "skill2",
+            flameA: "skill3",
+            flameB: "skill4a",
+            firebomb: "skill4b",
+            flameC: "skill5a",
+            incendiary: "skill5b",
+            meteor_S: "skill6",
+            meteor_M: "skill7",
+            meteor_L: "skill8a",
+            napalm: "skill8b",
+            deathhand: "skill9",
+        };
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -239,7 +258,7 @@ export default class Fountain extends Phaser.Scene {
         this.player.isCasting = false;
 
         // 컷씬 때 움직이지 못하게 하기
-        this.cutsceneLock = false;
+        this.cutsceneLock = true;
 
         // 넉백 변수
         this.player.isKnockback = false;
@@ -334,9 +353,7 @@ export default class Fountain extends Phaser.Scene {
             bullet.destroy();
         });
 
-        if (this.playerStats.totalPoint == 0) {
-            spawnMonsters(this);
-        }
+
 
         // 방향키에 대한 객체 생성
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -377,7 +394,6 @@ export default class Fountain extends Phaser.Scene {
             spawnLightning(this, x, y, radius, dmg);
         this.spawnHitFlash = (x, y) => spawnHitFlash(this, x, y);
 
-        console.log(6)
         createFireSkillAnims(this);
 
         this.count = 0;
@@ -456,10 +472,10 @@ export default class Fountain extends Phaser.Scene {
 
         // 게임 시작 자동 컷씬 스크립트
         const introScript = [
-            { cmd: "say", text: "프라가라흐: '오.. 저 몬스터는 아주 희귀한 몬스터지.'" },
-            { cmd: "say", text: "프라가라흐: '모든 몬스터는 잡을 시 일정한 확률로 보석을 드랍하지만 저 녀석은 무조건 보석을 드랍한다고.'" },
-            { cmd: "say", text: "프라가라흐: '인벤토리 창에 있는 보석을 사용하면 더 강해질 수 있지..'" },
-            { cmd: "say", text: "프라가라흐: '자 어서 빨리 저 몬스터를 잡아 보석을 사용해봐!'" },
+            { cmd: "say", text: "프라가라흐: 오! 이곳에서 저렇게나 희귀한 몬스터를 만날 줄이야!." },
+            { cmd: "say", text: "프라가라흐: 모든 몬스터는 일정 확률로 보석을 드랍하지. 하지만 저 녀석은 무조건 보석을 드랍한다고!." },
+            { cmd: "say", text: "프라가라흐: 인벤토리 창에 있는 보석을 사용하면 더 강해질 수 있지…." },
+            { cmd: "say", text: "프라가라흐: 자 어서 저 몬스터를 잡아 보석을 사용해봐!." },
 
             { cmd: "wait", time: 400 },
 
@@ -468,7 +484,13 @@ export default class Fountain extends Phaser.Scene {
 
         // 씬 로딩 0.5초 후 자동 실행
         this.time.delayedCall(500, () => {
-            this.cutscene.play(introScript);
+            if ((this.playerStats.cutScene & 1 << 2) == 0) {
+                this.cutscene.play(introScript);
+                this.playerStats.cutScene += (1 << 2);
+            }
+            else {
+                this.cutsceneLock = false;
+            }
         });
     }
     // ===========================================================================
@@ -509,7 +531,6 @@ export default class Fountain extends Phaser.Scene {
 
         // 시스템 메세지 출력
         this.textBar = `${skillName} 스킬 레벨업! (Lv${skill.level})`;
-        console.log(skill.level)
 
         return true;
     }
@@ -533,8 +554,7 @@ export default class Fountain extends Phaser.Scene {
         const prevActive = skill.active;
 
         //  실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
-        skill.tryCast(this, this.player);
-
+        skill.tryCast(this, this.player, this.skillLevel[this.skillState[name]]);
         // --- 진짜로 "시전이 된 건지" 판별 ---
         let castSuccess = false;
 
@@ -574,8 +594,6 @@ export default class Fountain extends Phaser.Scene {
     useItemShortcut(idx) {
         const slot = this.slotData.itemSlots[idx];
 
-        console.log(slot)
-
         // slot이 빈 경우, 시스템 메세지 출력 및 미동작
         if (!slot) return (this.textBar = "단축키에 아이템 없음");
 
@@ -597,7 +615,6 @@ export default class Fountain extends Phaser.Scene {
     update(time, delta) {
         // 컷씬 중에는 모든 조작 차단 + 몬스터도 멈춤
         if (this.cutsceneLock) {
-
             // 플레이어 정지
             if (this.player?.body) {
                 this.player.setVelocity(0, 0);
@@ -666,7 +683,7 @@ export default class Fountain extends Phaser.Scene {
             // 키를 누르고 있는 동안 지속 발사
             if (phaserKey.isDown) {
                 if (!skill.active) {
-                    skill.tryCast(this, this.player);
+                    skill.tryCast(this, this.player, this.skillLevel[this.skillState[skillName]]);
                 }
             }
 
@@ -1434,7 +1451,6 @@ export default class Fountain extends Phaser.Scene {
                         it.setTexture(def.name)
                         // 아이템 드랍 사운드
                         this.SoundManager.playItemDrop();
-                        console.log(it.getData('pickDef'))
                     })
 
                 }
@@ -1735,7 +1751,6 @@ export default class Fountain extends Phaser.Scene {
         })
             .then(res => res.json())
             .then(() => {
-                console.log("게임 저장 완료!");
                 this.textBar = "게임이 저장되었습니다!";
             })
             .catch(err => console.error(err));

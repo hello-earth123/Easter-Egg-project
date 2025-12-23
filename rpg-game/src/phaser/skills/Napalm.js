@@ -3,7 +3,7 @@ import { FireSkillBase } from "./FireSkillBase.js";
 import { applyVFX } from "../utils/SkillVFX.js";
 
 export class Napalm extends FireSkillBase {
-  cast(scene, caster) {
+  cast(scene, caster, level) {
     const dir = this.getDir(caster);
 
     const dist = this.base.distance ?? 150;
@@ -30,7 +30,7 @@ export class Napalm extends FireSkillBase {
       x: ox,
       y: oy,
       radius: this.getScaledRadius(radius),
-      dmg: this.getDamage(),
+      dmg: this.getDamage(level),
       onHit: () => this.shakeCameraOnHit(scene)
     });
 

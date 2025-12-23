@@ -9,7 +9,7 @@ export class FireBomb extends FireSkillBase {
     return this.scaledDamage(this.base.baseDmg);
   }
 
-  cast(scene, caster) {
+  cast(scene, caster, level) {
 
     const dir = this.getDir(caster);
 
@@ -31,7 +31,7 @@ export class FireBomb extends FireSkillBase {
 
     const radius = this.base.radius ?? 100;
 
-    let damageApplied = false; 
+    let damageApplied = false;
     let didHitMonster = false;
 
     // === 🔥 기존 FireBomb 핵심 기능: 9프레임 정확 판정 ===
@@ -39,7 +39,7 @@ export class FireBomb extends FireSkillBase {
       if (!damageApplied && frame.index === 9) {
         damageApplied = true;
 
-        let dmg = this.getDamage();
+        let dmg = this.getDamage(level);
 
         scene.monsters.children.iterate(mon => {
           if (!mon || !mon.active) return;
@@ -56,39 +56,39 @@ export class FireBomb extends FireSkillBase {
           scene.onMonsterAggro(mon);
         });
 
-        if (scene.boss){
-            scene.boss.children.iterate(b => {
-              if (!b || !b.active) return;
+        if (scene.boss) {
+          scene.boss.children.iterate(b => {
+            if (!b || !b.active) return;
 
-              const dx = b.x - x;
-              const dy = b.y - y;
-              if (dx * dx + dy * dy > radius * radius) return;
+            const dx = b.x - x;
+            const dy = b.y - y;
+            if (dx * dx + dy * dy > radius * radius) return;
 
-              didHitMonster = true;
+            didHitMonster = true;
 
-              const servuntC = scene.monsters.getLength();
-              dmg -= Math.round(dmg * servuntC / 10);
+            const servuntC = scene.monsters.getLength();
+            dmg -= Math.round(dmg * servuntC / 10);
 
-              if (b.doReflect){
-                dmg = Math.round(dmg - (dmg / 2));
-    
-                // 반사딜로 죽지 않음
-                if (scene.playerStats.hp > dmg){
-                    scene.playerStats.hp -= dmg;
-                    // 플레이어 피격 sound
-                    scene.SoundManager.playMonsterAttack();
-                    // 피격 데미지 출력 (빨간색)
-                    scene.showDamageText(scene.player, dmg, "#ff3333");
-                    // 피격 효과 (카메라, 색상)
-                    scene.cameras.main.shake(
-                        CFG.playerKB.shake.duration,
-                        CFG.playerKB.shake.intensity
-                    );
-                    scene.player.setTint(0xff6666);
-                    scene.time.delayedCall(CFG.playerKB.invulMs, () => {
-                        if (scene.player) scene.player.clearTint();
-                    });
-                }
+            if (b.doReflect) {
+              dmg = Math.round(dmg - (dmg / 2));
+
+              // 반사딜로 죽지 않음
+              if (scene.playerStats.hp > dmg) {
+                scene.playerStats.hp -= dmg;
+                // 플레이어 피격 sound
+                scene.SoundManager.playMonsterAttack();
+                // 피격 데미지 출력 (빨간색)
+                scene.showDamageText(scene.player, dmg, "#ff3333");
+                // 피격 효과 (카메라, 색상)
+                scene.cameras.main.shake(
+                  CFG.playerKB.shake.duration,
+                  CFG.playerKB.shake.intensity
+                );
+                scene.player.setTint(0xff6666);
+                scene.time.delayedCall(CFG.playerKB.invulMs, () => {
+                  if (scene.player) scene.player.clearTint();
+                });
+              }
             }
             b.hp -= dmg;
             scene.showDamageText(b, dmg, "#ffff66");

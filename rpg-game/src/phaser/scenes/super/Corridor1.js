@@ -123,6 +123,23 @@ export default class Corridor1 extends Phaser.Scene {
         }
 
         this.safeSpawnPoints = [[300, 600], [600, 650], [900, 600], [1200, 650]];
+
+        this.skillLevel;
+
+        this.skillState = {
+            fireball: "skill1",
+            buff: "skill2",
+            flameA: "skill3",
+            flameB: "skill4a",
+            firebomb: "skill4b",
+            flameC: "skill5a",
+            incendiary: "skill5b",
+            meteor_S: "skill6",
+            meteor_M: "skill7",
+            meteor_L: "skill8a",
+            napalm: "skill8b",
+            deathhand: "skill9",
+        };
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -566,8 +583,7 @@ export default class Corridor1 extends Phaser.Scene {
         const prevActive = skill.active;
 
         //  실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
-        skill.tryCast(this, this.player);
-
+        skill.tryCast(this, this.player, this.skillLevel[this.skillState[name]]);
         // --- 진짜로 "시전이 된 건지" 판별 ---
         let castSuccess = false;
 
@@ -697,7 +713,7 @@ export default class Corridor1 extends Phaser.Scene {
             // 키를 누르고 있는 동안 지속 발사
             if (phaserKey.isDown) {
                 if (!skill.active) {
-                    skill.tryCast(this, this.player);
+                    skill.tryCast(this, this.player, this.skillLevel[this.skillState[skillName]]);
                 }
             }
 

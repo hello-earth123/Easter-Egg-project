@@ -17,40 +17,40 @@ export class SkillBase {
 
     // ---- 스케일 계산 ----
     // SkillBase.js
-    scaledDamage(base) {
-    // 1) 스킬 레벨 기반 성장
-    const perLevel = this.base?.dmgScale ?? 0.15;
-    const levelScaleSkill = 1 + perLevel * (this.level - 1);
+    scaledDamage(base, level) {
+        // 1) 스킬 레벨 기반 성장
+        const perLevel = this.base?.dmgScale ?? 0.15;
+        const levelScaleSkill = 1 + perLevel * level;
 
-    const stats = this.lastScene?.playerStats;
+        const stats = this.lastScene?.playerStats;
 
-    // 🔹 플레이어의 baseDamage(무기/레벨 성장)을 base에 더해줌
-    const baseWeaponDamage = stats?.baseDamage || 0;
+        // 🔹 플레이어의 baseDamage(무기/레벨 성장)을 base에 더해줌
+        const baseWeaponDamage = stats?.baseDamage || 0;
 
-    // 👉 "스킬 기본 데미지 + 무기/레벨 기반 데미지" 를 합쳐서 스킬 레벨 보정
-    let value = (base + baseWeaponDamage) * levelScaleSkill;
+        // 👉 "스킬 기본 데미지 + 무기/레벨 기반 데미지" 를 합쳐서 스킬 레벨 보정
+        let value = (base + baseWeaponDamage) * levelScaleSkill;
 
-    if (stats) {
-        // 2) 버튼/젬으로 찍는 damage 스탯
-        const damageStat =
-        (stats.damage || 0) +
-        (stats.damageGem || 0);
+        if (stats) {
+            // 2) 버튼/젬으로 찍는 damage 스탯
+            const damageStat =
+                (stats.damage || 0) +
+                (stats.damageGem || 0);
 
-        const damageScale = 1 + damageStat * 0.02;
+            const damageScale = 1 + damageStat * 0.02;
 
-        // 3) 플레이어 레벨 보정 (이미 넣어놨다면 유지)
-        const playerLevel = stats.level || 1;
-        const levelScalePlayer = 1 + Math.max(0, playerLevel - 1) * 0.03;
+            // 3) 플레이어 레벨 보정 (이미 넣어놨다면 유지)
+            const playerLevel = stats.level || 1;
+            const levelScalePlayer = 1 + Math.max(0, playerLevel - 1) * 0.03;
 
-        value *= damageScale * levelScalePlayer;
-    }
+            value *= damageScale * levelScalePlayer;
+        }
 
-    // 버프(데미지 증가) 반영
-    if (stats?.damageMultiplier) {
-        value *= stats.damageMultiplier;
-    }
+        // 버프(데미지 증가) 반영
+        if (stats?.damageMultiplier) {
+            value *= stats.damageMultiplier;
+        }
 
-    return Math.floor(value);
+        return Math.floor(value);
     }
 
 
@@ -118,14 +118,14 @@ export class SkillBase {
         }
 
         // 🔥 Vue / TestScene2와 연동되는 필드들
-        this.cooldown  = cd / 1000;        // 초 단위 → Vue에서 *1000
+        this.cooldown = cd / 1000;        // 초 단위 → Vue에서 *1000
         this.lastCastAt = scene.time.now;  // TestScene2에서 성공 판정용
 
         // 숫자 쿨타임 / hasCooldown용 ms 단위
         this.onCooldownUntil = scene.time.now + cd;
     }
-    
-    tryCast(scene, caster) {
+
+    tryCast(scene, caster, level) {
 
         // 🔥 여기서 마지막 scene 기억 → scaledDamage/Cost 에서 사용
         this.lastScene = scene;
@@ -148,7 +148,7 @@ export class SkillBase {
         this.startCooldown(scene);
 
         // 5) 스킬 실제 발동
-        this.cast(scene, caster);
+        this.cast(scene, caster, level);
     }
 
     // 개별 스킬이 override 해야함

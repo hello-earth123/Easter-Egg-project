@@ -15,8 +15,8 @@ export class FireSkillBase extends SkillBase {
     }
 
     // 🔥 여기서는 단순히 스케일러만 호출
-    getDamage() {
-        return this.scaledDamage(this.base.baseDmg || 0);
+    getDamage(level) {
+        return this.scaledDamage(this.base.baseDmg || 0, level);
     }
 
     getManaCost() {

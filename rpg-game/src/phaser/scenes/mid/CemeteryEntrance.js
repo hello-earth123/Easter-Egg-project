@@ -124,6 +124,23 @@ export default class CemeteryEntrance extends Phaser.Scene {
         }
 
         this.safeSpawnPoints = [[400, 900], [1200, 1100], [400, 600], [1200, 750], [800, 600]];
+
+        this.skillLevel;
+
+        this.skillState = {
+            fireball: "skill1",
+            buff: "skill2",
+            flameA: "skill3",
+            flameB: "skill4a",
+            firebomb: "skill4b",
+            flameC: "skill5a",
+            incendiary: "skill5b",
+            meteor_S: "skill6",
+            meteor_M: "skill7",
+            meteor_L: "skill8a",
+            napalm: "skill8b",
+            deathhand: "skill9",
+        };
     }
 
     // preload() : 유니티의 Awake()와 같이 Scene이 시작되기 전, resource를 로드
@@ -243,7 +260,7 @@ export default class CemeteryEntrance extends Phaser.Scene {
         this.player.isCasting = false;
 
         // 컷씬 때 움직이지 못하게 하기
-        this.cutsceneLock = false;
+        this.cutsceneLock = true;
 
         // 넉백 변수
         this.player.isKnockback = false;
@@ -456,7 +473,7 @@ export default class CemeteryEntrance extends Phaser.Scene {
 
         // 게임 시작 자동 컷씬 스크립트
         const introScript = [
-            { cmd: "say", text: "이프리트: \"마법 도시 근처에 이렇게나 큰 구조물이 있는데 아무도 몰랐다고..?\"" },
+            { cmd: "say", text: "이프리트: 마법 도시 근처에 이렇게나 큰 건축물이 있는데 아무도 몰랐다고…?" },
 
             { cmd: "wait", time: 400 },
 
@@ -467,7 +484,13 @@ export default class CemeteryEntrance extends Phaser.Scene {
 
         // 씬 로딩 0.5초 후 자동 실행
         this.time.delayedCall(500, () => {
-            this.cutscene.play(introScript);
+            if ((this.playerStats.cutScene & 1 << 3) == 0) {
+                this.cutscene.play(introScript);
+                this.playerStats.cutScene += (1 << 3);
+            }
+            else {
+                this.cutsceneLock = false;
+            }
         });
     }
     // ===========================================================================
@@ -531,8 +554,7 @@ export default class CemeteryEntrance extends Phaser.Scene {
         const prevActive = skill.active;
 
         //  실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
-        skill.tryCast(this, this.player);
-
+        skill.tryCast(this, this.player, this.skillLevel[this.skillState[name]]);
         // --- 진짜로 "시전이 된 건지" 판별 ---
         let castSuccess = false;
 
@@ -593,7 +615,6 @@ export default class CemeteryEntrance extends Phaser.Scene {
     update(time, delta) {
         // 컷씬 중에는 모든 조작 차단 + 몬스터도 멈춤
         if (this.cutsceneLock) {
-
             // 플레이어 정지
             if (this.player?.body) {
                 this.player.setVelocity(0, 0);
@@ -662,7 +683,7 @@ export default class CemeteryEntrance extends Phaser.Scene {
             // 키를 누르고 있는 동안 지속 발사
             if (phaserKey.isDown) {
                 if (!skill.active) {
-                    skill.tryCast(this, this.player);
+                    skill.tryCast(this, this.player, this.skillLevel[this.skillState[skillName]]);
                 }
             }
 
