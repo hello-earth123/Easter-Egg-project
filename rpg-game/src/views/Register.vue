@@ -85,6 +85,19 @@
       <footer class="footer">
         <span class="footer-text">© Pragarach — Create your legend</span>
       </footer>
+
+    <!-- ✅ 이메일 인증 안내 모달 -->
+    <div v-if="showVerifyModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="이메일 인증 안내">
+      <div class="modal">
+        <h3 class="modal-title">이메일 인증 필요</h3>
+        <p class="modal-text">이메일을 통해서 인증해주세요.</p>
+        <button class="btn primary" type="button" @click="onConfirmVerify">
+          <span class="btn-glow" aria-hidden="true"></span>
+          확인
+        </button>
+      </div>
+    </div>
+
     </main>
   </div>
 </template>
@@ -125,7 +138,8 @@ export default {
       },
       statusMessage: "",
       isLoading: false,
-      isOk: true
+      isOk: true,
+      showVerifyModal: false
     };
   },
   computed: {
@@ -147,7 +161,12 @@ export default {
     startAuthBgm() {
       const bgm = getAuthBgm();
       if (bgm.paused) {
-        bgm.play().catch(() => {});
+        const p = bgm.play();
+        if (p && p.catch) {
+          p.catch(() => {
+            this.bindAuthBgmUnlock();
+          });
+        }
       }
     },
     stopAuthBgm() {
@@ -170,6 +189,11 @@ export default {
     onClearForm() {
       this.playUiClick();
       this.clearForm();
+    },
+    onConfirmVerify() {
+      this.playUiClick();
+      this.showVerifyModal = false;
+      this.$router.push("/login");
     },
 clearForm() {
       this.form.username = "";
@@ -216,8 +240,8 @@ clearForm() {
           // ✅ 회원가입 성공 → 로그인 화면으로 이동 (기존 기능 유지)
           this.statusMessage = "새로운 불꽃의 서약이 등록되었습니다. 로그인으로 이동합니다…";
           this.isOk = true;
-          this.$router.push("/login");
-        } else {
+          this.showVerifyModal = true;
+} else {
           this.statusMessage = this.normalizeError(data);
           this.isOk = false;
         }
@@ -568,4 +592,38 @@ clearForm() {
     grid-template-columns: 1fr;
   }
 }
+
+/* ✅ 이메일 인증 안내 모달 (2D Pixel RPG 감성 유지) */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 50;
+}
+
+.modal {
+  width: min(520px, 92vw);
+  background: linear-gradient(180deg, rgba(22, 10, 20, 0.95), rgba(10, 6, 16, 0.97));
+  border: 4px solid rgba(0, 0, 0, 0.82);
+  box-shadow: 0 16px 0 rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(255, 106, 0, 0.22) inset;
+  border-radius: 14px;
+  padding: 18px 16px 16px;
+}
+
+.modal-title {
+  margin: 0 0 10px;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+}
+
+.modal-text {
+  margin: 0 0 12px;
+  font-size: 10px;
+  line-height: 1.7;
+  opacity: 0.92;
+}
+
 </style>

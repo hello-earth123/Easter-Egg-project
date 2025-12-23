@@ -120,25 +120,9 @@ export default {
       return Boolean(this.form.email) && Boolean(this.form.password);
     }
   },
-
   mounted() {
     this.startAuthBgm();
-
-    // autoplay 막히는 케이스 대비: 첫 사용자 입력에서 BGM unlock
-    const unlock = () => {
-      this.startAuthBgm();
-      window.removeEventListener("pointerdown", unlock, true);
-      window.removeEventListener("keydown", unlock, true);
-    };
-
-    window.addEventListener("pointerdown", unlock, true);
-    window.addEventListener("keydown", unlock, true);
   },
-  beforeUnmount() {
-    // 혹시 남아있을 수 있으니 안전하게 제거
-    // (이미 제거됐어도 removeEventListener는 안전)
-  },
-
   beforeRouteLeave(to, from, next) {
     if (to?.path === "/game") {
       this.stopAuthBgm();
@@ -154,7 +138,22 @@ export default {
         bgm.play().catch(() => {});
       }
     },
-    stopAuthBgm() {
+    
+    bindAuthBgmUnlock() {
+      // 브라우저 자동재생 정책 때문에 최초 진입 시 재생이 막힐 수 있음
+      if (window.__AUTH_BGM_UNLOCK_BOUND__) return;
+      window.__AUTH_BGM_UNLOCK_BOUND__ = true;
+
+      const unlock = () => {
+        const bgm = getAuthBgm();
+        bgm.play().catch(() => {});
+      };
+
+      window.addEventListener("pointerdown", unlock, { once: true });
+      window.addEventListener("keydown", unlock, { once: true });
+    },
+
+stopAuthBgm() {
       const bgm = window.__AUTH_BGM__;
       if (!bgm) return;
       bgm.pause();
