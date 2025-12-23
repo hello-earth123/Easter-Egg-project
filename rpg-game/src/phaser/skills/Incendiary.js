@@ -32,13 +32,13 @@ export class Incendiary extends FireSkillBase {
     this._tickEvent = scene.time.addEvent({
       delay: 16,
       loop: true,
-      callback: () => this._tick(scene, caster, interval)
+      callback: () => this._tick(scene, caster, interval, level)
     });
 
     scene.textBar = `Incendiary (Hold)`;
   }
 
-  _tick(scene, caster, interval) {
+  _tick(scene, caster, interval, level) {
     if (!this.active) return;
 
     const now = scene.time.now;
@@ -52,7 +52,7 @@ export class Incendiary extends FireSkillBase {
     }
     scene.playerStats.mp -= mpCost;
 
-    this.doDamage(scene, caster);
+    this.doDamage(scene, caster, level);
     this.doEffect(scene, caster);
   }
 
@@ -101,7 +101,7 @@ export class Incendiary extends FireSkillBase {
   // =========================================================
   // 🔥 데미지 판정
   // =========================================================
-  doDamage(scene, caster) {
+  doDamage(scene, caster, level) {
     const direction = this._getDirectionState(caster);
     const dir = this._getDirVector(direction);
 

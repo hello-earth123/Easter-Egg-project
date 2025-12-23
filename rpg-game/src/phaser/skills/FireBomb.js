@@ -5,8 +5,8 @@ import { CFG } from "../config/Config.js";
 
 export class FireBomb extends FireSkillBase {
 
-  getDamage() {
-    return this.scaledDamage(this.base.baseDmg);
+  getDamage(level) {
+    return this.scaledDamage(this.base.baseDmg, level);
   }
 
   cast(scene, caster, level) {
