@@ -122,11 +122,7 @@ export const CFG = {
     costScale: 0.1,
     cd: 2000,
 
-<<<<<<< HEAD
-    distance: 150,
-=======
     distance: 170,
->>>>>>> 256a4af133705d8cf0dc2f339ed3d478eea5e9dc
     radius: 60,
     tickDmg: 10,
     duration: 3000,
@@ -148,11 +144,7 @@ export const CFG = {
     costScale: 0.1,
     cd: 3100,
 
-<<<<<<< HEAD
-    distance: 150,
-=======
     distance: 170,
->>>>>>> 256a4af133705d8cf0dc2f339ed3d478eea5e9dc
     radius: 60,
     tickDmg: 12,
     duration: 3500,
@@ -174,11 +166,7 @@ export const CFG = {
     costScale: 0.12,
     cd: 4100,
 
-<<<<<<< HEAD
-    distance: 150,
-=======
     distance: 170,
->>>>>>> 256a4af133705d8cf0dc2f339ed3d478eea5e9dc
     radius: 70,
     tickDmg: 14,
     duration: 1200,
