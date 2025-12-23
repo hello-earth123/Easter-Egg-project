@@ -33,7 +33,7 @@ import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
 export default class CastleEntrance extends Phaser.Scene {
 
     init(data) {
-        this.userId = data.userId;
+        this.userId = this.registry.get('userId') ?? data.userId;
         this.registry.set('userId', this.userId);
 
         let fromPortal = null;
@@ -493,6 +493,8 @@ export default class CastleEntrance extends Phaser.Scene {
             }
         });
         // === 이 씬이 활성 씬임을 Vue에게 강제로 통보 ===
+
+        this.autosave = false;
     }
     // ===========================================================================
 
@@ -639,6 +641,11 @@ export default class CastleEntrance extends Phaser.Scene {
 
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
         if (this.player?.isDead) return;// 플레이어 죽으면 return
+
+        if (!this.autosave) {
+            this.autosave = true;
+            saveGame(this.userId, this.skillLevel);
+        }
 
         const now = this.time.now;
 

@@ -33,7 +33,7 @@ import CutscenePlayer from "../../cutscene/CutscenePlayer.js";
 export default class Road1 extends Phaser.Scene {
 
     init(data) {
-        this.userId = data.userId;
+        this.userId = this.registry.get('userId') ?? data.userId;
         this.registry.set('userId', this.userId);
 
         let fromPortal = null;
@@ -491,6 +491,8 @@ export default class Road1 extends Phaser.Scene {
                 this.cutsceneLock = false;
             }
         });
+
+        this.autosave = false;
     }
     // ===========================================================================
 
@@ -637,6 +639,11 @@ export default class Road1 extends Phaser.Scene {
 
         if (!this.playerStats) return;  // playerStats 로딩 전 update 차단
         if (this.player?.isDead) return;// 플레이어 죽으면 return
+
+        if (!this.autosave) {
+            this.autosave = true;
+            saveGame(this.userId, this.skillLevel);
+        }
 
         const now = this.time.now;
 
