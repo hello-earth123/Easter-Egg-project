@@ -34,6 +34,7 @@ export function preloadMonsterAnims(scene) {
         {file: 'vampire.png'},
         {file: 'weapon.png'},
         {file: 'wolf.png'},
+        {file: 'hidden.png'},
     ];
 
     for (const m of monsterAnims) {

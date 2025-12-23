@@ -78,16 +78,16 @@ export const CFG = {
 
   // Fireball
   fireball: {
-    baseDmg: 24,
-    dmgScale: 0.15,
-    baseCost: 10,
+    baseDmg: 6,
+    dmgScale: 0.3,
+    baseCost: 7,
     costScale: 0.1,
-    cd: 2000,
+    cd: 777,
     speed: 500,
     frameRate: 14,
 
     // 🔥 연출 관련
-    scale: 3.0,            // 작은 탄
+    scale: 3.3,            // 작은 탄
     vfx: "trail_fast",     // 빠르게 움직이는 발사체
 
     description: "마법에 조예가 있다면 누구나 쓸 수 있는 기초 마법이다.\n 전방으로 작은 불덩이를 쏘아낸다.",
@@ -96,9 +96,9 @@ export const CFG = {
 
   // Buff
   buff: {
-    baseCost: 24,
+    baseCost: 35,
     costScale: 0,
-    cd: 60000,
+    cd: 30000,
 
     duration: 10000,
 
@@ -108,7 +108,7 @@ export const CFG = {
     frameRate: 15,
 
     // 🔥 연출
-    scale: 1.3,
+    scale: 1.4,
     vfx: "buff_aura",
 
     description: "마나의 축복이 있으리라.\n 짧은 시간 스킬의 데미지와 마나 소모량이 증가한다.",
@@ -117,12 +117,16 @@ export const CFG = {
   // Flame A (1타)
   flameA: {
     baseDmg: 30,
-    dmgScale: 0.15,
-    baseCost: 11,
+    dmgScale: 0.08,
+    baseCost: 16,
     costScale: 0.1,
-    cd: 900,
+    cd: 2000,
 
+<<<<<<< HEAD
     distance: 150,
+=======
+    distance: 170,
+>>>>>>> 256a4af133705d8cf0dc2f339ed3d478eea5e9dc
     radius: 60,
     tickDmg: 10,
     duration: 3000,
@@ -139,12 +143,16 @@ export const CFG = {
   // Flame B (1타 + 전방 한 칸 추가)
   flameB: {
     baseDmg: 36,
-    dmgScale: 0.15,
-    baseCost: 14,
+    dmgScale: 0.08,
+    baseCost: 22,
     costScale: 0.1,
-    cd: 1200,
+    cd: 3100,
 
+<<<<<<< HEAD
     distance: 150,
+=======
+    distance: 170,
+>>>>>>> 256a4af133705d8cf0dc2f339ed3d478eea5e9dc
     radius: 60,
     tickDmg: 12,
     duration: 3500,
@@ -161,12 +169,16 @@ export const CFG = {
   // Flame C (십자 5방)
   flameC: {
     baseDmg: 45,
-    dmgScale: 0.2,
-    baseCost: 20,
+    dmgScale: 0.12,
+    baseCost: 26,
     costScale: 0.12,
-    cd: 4800,
+    cd: 4100,
 
+<<<<<<< HEAD
     distance: 150,
+=======
+    distance: 170,
+>>>>>>> 256a4af133705d8cf0dc2f339ed3d478eea5e9dc
     radius: 70,
     tickDmg: 14,
     duration: 1200,
@@ -183,11 +195,11 @@ export const CFG = {
 
   // Firebomb
   firebomb: {
-    baseDmg: 65,
-    dmgScale: 0.20,
-    baseCost: 24,
+    baseDmg: 70,
+    dmgScale: 0.15,
+    baseCost: 40,
     costScale: 0.12,
-    cd: 5500,
+    cd: 3550,
 
     radius: 90,
 
@@ -202,11 +214,11 @@ export const CFG = {
 
   // Incendiary (화염 방사기)
   incendiary: {
-    baseDmg: 22,
+    baseDmg: 44,
     dmgScale: 0.15,
     baseCost: 18,
     costScale: 0.1,
-    cd: 6000,
+    cd: 4400,
 
     tickDmg: 8,
     duration: 2000,
@@ -228,7 +240,7 @@ export const CFG = {
   // Meteor S
   meteor_S: {
     baseDmg: 45,
-    dmgScale: 0.20,
+    dmgScale: 0.10,
     baseCost: 24,
     costScale: 0.1,
     cd: 3200,
@@ -251,7 +263,7 @@ export const CFG = {
   // Meteor M
   meteor_M: {
     baseDmg: 80,
-    dmgScale: 0.22,
+    dmgScale: 0.12,
     baseCost: 30,
     costScale: 0.12,
     cd: 7000,
@@ -274,10 +286,10 @@ export const CFG = {
   // Meteor L
   meteor_L: {
     baseDmg: 90,
-    dmgScale: 0.25,
-    baseCost: 40,
+    dmgScale: 0.12,
+    baseCost: 36,
     costScale: 0.15,
-    cd: 9500,
+    cd: 10000,
 
     fallSpeed: 700,
     count: 6,
@@ -296,7 +308,7 @@ export const CFG = {
   // Napalm (장판)
   napalm: {
     baseDmg: 300,
-    dmgScale: 0.18,
+    dmgScale: 0.3,
     baseCost: 32,
     costScale: 0.12,
     cd: 10000,
@@ -318,8 +330,8 @@ export const CFG = {
 
   // Death Hand
   deathhand: {
-    baseDmg: 400,
-    dmgScale: 0.30,
+    baseDmg: 440,
+    dmgScale: 0.25,
     baseCost: 55,
     costScale: 0.2,
     cd: 10000,
@@ -336,60 +348,60 @@ export const CFG = {
     description: "재능만으로는 닿을 수 없는, 다른 차원의 불꽃을 사용하는 미지의 마법이다.\n 거대한 불의 손으로 적을 뒤덮는다."
   },
 
-  // 몬스터 설정
-  monsters: [
-    {
-      key: "slime",
-      name: "Slime",
-      baseHp: 40,
-      hpExp: 1.1,
-      baseAtk: 4,
-      atkExp: 1.05,
-      expBase: 8,
-      expExp: 1.0,
-      minLevel: 1,
-      maxLevel: 2,
-      count: 5,
-      dropTable: [
-        { id: "potion_hp", name: "HP Potion", chance: 45 },
-        { id: "gold_coin", name: "Gold Coin", chance: 80 },
-      ],
-    },
-    {
-      key: "orc",
-      name: "Orc",
-      baseHp: 90,
-      hpExp: 1.18,
-      baseAtk: 12,
-      atkExp: 1.1,
-      expBase: 18,
-      expExp: 1.08,
-      minLevel: 2,
-      maxLevel: 4,
-      count: 4,
-      dropTable: [
-        { id: "mana_pot", name: "MP Potion", chance: 30 },
-        { id: "gold_coin", name: "Gold Coin", chance: 90 },
-      ],
-    },
-    {
-      key: "dragonling",
-      name: "Dragonling",
-      baseHp: 220,
-      hpExp: 1.25,
-      baseAtk: 24,
-      atkExp: 1.18,
-      expBase: 40,
-      expExp: 1.12,
-      minLevel: 4,
-      maxLevel: 7,
-      count: 3,
-      dropTable: [
-        { id: "rare_gem", name: "Rare Gem", chance: 18 },
-        { id: "elixir", name: "Elixir", chance: 10 },
-      ],
-    },
-  ],
+  // // 몬스터 설정
+  // monsters: [
+  //   {
+  //     key: "slime",
+  //     name: "Slime",
+  //     baseHp: 40,
+  //     hpExp: 1.1,
+  //     baseAtk: 4,
+  //     atkExp: 1.05,
+  //     expBase: 8,
+  //     expExp: 1.0,
+  //     minLevel: 1,
+  //     maxLevel: 2,
+  //     count: 5,
+  //     dropTable: [
+  //       { id: "potion_hp", name: "HP Potion", chance: 45 },
+  //       { id: "gold_coin", name: "Gold Coin", chance: 80 },
+  //     ],
+  //   },
+  //   {
+  //     key: "orc",
+  //     name: "Orc",
+  //     baseHp: 90,
+  //     hpExp: 1.18,
+  //     baseAtk: 12,
+  //     atkExp: 1.1,
+  //     expBase: 18,
+  //     expExp: 1.08,
+  //     minLevel: 2,
+  //     maxLevel: 4,
+  //     count: 4,
+  //     dropTable: [
+  //       { id: "mana_pot", name: "MP Potion", chance: 30 },
+  //       { id: "gold_coin", name: "Gold Coin", chance: 90 },
+  //     ],
+  //   },
+  //   {
+  //     key: "dragonling",
+  //     name: "Dragonling",
+  //     baseHp: 220,
+  //     hpExp: 1.25,
+  //     baseAtk: 24,
+  //     atkExp: 1.18,
+  //     expBase: 40,
+  //     expExp: 1.12,
+  //     minLevel: 4,
+  //     maxLevel: 7,
+  //     count: 3,
+  //     dropTable: [
+  //       { id: "rare_gem", name: "Rare Gem", chance: 18 },
+  //       { id: "elixir", name: "Elixir", chance: 10 },
+  //     ],
+  //   },
+  // ],
 };
 
 /** 레벨 당 필요 경험치 계산 */

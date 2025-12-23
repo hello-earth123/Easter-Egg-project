@@ -98,8 +98,8 @@ export class BuffSkill extends FireSkillBase {
     scene.events.once("shutdown", cleanupBuffOnSceneExit);
     scene.events.once("destroy", cleanupBuffOnSceneExit);
 
-    // === ⏳ 1분(60000ms) 뒤 능력치 복구 ===
-    stats.buffTimer = scene.time.delayedCall(60000, () => {
+    // === ⏳ 1분(30000ms) 뒤 능력치 복구 ===
+    stats.buffTimer = scene.time.delayedCall(30000, () => {
       stats.clearBuff({
         damageMultiplier,
         manaCostMultiplier,

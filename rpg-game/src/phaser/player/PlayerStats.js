@@ -7,7 +7,7 @@ const growthHpPerLevel = 1.1;   // 기존보다 10% 증가 → 중후반 체력 
 const growthMpPerLevel = 1.05;   // 기존보다 소폭 증가
 
 // 🔹 공격력 자동 성장 (레벨업 기반)
-const growthDamagePerLevel = 5.0; // 레벨 1당 +5 (중후반 체감 상승)
+const growthDamagePerLevel = 3.0; // 레벨 1당 +3 (중후반 체감 상승)
 
 // =============================================================
 // PlayerStats
@@ -24,7 +24,7 @@ export class PlayerStats {
 
     this.maxHp = data.maxHP || 100;
     this.hp = data.currentHP || this.maxHp;
-    this.maxMp = data.maxMP || 60;
+    this.maxMp = data.maxMP || 70;
     this.mp = data.currentMP || this.maxMp;
 
     // ⭐ 기존 staffDamage → baseDamage 로 승격 (레벨 성장 대상)
