@@ -4,6 +4,7 @@ import { applyVFX } from "../utils/SkillVFX.js";
 
 export class Napalm extends FireSkillBase {
   cast(scene, caster, level) {
+    console.log(level);
     const dir = this.getDir(caster);
 
     const dist = this.base.distance ?? 150;
@@ -25,7 +26,6 @@ export class Napalm extends FireSkillBase {
 
     boom.play("napalm");
 
-    console.log(level);
     // 즉발 데미지
     scene.damageArea({
       x: ox,

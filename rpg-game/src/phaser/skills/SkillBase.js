@@ -126,7 +126,6 @@ export class SkillBase {
     }
 
     tryCast(scene, caster, level) {
-
         // 🔥 여기서 마지막 scene 기억 → scaledDamage/Cost 에서 사용
         this.lastScene = scene;
 

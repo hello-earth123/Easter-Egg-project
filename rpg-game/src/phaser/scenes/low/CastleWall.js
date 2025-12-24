@@ -1146,6 +1146,7 @@ export default class CastleWall extends Phaser.Scene {
         const prevActive = skill.active;
 
         //  실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
+        console.log(this.skillLevel[this.skillState[name]]);
         skill.tryCast(this, this.player, this.skillLevel[this.skillState[name]]);
         // --- 진짜로 "시전이 된 건지" 판별 ---
         let castSuccess = false;
