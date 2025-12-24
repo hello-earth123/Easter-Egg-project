@@ -57,6 +57,7 @@ export class FlameC extends FireSkillBase {
         y: f.y,
         radius,
         dmg: this.getDamage(level),
+        collectTargets: true,
         onHit: () => this.shakeCameraOnHit(scene),
       });
     }

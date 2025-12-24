@@ -59,6 +59,7 @@ export class MeteorS extends FireSkillBase {
               y: landY,
               radius: this.getScaledRadius(radius),
               dmg: this.getDamage(level),
+              collectTargets: true,
               onHit: () => this.shakeCameraOnHit(scene),
             });
           }

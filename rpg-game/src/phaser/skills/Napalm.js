@@ -25,12 +25,14 @@ export class Napalm extends FireSkillBase {
 
     boom.play("napalm");
 
+    console.log(level);
     // 즉발 데미지
     scene.damageArea({
       x: ox,
       y: oy,
       radius: this.getScaledRadius(radius),
       dmg: this.getDamage(level),
+      collectTargets: true,
       onHit: () => this.shakeCameraOnHit(scene)
     });
 
@@ -71,6 +73,7 @@ export class Napalm extends FireSkillBase {
           y: oy,
           radius: this.getScaledRadius(radius),
           dmg: tickDmg,
+          collectTargets: true,
           onHit: () => this.shakeCameraOnHit(scene)
         });
       });

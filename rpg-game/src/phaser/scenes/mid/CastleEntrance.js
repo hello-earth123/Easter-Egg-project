@@ -1569,6 +1569,7 @@ export default class CastleEntrance extends Phaser.Scene {
         });
 
         if (hitList.length > 0 && typeof onHit === "function") {
+            console.log('asd');
             onHit();
         }
 

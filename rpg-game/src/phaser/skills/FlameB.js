@@ -36,6 +36,7 @@ export class FlameB extends FireSkillBase {
       y: oy1,
       radius,
       dmg: this.getDamage(level),
+      collectTargets: true,
       onHit: () => this.shakeCameraOnHit(scene)
     });
 
@@ -57,6 +58,7 @@ export class FlameB extends FireSkillBase {
       y: oy2,
       radius,
       dmg: this.getDamage(level),
+      collectTargets: true,
       onHit: () => this.shakeCameraOnHit(scene)
     });
 
