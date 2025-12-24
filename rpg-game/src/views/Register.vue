@@ -16,7 +16,7 @@
         <p class="subtitle">회원가입</p>
       </header>
 
-      <!-- ✅ form으로 감싸서 Enter/Click 중복 호출(이메일 중복 오류처럼 보이는 현상) 방지 -->
+      <!-- form으로 감싸서 Enter/Click 중복 호출(이메일 중복 오류처럼 보이는 현상) 방지 -->
       <form class="card" @submit.prevent="onRegisterSubmit">
         <h2 class="card-title">회원가입</h2>
 
@@ -86,7 +86,7 @@
         <span class="footer-text">© Pragarach — Create your legend</span>
       </footer>
 
-    <!-- ✅ 이메일 인증 안내 모달 -->
+    <!-- 이메일 인증 안내 모달 -->
     <div v-if="showVerifyModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="이메일 인증 안내">
       <div class="modal">
         <h3 class="modal-title">이메일 인증 필요</h3>
@@ -216,7 +216,7 @@ clearForm() {
       return JSON.stringify(data);
     },
     async register() {
-      // ✅ 중복 클릭/Enter 연타 방지
+      // 중복 클릭/Enter 연타 방지
       if (this.isLoading) return;
 
       this.statusMessage = "";
@@ -237,7 +237,7 @@ clearForm() {
         const data = await response.json();
 
         if (response.ok) {
-          // ✅ 회원가입 성공 → 로그인 화면으로 이동 (기존 기능 유지)
+          // 회원가입 성공 → 로그인 화면으로 이동
           this.statusMessage = "새로운 불꽃의 서약이 등록되었습니다. 로그인으로 이동합니다…";
           this.isOk = true;
           this.showVerifyModal = true;
@@ -593,7 +593,7 @@ clearForm() {
   }
 }
 
-/* ✅ 이메일 인증 안내 모달 (2D Pixel RPG 감성 유지) */
+/* 이메일 인증 안내 모달 (2D Pixel RPG 감성 유지) */
 .modal-backdrop {
   position: fixed;
   inset: 0;

@@ -24,13 +24,12 @@ const items = {
   luckGemSuper: '특급 보석 (행운)',
 }
 
-/** Item ID에 맞춰 Item 정보 반환 - TODO */
+
 export function resolveDropItem(drop) {
   return fetch(`http://121.162.159.56:8000/api/item/${drop.itemName}/`)
     .then(res => { return res.json(); })
     .then(data => {
       const { name, effect } = data;
-      console.log(name);
       return {
         name,
         effect,
@@ -54,7 +53,6 @@ export function useItemFromInventory(state, invIndex) {
     state.playerStats.consume('mp', item.effect);
   }
   else if (item.name.includes('Gem')) {
-    console.log(state.playerStats.totalGem);
     if (state.playerStats.totalGem < state.playerStats.maxGem) {
       if (item.name.includes('damage')) {
         state.playerStats.consume('damageGem', item.effect);
@@ -79,7 +77,6 @@ export function useItemFromInventory(state, invIndex) {
     }
   }
 
-  console.log(item);
   // 전부 사용했을 경우, 슬롯에서 제거
   if (item.count <= 0) state.inventoryData.inventory.items.splice(invIndex, 1);
 

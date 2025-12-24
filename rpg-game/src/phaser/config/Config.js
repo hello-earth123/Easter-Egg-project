@@ -335,61 +335,6 @@ export const CFG = {
 
     description: "재능만으로는 닿을 수 없는, 다른 차원의 불꽃을 사용하는 미지의 마법이다.\n 거대한 불의 손으로 적을 뒤덮는다."
   },
-
-  // // 몬스터 설정
-  // monsters: [
-  //   {
-  //     key: "slime",
-  //     name: "Slime",
-  //     baseHp: 40,
-  //     hpExp: 1.1,
-  //     baseAtk: 4,
-  //     atkExp: 1.05,
-  //     expBase: 8,
-  //     expExp: 1.0,
-  //     minLevel: 1,
-  //     maxLevel: 2,
-  //     count: 5,
-  //     dropTable: [
-  //       { id: "potion_hp", name: "HP Potion", chance: 45 },
-  //       { id: "gold_coin", name: "Gold Coin", chance: 80 },
-  //     ],
-  //   },
-  //   {
-  //     key: "orc",
-  //     name: "Orc",
-  //     baseHp: 90,
-  //     hpExp: 1.18,
-  //     baseAtk: 12,
-  //     atkExp: 1.1,
-  //     expBase: 18,
-  //     expExp: 1.08,
-  //     minLevel: 2,
-  //     maxLevel: 4,
-  //     count: 4,
-  //     dropTable: [
-  //       { id: "mana_pot", name: "MP Potion", chance: 30 },
-  //       { id: "gold_coin", name: "Gold Coin", chance: 90 },
-  //     ],
-  //   },
-  //   {
-  //     key: "dragonling",
-  //     name: "Dragonling",
-  //     baseHp: 220,
-  //     hpExp: 1.25,
-  //     baseAtk: 24,
-  //     atkExp: 1.18,
-  //     expBase: 40,
-  //     expExp: 1.12,
-  //     minLevel: 4,
-  //     maxLevel: 7,
-  //     count: 3,
-  //     dropTable: [
-  //       { id: "rare_gem", name: "Rare Gem", chance: 18 },
-  //       { id: "elixir", name: "Elixir", chance: 10 },
-  //     ],
-  //   },
-  // ],
 };
 
 /** 레벨 당 필요 경험치 계산 */

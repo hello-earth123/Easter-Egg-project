@@ -69,7 +69,5 @@ export class DeathHand extends FireSkillBase {
       if (timer) timer.remove(false);
       safeDestroy();
     });
-
-    scene.textBar = `Death Hand (Lv${this.level})`;
   }
 }

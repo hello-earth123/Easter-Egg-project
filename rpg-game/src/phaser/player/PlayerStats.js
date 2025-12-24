@@ -2,11 +2,11 @@ import { calcNextExp } from "../config/Config.js";
 
 let playerInstance = null;
 
-// 🔹 플레이어 성장 곡선 (비선형: 지수 성장)
+// 플레이어 성장 곡선 (비선형: 지수 성장)
 const growthHpPerLevel = 1.1;   // 기존보다 10% 증가 → 중후반 체력 안정
 const growthMpPerLevel = 1.05;   // 기존보다 소폭 증가
 
-// 🔹 공격력 자동 성장 (레벨업 기반)
+// 공격력 자동 성장 (레벨업 기반)
 const growthDamagePerLevel = 3.0; // 레벨 1당 +3 (중후반 체감 상승)
 
 // =============================================================
@@ -27,10 +27,10 @@ export class PlayerStats {
     this.maxMp = data.maxMP || 70;
     this.mp = data.currentMP || this.maxMp;
 
-    // ⭐ 기존 staffDamage → baseDamage 로 승격 (레벨 성장 대상)
+    // 기존 staffDamage → baseDamage 로 승격 (레벨 성장 대상)
     this.baseDamage = (this.level - 1) * growthDamagePerLevel;
 
-    // ⭐ 기존 damage 는 버튼 스탯 (0~50 유지)
+    // 기존 damage 는 버튼 스탯 (0~50 유지)
     this.damage = data.staffDamage || 0;
 
     this.cooldown = data.staffCoolReduce || 0;
@@ -108,7 +108,7 @@ export class PlayerStats {
       this.hp = this.maxHp;
       this.mp = this.maxMp;
 
-      // ⭐ 레벨업 기반 공격력 증가 (상한 없음)
+      // 레벨업 기반 공격력 증가 (상한 없음)
       this.baseDamage += growthDamagePerLevel;
 
       if (this.level % 2 == 0) {
@@ -140,7 +140,7 @@ export class PlayerStats {
         playerInstance.mp + point * playerInstance.maxMp
       );
     } else {
-      // ⭐ 버튼 스탯은 기존대로 maxGem 루트 유지
+      // 버튼 스탯은 기존대로 maxGem 루트 유지
       playerInstance[target] = Math.min(
         playerInstance.maxGem,
         playerInstance[target] + point
@@ -182,7 +182,7 @@ export async function initPlayer(userId) {
 // 스탯 증가 & 초기화 (UI 버튼용) — 기존 유지
 // =============================================================
 export function increaseStat(key) {
-  // 🔒 사용 가능한 스탯 포인트 없으면 바로 리턴
+  // 사용 가능한 스탯 포인트 없으면 바로 리턴
   if (playerInstance.point <= 0) {
     console.log("no stat points left");
     return;

@@ -1,4 +1,4 @@
-/** 데미지 출력용 Floating Text Class */
+/** 데미지 출력용 FloatingText Class */
 export class FloatingText extends Phaser.GameObjects.Text {
   constructor(scene, x, y, text, color = "#fff") {
     super(scene, x, y, text, {

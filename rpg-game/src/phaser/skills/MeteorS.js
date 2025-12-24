@@ -30,7 +30,7 @@ export class MeteorS extends FireSkillBase {
       const spawnX = landX - facingX * 200;
       const spawnY = landY - 220;
 
-      // === 🔥 순차 메테오 낙하 ===
+      // === 순차 메테오 낙하 ===
       scene.time.delayedCall(i * interval, () => {
 
         const meteor = scene.add.sprite(spawnX, spawnY, "meteor_L");
@@ -66,7 +66,5 @@ export class MeteorS extends FireSkillBase {
         });
       });
     }
-
-    scene.textBar = `Meteor S (Lv${this.level})`;
   }
 }

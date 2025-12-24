@@ -28,11 +28,11 @@ export class MeteorL extends FireSkillBase {
       const spawnY = landY - 240;
 
       scene.time.delayedCall(i * interval, () => {
-        // 🔥 모든 메테오 스킬과 동일하게 meteor_L 스프라이트 사용
+        // 모든 메테오 스킬과 동일하게 meteor_L 스프라이트 사용
         const meteor = scene.add.sprite(spawnX, spawnY, "meteor_L");
         meteor.setOrigin(0.5);
 
-        // 🔥 Meteor_S 스타일과 맞춰서 scale + VFX 적용
+        // Meteor_S 스타일과 맞춰서 scale + VFX 적용
         const scale = this.base.scale ?? 1.4;   // L이니 S/M보다 약간 크게
         meteor.setScale(scale);
         applyVFX(scene, meteor, this.base.vfx);
@@ -62,7 +62,5 @@ export class MeteorL extends FireSkillBase {
         });
       });
     }
-
-    scene.textBar = `Meteor L (Lv${this.level})`;
   }
 }

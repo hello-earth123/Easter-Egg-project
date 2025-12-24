@@ -17,16 +17,16 @@ export class FireBomb extends FireSkillBase {
     const x = caster.x + dir.x * dist;
     const y = caster.y + dir.y * dist;
 
-    // === 🔥 FireBomb 스프라이트 생성 ===
+    // === FireBomb 스프라이트 생성 ===
     const fx = scene.add.sprite(x, y, "firebomb");
     fx.setOrigin(0.5);
 
-    // === 🔥 scale + VFX 적용 ===
+    // === scale + VFX 적용 ===
     const scale = this.base.scale ?? 1.4;
     fx.setScale(scale);
     applyVFX(scene, fx, this.base.vfx);
 
-    // === 🔥 폭발 애니메이션 재생 ===
+    // === 폭발 애니메이션 재생 ===
     fx.play("firebomb");
 
     const radius = this.base.radius ?? 100;
@@ -34,7 +34,7 @@ export class FireBomb extends FireSkillBase {
     let damageApplied = false;
     let didHitMonster = false;
 
-    // === 🔥 기존 FireBomb 핵심 기능: 9프레임 정확 판정 ===
+    // === 기존 FireBomb 핵심 기능: 9프레임 정확 판정 ===
     fx.on("animationupdate", (_, frame) => {
       if (!damageApplied && frame.index === 9) {
         damageApplied = true;
@@ -103,12 +103,10 @@ export class FireBomb extends FireSkillBase {
       }
     });
 
-    // === 🔥 애니메이션 완료 = 안전 Destroy ===
+    // === 애니메이션 완료 = 안전 Destroy ===
     fx.once("animationcomplete", () => {
       fx.setVisible(false);
       scene.time.delayedCall(0, () => fx.destroy?.());
     });
-
-    scene.textBar = `Fire Bomb (Lv${this.level})`;
   }
 }
