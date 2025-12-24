@@ -1,7 +1,8 @@
 extra
 1. 상점
-2. 아이템 착용
-3. 직업 선택 (전직)
+2. NPC 퀘스트
+3. 아이템 착용
+4. 직업 선택 (전직)
 
 npm install
 npm install chart.js
