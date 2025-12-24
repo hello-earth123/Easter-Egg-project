@@ -56,8 +56,8 @@ export default class Center3 extends Phaser.Scene {
             this.spawnX = portalSpawnPoints[fromPortal].x;
             this.spawnY = portalSpawnPoints[fromPortal].y;
         } else {
-            this.spawnX = 400;
-            this.spawnY = 300;
+            this.spawnX = data.spawnX;
+            this.spawnY = data.spawnY;
         }
     }
 
@@ -651,6 +651,21 @@ export default class Center3 extends Phaser.Scene {
 
             return;
         }
+
+        if (!this.scene.get('CenterEntrance')) this.scene.add('CenterEntrance', CenterEntrance);
+
+        this.cameras.main.fadeOut(300, 0, 0, 0);
+
+        this.time.delayedCall(300, () => {
+            this.scene.start("CenterEntrance", {
+                playerStats: this.playerStats,
+                inventoryData: this.inventoryData,
+                slotData: this.slotData,
+                fromPortal: "south",
+                spawnX: this.portal.x,
+                spawnY: this.portal.y + 60
+            });
+        });
 
         // 컷씬 종료 → 이동 허용
         if (this.player?.body) this.player.body.moves = true;

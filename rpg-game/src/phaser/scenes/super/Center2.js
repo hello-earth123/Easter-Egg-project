@@ -56,8 +56,8 @@ export default class Center2 extends Phaser.Scene {
             this.spawnX = portalSpawnPoints[fromPortal].x;
             this.spawnY = portalSpawnPoints[fromPortal].y;
         } else {
-            this.spawnX = 400;
-            this.spawnY = 300;
+            this.spawnX = data.spawnX;
+            this.spawnY = data.spawnY;
         }
     }
 

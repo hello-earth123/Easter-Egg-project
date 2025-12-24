@@ -49,7 +49,7 @@ export default class Center1 extends Phaser.Scene {
         }
 
         const portalSpawnPoints = {
-            east: { x: data.spawnX, y: data.spawnY },   // TestScene2의 east 포탈을 타면 여기서 등장
+            north: { x: 800, y: 1100 },   // TestScene2의 east 포탈을 타면 여기서 등장
         };
 
         if (fromPortal && portalSpawnPoints[fromPortal]) {
