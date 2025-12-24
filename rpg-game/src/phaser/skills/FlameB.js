@@ -13,7 +13,7 @@ export class FlameB extends FireSkillBase {
     const duration = this.base.duration ?? 1200;
     const tickDmg = this.base.tickDmg ?? 10;
 
-    // ===== 🔥 1타: 기본 위치 =====
+    // ===== 1타: 기본 위치 =====
     const ox1 = caster.x + dir.x * dist;
     const oy1 = caster.y + dir.y * dist;
 
@@ -40,7 +40,7 @@ export class FlameB extends FireSkillBase {
       onHit: () => this.shakeCameraOnHit(scene)
     });
 
-    // ===== 🔥 2타: 전방에 추가 타격 =====
+    // ===== 2타: 전방에 추가 타격 =====
     const ox2 = caster.x + dir.x * (dist + 50);
     const oy2 = caster.y + dir.y * (dist + 50);
 
@@ -62,7 +62,7 @@ export class FlameB extends FireSkillBase {
       onHit: () => this.shakeCameraOnHit(scene)
     });
 
-    // ===== 🔥 도트 데미지 =====
+    // ===== 도트 데미지 =====
     // 1타 dot
     const interval = duration / 6; // 원본 로직 유지
     scene.applyDotArea({
@@ -85,7 +85,7 @@ export class FlameB extends FireSkillBase {
     });
 
 
-    // ===== 🔥 애니메이션 종료 후 safe destroy =====
+    // ===== 애니메이션 종료 후 safe destroy =====
     fx1.once("animationcomplete", () => {
       fx1.setVisible(false);
       scene.time.delayedCall(0, () => fx1.destroy?.());
@@ -95,7 +95,5 @@ export class FlameB extends FireSkillBase {
       fx2.setVisible(false);
       scene.time.delayedCall(0, () => fx2.destroy?.());
     });
-
-    scene.textBar = `Flame B (Lv${this.level})`;
   }
 }

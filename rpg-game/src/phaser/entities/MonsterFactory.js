@@ -10,7 +10,7 @@ export function makeMonsterStats(def) {
   return { level, maxHp, atk, expReward: expRw };
 }
 
-/** 몬스터 객체 생성 및 scene에 추가 - TODO */
+
 export function spawnMonsters(scene) {
   CFG.monsters.forEach((def) => {
     for (let i = 0; i < def.count; i++) {
@@ -21,7 +21,6 @@ export function spawnMonsters(scene) {
         "monster"
       );
 
-      // TODO: sprite 연결
       const stats = makeMonsterStats(def);
       Object.assign(m, {
         name: def.name,

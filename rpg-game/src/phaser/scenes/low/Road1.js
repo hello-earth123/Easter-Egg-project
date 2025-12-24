@@ -384,11 +384,6 @@ export default class Road1 extends Phaser.Scene {
         // ==========================================================
 
 
-
-
-        // ================ 시스템 메세지 창 (로그창) ==================
-        this.textBar = "게임 시작!";
-
         // 이펙트 출력 함수 바인딩
         this.spawnShockwave = (x, y, radius, dmg) =>
             spawnShockwave(this, x, y, radius, dmg);
@@ -572,7 +567,7 @@ export default class Road1 extends Phaser.Scene {
             castSuccess = true;
         }
 
-        // ❌ 쿨타임, 마나부족, 기타 조건 실패 → 아무 모션도 내보내지 말고 종료
+        // 쿨타임, 마나부족, 기타 조건 실패 → 아무 모션도 내보내지 말고 종료
         if (!castSuccess) return;
 
         // 스킬 캐스팅 사운드 (스킬에 성공했을 경우에만 시전) -> (윗 줄(1080줄)에서 넘어왔다면 확실히 casting된 것으로 판단)
@@ -845,7 +840,7 @@ export default class Road1 extends Phaser.Scene {
 
     /** 대쉬 구현 */
     doDash(dir) {
-        // 🔥 대쉬 사운드
+        // 대쉬 사운드
         this.SoundManager.playDash();
 
         const D = CFG.dash.distance;
@@ -861,7 +856,6 @@ export default class Road1 extends Phaser.Scene {
         // 대쉬 이펙트
         const c = CFG.dash.cameraFlash;
         this.cameras.main.flash(c.duration, c.r, c.g, c.b);
-        this.textBar = "대쉬!";
     }
 
     /** 대쉬 지속 */
@@ -962,7 +956,7 @@ export default class Road1 extends Phaser.Scene {
     onPlayerHitByMonster = (player, monster) => {
         if (!player || !monster) return;
 
-        // 🔥 키다운 스킬(incendiary) 사용 중이면 즉시 끊기
+        // 키다운 스킬(incendiary) 사용 중이면 즉시 끊기
         if (this.activeHoldSkill) {
             const s = this.skills[this.activeHoldSkill];
             if (s && s.stop) s.stop();
@@ -1010,7 +1004,6 @@ export default class Road1 extends Phaser.Scene {
             if (player) player.clearTint();
         });
 
-        this.textBar = "적에게 피격!";
 
         // 사망 체크
         if (this.playerStats.hp <= 0) {
@@ -1063,7 +1056,7 @@ export default class Road1 extends Phaser.Scene {
             this.player.body.enable = false;
         }
 
-        // 🔊 사운드 매니저
+        // 사운드 매니저
         const sm = this.SoundManager || SoundManager.getInstance();
 
         /* ------------------------------
@@ -1093,7 +1086,7 @@ export default class Road1 extends Phaser.Scene {
             this.gameOverImage.setVisible(true);
         }
 
-        // 🔥 화면 전체를 덮도록 크기 강제 설정
+        // 화면 전체를 덮도록 크기 강제 설정
         this.gameOverImage.setDisplaySize(cam.width, cam.height);
 
         // 처음엔 투명
@@ -1117,7 +1110,7 @@ export default class Road1 extends Phaser.Scene {
         }
 
         /* ------------------------------
-        🧊 몬스터 어그로 초기화
+        몬스터 어그로 초기화
         ------------------------------ */
         if (this.monsters) {
             this.monsters.children.iterate(mon => {
@@ -1144,7 +1137,7 @@ export default class Road1 extends Phaser.Scene {
 
             // GAME OVER 화면이 켜진 상태로 0.4초 유지
             this.time.delayedCall(4000, () => {
-                // 🔥 마지막 저장 지점에서 부활 처리
+                // 마지막 저장 지점에서 부활 처리
                 this.respawnFromLastSave();
             });
         });
@@ -1157,7 +1150,6 @@ export default class Road1 extends Phaser.Scene {
         try {
             // 1) 백엔드에서 저장 데이터 가져오기
             const saveData = await loadGame();
-            console.log("[respawnFromLastSave] loaded:", saveData);
 
             if (!saveData || !saveData.stats) {
                 throw new Error("저장 데이터가 없습니다.");
@@ -1243,7 +1235,7 @@ export default class Road1 extends Phaser.Scene {
             this.textBar = "마지막 저장 지점에서 부활했습니다!";
         } catch (e) {
             console.error("[respawnFromLastSave] 로드 실패:", e);
-            // ⚠️ 실패 시에는 최소한 현재 씬에서라도 안전하게 부활
+            // 실패 시에는 최소한 현재 씬에서라도 안전하게 부활
             if (this.playerStats) {
                 this.playerStats.hp = Math.max(
                     1,
@@ -1360,7 +1352,7 @@ export default class Road1 extends Phaser.Scene {
     updateMonsterWander(monster, now) {
         if (!monster) return;
 
-        // 🔥 몬스터별 walk 애니메이션 선택
+        // 몬스터별 walk 애니메이션 선택
         const animKey = this.monsterWalkAnim[monster.name];
         if (animKey) {
             if (!monster.anims.isPlaying || monster.anims.currentAnim.key !== animKey) {
@@ -1505,12 +1497,12 @@ export default class Road1 extends Phaser.Scene {
 
         if (!animKey) return;
 
-        // 🔥 캐스팅 상태 ON
+        // 캐스팅 상태 ON
         this.player.isCasting = true;
 
         const anim = this.player.play(animKey, true);
 
-        // 🔥 hold 스킬(incendiary 등) 말고, 일반 스킬은 애니 끝나면 캐스팅 해제
+        // hold 스킬(incendiary 등) 말고, 일반 스킬은 애니 끝나면 캐스팅 해제
         if (!isHold && type !== "incendiary-hold") {
             this.player.once(`animationcomplete-${animKey}`, () => {
                 this.player.isCasting = false;
@@ -1598,60 +1590,10 @@ export default class Road1 extends Phaser.Scene {
         });
     }
 
-    /**
-     * 라인 형태의 지속 장판 DoT (Napalm 등에 사용)
-     * origin(x, y)에서 dir 방향으로 length 만큼 뻗은 띠 모양 영역
-     */
-    applyPersistentDot({
-        x,
-        y,
-        dir,
-        length,
-        radius,
-        tickDmg,
-        duration,
-        interval,
-    }) {
-        if (!this.monsters) return;
 
-        const nx = dir?.x ?? 1;
-        const ny = dir?.y ?? 0;
-        const totalTicks = Math.max(1, Math.floor(duration / interval));
-
-        for (let i = 0; i < totalTicks; i++) {
-            this.time.delayedCall(interval * i, () => {
-                this.monsters.children.iterate((monster) => {
-                    if (!monster || !monster.active) return;
-
-                    const vx = monster.x - x;
-                    const vy = monster.y - y;
-
-                    // 라인상의 투영 길이 t
-                    const t = vx * nx + vy * ny;
-                    if (t < 0 || t > length) return;
-
-                    // 라인으로부터의 수직 거리 체크
-                    const px = nx * t;
-                    const py = ny * t;
-                    const lx = vx - px;
-                    const ly = vy - py;
-                    if (lx * lx + ly * ly > radius * radius) return;
-
-                    monster.hp -= tickDmg;
-                    this.showDamageText(monster, tickDmg, "#ffff66");
-                    if (this.spawnHitFlash) {
-                        this.spawnHitFlash(monster.x, monster.y);
-                    }
-                    if (typeof this.onMonsterAggro === "function") {
-                        this.onMonsterAggro(monster);
-                    }
-                });
-            });
-        }
-    }
 
     /**
-     * 🔥 방향 직사각형 데미지 (Incendiary 전용)
+     * 방향 직사각형 데미지 (Incendiary 전용)
      * originX, originY = 시작점
      * dir = 방향벡터
      * width = 스프라이트 폭(px)
@@ -1684,7 +1626,7 @@ export default class Road1 extends Phaser.Scene {
             if ((lx * lx + ly * ly) > (halfW * halfW)) return;
 
             this.showDamageText(monster, dmg, "#ffff66");
-            // 🔥 데미지 적용
+            // 데미지 적용
             monster.hp -= dmg;
             if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
             this.onMonsterAggro(monster);
@@ -1692,7 +1634,7 @@ export default class Road1 extends Phaser.Scene {
             hitSomething = true;
         });
 
-        // 🔥 명중했으면 onHit() 실행 (카메라 흔들림, 스킬 중단 등)
+        // 명중했으면 onHit() 실행 (카메라 흔들림, 스킬 중단 등)
         if (hitSomething && typeof onHit === "function") {
             onHit();
         }
@@ -1703,7 +1645,7 @@ export default class Road1 extends Phaser.Scene {
     moveToNextScene(portalId) {
         this.SoundManager.playPortal();
 
-        // ⭐ 포탈 → 목적지 씬 매핑 테이블
+        // 포탈 → 목적지 씬 매핑 테이블
         const portalToScene = {
             east: "Road2",
             west: "CastleWall",
@@ -1719,7 +1661,6 @@ export default class Road1 extends Phaser.Scene {
         // 필요 시 해당 씬을 미리 add() (존재하지 않을 경우)
         if (!this.scene.get(nextScene)) {
             this.scene.add(nextScene, window[nextScene]);
-            // 🔥 주의: TestScene2, TestScene3 같은 씬들은 전역에 등록되어 있어야 함
         }
 
         const p = this.currentPortal;

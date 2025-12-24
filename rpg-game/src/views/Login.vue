@@ -214,7 +214,7 @@ fillDemo() {
         const data = await response.json();
 
         if (response.ok) {
-          // ✅ 로그인 성공 → user_id를 localStorage에 저장 후 Game.vue로 이동 (기존 기능 유지)
+          // 로그인 성공 → user_id를 localStorage에 저장 후 Game.vue로 이동 (기존 기능 유지)
           localStorage.setItem("user_id", data.user_id);
           this.statusMessage = "불꽃의 계약이 체결되었습니다. 게임으로 이동합니다…";
           this.isOk = true;
