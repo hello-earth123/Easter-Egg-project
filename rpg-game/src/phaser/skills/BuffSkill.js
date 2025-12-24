@@ -72,7 +72,7 @@ export class BuffSkill extends FireSkillBase {
     stats.buffDamageMultiplier = damageMultiplier;
     stats.buffManaCostMultiplier = manaCostMultiplier;
 
-    // ✅ 씬이 꺼질 때 버프가 영구로 남지 않게 강제 정리
+    // 씬이 꺼질 때 버프가 영구로 남지 않게 강제 정리
     const cleanupBuffOnSceneExit = () => {
       // 타이머 정리
       if (stats.buffTimer) {
@@ -98,7 +98,7 @@ export class BuffSkill extends FireSkillBase {
     scene.events.once("shutdown", cleanupBuffOnSceneExit);
     scene.events.once("destroy", cleanupBuffOnSceneExit);
 
-    // === ⏳ 1분(30000ms) 뒤 능력치 복구 ===
+    // === 1분(30000ms) 뒤 능력치 복구 ===
     stats.buffTimer = scene.time.delayedCall(30000, () => {
       stats.clearBuff({
         damageMultiplier,
@@ -107,8 +107,5 @@ export class BuffSkill extends FireSkillBase {
 
       stats.buffTimer = null;
     });
-
-    // UI 출력
-    scene.textBar = `Buff (Lv${this.level})`;
   }
 }

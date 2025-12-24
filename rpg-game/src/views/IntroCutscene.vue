@@ -10,7 +10,7 @@
     </transition>
 
     <div class="hint">
-      클릭/스페이스: 다음 ({{ currentIndex + 1 }} / {{ images.length }})
+      스페이스: 다음 ({{ currentIndex + 1 }} / {{ images.length }})
     </div>
   </div>
 </template>

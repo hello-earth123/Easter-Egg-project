@@ -7,7 +7,7 @@ export class SkillBase {
         this.isHoldSkill = false;
         this.onCooldownUntil = 0;
 
-        // 🔥 Vue / TestScene2 에서 쓰는 보조 필드들
+        // Vue / Scene 에서 쓰는 보조 필드들
         this.cooldown = this.base?.cd ? this.base.cd / 1000 : 0; // 초 단위
         this.lastCastAt = null;
 
@@ -24,10 +24,10 @@ export class SkillBase {
 
         const stats = this.lastScene?.playerStats;
 
-        // 🔹 플레이어의 baseDamage(무기/레벨 성장)을 base에 더해줌
+        // 플레이어의 baseDamage(무기/레벨 성장)을 base에 더해줌
         const baseWeaponDamage = stats?.baseDamage || 0;
 
-        // 👉 "스킬 기본 데미지 + 무기/레벨 기반 데미지" 를 합쳐서 스킬 레벨 보정
+        // "스킬 기본 데미지 + 무기/레벨 기반 데미지" 를 합쳐서 스킬 레벨 보정
         let value = (base + baseWeaponDamage) * levelScaleSkill;
 
         if (stats) {
@@ -117,9 +117,9 @@ export class SkillBase {
             cd = Math.floor(cd * reduceScale); // 여전히 ms
         }
 
-        // 🔥 Vue / TestScene2와 연동되는 필드들
+        // Vue / Scene과 연동되는 필드들
         this.cooldown = cd / 1000;        // 초 단위 → Vue에서 *1000
-        this.lastCastAt = scene.time.now;  // TestScene2에서 성공 판정용
+        this.lastCastAt = scene.time.now;  // Scene에서 성공 판정용
 
         // 숫자 쿨타임 / hasCooldown용 ms 단위
         this.onCooldownUntil = scene.time.now + cd;
@@ -127,7 +127,7 @@ export class SkillBase {
 
     tryCast(scene, caster, level) {
 
-        // 🔥 여기서 마지막 scene 기억 → scaledDamage/Cost 에서 사용
+        // 여기서 마지막 scene 기억 → scaledDamage/Cost 에서 사용
         this.lastScene = scene;
 
         // 1) 쿨타임 검사

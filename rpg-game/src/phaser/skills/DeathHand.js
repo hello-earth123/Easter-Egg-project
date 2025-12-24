@@ -49,6 +49,7 @@ export class DeathHand extends FireSkillBase {
           y: oy,
           radius,
           dmg: this.getDamage(level),
+          collectTargets: true,
           onHit: () => this.shakeCameraOnHit(scene)
         });
       }
@@ -68,7 +69,5 @@ export class DeathHand extends FireSkillBase {
       if (timer) timer.remove(false);
       safeDestroy();
     });
-
-    scene.textBar = `Death Hand (Lv${this.level})`;
   }
 }

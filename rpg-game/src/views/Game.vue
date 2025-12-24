@@ -2,17 +2,9 @@
   <div id="app-wrap">
     <!-- 게임 컨테이너 (Phaser가 붙는 영역) -->
     <div id="game-container">
-
-      <!-- 인트로 컷 씬 -->
-      <!-- <IntroCutscene
-        v-if="showIntroCutscene"
-        :images="cutsceneImages"
-        @finished="onIntroFinished"
-      /> -->
-
       <!-- =================== 오버레이 HUD =================== -->
       <div class="hud-root">
-        <!-- 🔹 좌측 상단: Lv + HP/MP/EXP 패널 -->
+        <!-- 좌측 상단: Lv + HP/MP/EXP 패널 -->
         <div class="hud-top-left-panel">
           <div class="hud-level-row">
             <span class="hud-level-text">Lv {{ playerLevel }}</span>
@@ -73,7 +65,7 @@
           </div>
         </div>
 
-        <!-- 🔹 하단 중앙: 스킬(QWER) / 아이템(PgUp/PgDn) 숏컷 바 -->
+        <!-- 하단 중앙: 스킬(QWER) / 아이템(PgUp/PgDn) 숏컷 바 -->
         <div class="hud-bottom-center-panel">
                     <!-- 아이템 슬롯 -->
           <div class="shortcut-row item-row">
@@ -116,7 +108,7 @@
                   {{ Math.ceil(cdLeftMs(s.phaserKey) / 1000) }}
                 </div>
 
-                <!-- 🔥 시계 방향 쿨다운 마스크 -->
+                <!-- 시계 방향 쿨다운 마스크 -->
                 <svg
                   v-if="cdLeftMs(s.phaserKey) > 0"
                   class="cooldown-mask"
@@ -137,7 +129,7 @@
           </div>
         </div>
 
-        <!-- 🔹 좌측 하단: 텍스트 로그 바 -->
+        <!-- 좌측 하단: 텍스트 로그 바 -->
         <div class="hud-bottom-left-log">
           <div class="log-label">LOG</div>
           <div class="log-content">
@@ -146,7 +138,7 @@
         </div>
       </div>
       
-      <!-- 🔥 미니맵 HUD -->
+      <!-- 미니맵 HUD -->
       <MiniMap 
         :mapName="currentMapTitle"
         :player="miniMapPlayer"
@@ -154,7 +146,7 @@
         :portals="miniMapPortals"
       />
       
-      <!-- 🔥 맵 이름 표시 -->
+      <!-- 맵 이름 표시 -->
       <div
         v-if="showMapTitle"
         class="map-title-banner"
@@ -162,7 +154,7 @@
         {{ currentMapTitle }}
       </div>
 
-      <!-- 🔥 컷씬 대화 UI -->
+      <!-- 컷씬 대화 UI -->
       <DialogueUI ref="dialogue" />
 
 
@@ -308,7 +300,7 @@
           >
             <img :src="it.icon" />
             <div class="inv-info">
-              <!-- 🔹 긴 이름은 말줄임 + title 툴팁 -->
+              <!-- 아이템 이름 -->
               <div class="inv-name" :title="items[it.name]">
                 {{ items[it.name] }}
               </div>
@@ -400,11 +392,11 @@
 
               <div><b>Skill Pts</b> {{ availableSkillPoints }}</div>
 
-              <!-- ⭐ 추가된 Stats Pts -->
+              <!-- 추가된 Stats Pts -->
               <div><b>Stats Pts</b> {{ statPoints }} / {{ maxStatPoints }}</div>
             </div>
 
-            <!-- ⭐ Gem 그래프 영역 -->
+            <!-- Gem 그래프 영역 -->
             <div class="gem-usage-section">
               <div class="gem-title">Gem Usage (Total {{ (totalGemUsed).toFixed(2) }}/20)</div>
 
@@ -661,8 +653,8 @@ export default {
       // 스텟창 플레이어
       playerSpriteSheet: "/static/assets/player.png",
       playerFrameIndex: 0, // 무조건 0번 고정
-      playerFrameWidth: 30, // 🔥 실제 스프라이트 가로
-      playerFrameHeight: 16, // 🔥 실제 스프라이트 세로
+      playerFrameWidth: 30, // 실제 스프라이트 가로
+      playerFrameHeight: 16, // 실제 스프라이트 세로
       playerFrameScale: 8,
       playerOffsetX: 2,
       statPoints: 0,
@@ -734,7 +726,7 @@ export default {
       windowStack: [],
       topZIndex: 10000,
 
-      // 🔊 사운드 설정
+      // 사운드 설정
       soundSettings: {
         master: 1,
         bgm: 1,
@@ -1002,20 +994,10 @@ export default {
     this.userId = localStorage.getItem('user_id')
 
     // 여기서 firstScene 여부 먼저 확인
-    // 아래 API는 네가 만든 firstScene 조회 endpoint로 바꿔서 쓰면 됨.
     // 예시: /accounts/first-scene/<userId>/ 같은 형태
     const API_BASE = "http://121.162.159.56:8000";
 
     const firstRes = await fetch(`${API_BASE}/api/accounts/first-scene/${this.userId}/`);
-    // const ct = firstRes.headers.get("content-type") || "";
-    // console.log("first-scene status:", firstRes.status);
-    // console.log("first-scene content-type:", ct);
-
-    // if (!ct.includes("application/json")) {
-    //   const raw = await firstRes.text();
-    //   console.log("first-scene raw:", raw.slice(0, 300));
-    //   throw new Error("first-scene endpoint did not return JSON. Check URL / auth / server error.");
-    // }
 
     const firstData = await firstRes.json();
     this.showIntroCutscene = firstData.firstScene; // false면 컷씬 보여줌(첫 방문)
@@ -1061,9 +1043,6 @@ export default {
           default: "arcade",
           arcade: { gravity: { y: 0 }, debug: false },
         },
-        // userId: this.userId,
-        // scene: Object.values(sceneMap),
-        // scene: [BossScene],
       };
 
       const game = new Phaser.Game(config);
@@ -1074,12 +1053,12 @@ export default {
       });
       game.scene.start(lastScene, {userId: this.userId});
 
-      // 🔥 Vue 인스턴스를 Phaser game에 연결
+      // Vue 인스턴스를 Phaser game에 연결
       this.$nextTick(() => {
         game.vue = this;
       });
 
-      // 🔊 사운드 매니저 초기화
+      // 사운드 매니저 초기화
       const sm = SoundManager.init(game);
       const vols = sm.getVolumes();
       this.soundSettings.master = vols.master;
@@ -1095,9 +1074,6 @@ export default {
         const skillSlotData = slotData.skillSlots;
         const rawSlots = skillSlotData || [null, null, null, null];
 
-        // Vue상의 skillSlots는 먼저 초기화
-        // this.skillSlots = [null, null, null, null];
-
         // DB에서 불러온 스킬을 Vue의 onDropSkillShortcut 방식으로 재적용
         rawSlots.forEach((skill, idx) => {
           if (!skill) return;
@@ -1107,8 +1083,6 @@ export default {
               getData: (key) => (key === "skill-id" ? skill : ""),
             },
           };
-
-          // 기존 drop 로직 100% 그대로 활용
           this.onDropSkillShortcut(fakeEv, idx);
         });
 
@@ -1132,8 +1106,6 @@ export default {
           this.triggerMapTitle();
         }
 
-
-
         if (!main || !main.playerStats) return;
 
         this.playerHP = Math.round(main.playerStats.hp);
@@ -1147,8 +1119,8 @@ export default {
         this.statPoints = main.playerStats.point ?? 0;
         this.maxStatPoints = main.playerStats.maxPoint ?? 100;
 
-        // Gem 사용량 업데이트 ⭐⭐
-        // Gem 사용량 업데이트 ⭐ PlayerStats 필드에 맞게
+        // Gem 사용량 업데이트 
+        // Gem 사용량 업데이트 PlayerStats 필드에 맞게
         const g = main.playerStats || {};
 
         this.gemUsage.damage   = g.damageGem   ?? 0;     // damageGem
@@ -1319,8 +1291,6 @@ export default {
     },
 
     setMapTitle(name) {
-      // console.log("[Vue] 맵 이름 갱신됨:", name);
-
       this.currentMapTitle = name;
       this.triggerMapTitle();   // 배너 표시
     },
@@ -1337,10 +1307,10 @@ export default {
       }
     },
 
+
     /* ===================
        무기 스탯 및 레이더 차트
     ====================== */
-
     weaponStatLabel(key) {
       return {
         damage: "데미지",
@@ -1515,7 +1485,7 @@ export default {
         const skillObj = this.scene.skills[phaserKey];
         if (!skillObj) continue;
 
-        skillObj.level = lv; // 🔥 Phaser 스킬 레벨 직접 반영
+        skillObj.level = lv; // Phaser 스킬 레벨 직접 반영
       }
     },
 
@@ -1535,13 +1505,13 @@ export default {
         [node.id]: this.skillLevelOf(node.id) + 1,
       };
 
-      // 🔥 UI에 즉시 반영 (사용 가능한 스킬 포인트 감소)
+      // UI에 즉시 반영 (사용 가능한 스킬 포인트 감소)
       this.animSkillPoints = this.availableSkillPoints;
 
       // 레벨업 후에도 라인 강조 등 반영 위해 다시 그림
       this.$nextTick(() => {
         this.drawSkillLines();
-        this.syncSkillLevelToPhaser(); // 🔥 Phaser 반영
+        this.syncSkillLevelToPhaser(); // Phaser 반영
       });
 
       // 스킬/스탯 공용 레벨업 SFX
@@ -1591,7 +1561,7 @@ export default {
       });
 
       /* ===========================
-      🔥 스킬 포인트 환산 애니메이션
+      스킬 포인트 환산 애니메이션
       =========================== */
       const start = 0;
       const end = this.availableSkillPoints; // 계산된 실제 값
@@ -1739,7 +1709,7 @@ export default {
         const last = this.windowStack.pop();
 
         if (last) {
-          this.playUiClose(); // 🔊 창 닫기 사운드
+          this.playUiClose(); // 창 닫기 사운드
 
           if (last === "inventory") this.showInventory = false;
           if (last === "stats") this.showStats = false;
@@ -1835,14 +1805,14 @@ export default {
       this.showInventory = !this.showInventory;
       if (this.showInventory) {
         this.windowStack.push("inventory");
-        this.playUiOpen(); // 🔊 창 열기 사운드
+        this.playUiOpen(); // 창 열기 사운드
         this.$nextTick(() => {
           const el = this.$el.querySelector("#inventory");
           this.makeDraggable(el);
         });
       } else {
         this.removeFromStack("inventory");   
-        this.playUiClose(); // 🔊 창 닫기 사운드
+        this.playUiClose(); // 창 닫기 사운드
       }
     },
 
@@ -1850,7 +1820,7 @@ export default {
       this.showStats = !this.showStats;
       if (this.showStats) {
         this.windowStack.push("stats");
-        this.playUiOpen(); // 🔊 창 열기 사운드
+        this.playUiOpen(); // 창 열기 사운드
         this.$nextTick(() => {
           const el = this.$el.querySelector("#stats");
           this.makeDraggable(el);
@@ -1858,7 +1828,7 @@ export default {
         });
       } else {
         this.removeFromStack("stats");   
-        this.playUiClose(); // 🔊 창 닫기 사운드
+        this.playUiClose(); // 창 닫기 사운드
       }
     },
 
@@ -1866,7 +1836,7 @@ export default {
       this.showSkills = !this.showSkills;
       if (this.showSkills) {
         this.windowStack.push("skills");
-        this.playUiOpen(); // 🔊 창 열기 사운드
+        this.playUiOpen(); // 창 열기 사운드
         this.$nextTick(() => {
           const el = this.$refs.skillsModal;
           this.makeDraggable(el);
@@ -1874,19 +1844,19 @@ export default {
         });
       } else {
         this.removeFromStack("skills");   // ← 추가!
-        this.playUiClose(); // 🔊 창 닫기 사운드
+        this.playUiClose(); // 창 닫기 사운드
       }
     },
 
     closeMenu() {
       this.showMenu = false;
-      this.playUiClose(); // 🔊 창 닫기 사운드
+      this.playUiClose(); // 창 닫기 사운드
     },
     openMenu() {
       this.showMenu = true;
       this.showSound = false;
       this.windowStack.push("menu");
-      this.playUiOpen(); // 🔊 창 열기 사운드
+      this.playUiOpen(); // 창 열기 사운드
     },
 
     openSoundMenu() {
@@ -1957,7 +1927,7 @@ export default {
         const phaserKey = this.skillTreeToPhaserMap(skillId) || skillId;
         if (!phaserKey) return;
 
-        // ⭐ id = phaserKey 로 완전 통일 (스킬 슬롯)
+        // id = phaserKey 로 완전 통일 (스킬 슬롯)
         newSkill = {
           id: phaserKey,
           phaserKey,
@@ -1980,7 +1950,7 @@ export default {
         };
       }
 
-      // ⭐ 중복 제거 (phaserKey 기준)
+      // 중복 제거 (phaserKey 기준)
       const existingIdx = this.skillSlots.findIndex((s, i) => {
         return s && s.phaserKey === newSkill.phaserKey && i !== slotIdx;
       });
@@ -2767,7 +2737,7 @@ export default {
   font-size: 11px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* 🔹 긴 이름 말줄임 처리 */
+  text-overflow: ellipsis; /* 긴 이름 말줄임 처리 */
   white-space: pre-line;  /* 개행 문자 사용 */
 }
 

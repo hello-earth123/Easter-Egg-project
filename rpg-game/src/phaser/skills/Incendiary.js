@@ -32,13 +32,13 @@ export class Incendiary extends FireSkillBase {
     this._tickEvent = scene.time.addEvent({
       delay: 16,
       loop: true,
-      callback: () => this._tick(scene, caster, interval)
+      callback: () => this._tick(scene, caster, interval, level)
     });
 
     scene.textBar = `Incendiary (Hold)`;
   }
 
-  _tick(scene, caster, interval) {
+  _tick(scene, caster, interval, level) {
     if (!this.active) return;
 
     const now = scene.time.now;
@@ -52,12 +52,12 @@ export class Incendiary extends FireSkillBase {
     }
     scene.playerStats.mp -= mpCost;
 
-    this.doDamage(scene, caster);
+    this.doDamage(scene, caster, level);
     this.doEffect(scene, caster);
   }
 
   // =========================================================
-  //  🔥 4방향 정규화 (velocity 우선, 없으면 facing 사용)
+  //  4방향 정규화 (velocity 우선, 없으면 facing 사용)
   // =========================================================
   _getDirectionState(caster) {
     let vx = 0, vy = 0;
@@ -99,9 +99,9 @@ export class Incendiary extends FireSkillBase {
   }
 
   // =========================================================
-  // 🔥 데미지 판정
+  // 데미지 판정
   // =========================================================
-  doDamage(scene, caster) {
+  doDamage(scene, caster, level) {
     const direction = this._getDirectionState(caster);
     const dir = this._getDirVector(direction);
 
@@ -126,7 +126,7 @@ export class Incendiary extends FireSkillBase {
   }
 
   // =========================================================
-  // 🔥 FX 생성 (flip + 회전 모두 적용)
+  // FX 생성 (flip + 회전 모두 적용)
   // =========================================================
   doEffect(scene, caster) {
     const direction = this._getDirectionState(caster);
@@ -142,7 +142,7 @@ export class Incendiary extends FireSkillBase {
     fx.setOrigin(0.5);
     fx.setScale(this.base.scale ?? 1.1);
 
-    // 🔥 방향별 sprite 처리
+    // 방향별 sprite 처리
     switch (direction) {
       case "right":
         fx.flipX = false;

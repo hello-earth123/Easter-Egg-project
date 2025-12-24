@@ -75,8 +75,6 @@ export default class CastleWall extends Phaser.Scene {
         this.lastDashAt = 0;
 
         this.monsterData = {
-            // snake: 2,
-            // wolf: 1,
             rabbit: 4,
             squirrel: 5,
             // hidden: 1,
@@ -97,7 +95,6 @@ export default class CastleWall extends Phaser.Scene {
         this.inventoryData;
         this.slotData;
 
-        // this.itemList = ['hpPotion', 'mpPotion', 'damageGemLow', 'damageGemMid', 'damageGemHigh', 'damageGemSuper', 'cooldownGemLow', 'cooldownGemMid', 'cooldownGemHigh', 'cooldownGemSuper', 'manaCostGemLow', 'manaCostGemMid', 'manaCostGemHigh', 'manaCostGemSuper', 'defenseGemLow', 'defenseGemMid', 'defenseGemHigh', 'defenseGemSuper', 'luckGemLow', 'luckGemMid', 'luckGemHigh', 'luckGemSuper'];
         this.skills;
 
         this.itemShow = {
@@ -149,240 +146,10 @@ export default class CastleWall extends Phaser.Scene {
     preload() {
         this.load.image("castle_wall", "/static/assets/map/castle_wall.png");
         this.load.tilemapTiledJSON('castle_wallTile', '/static/assets/map/castle_wall.json');
-        // 포탈 PNG 로드
-        // this.load.spritesheet("portal", "/static/assets/portal.png", {
-        //     frameWidth: 102.1428,   // 포탈 프레임 최대 가로(당신이 원하는 값으로 맞추기)
-        //     frameHeight: 120,  // 프레임 높이(실제 png 높이에 맞추기)
-        // });
-
-        // 플레이어 PNG 로드
-        // this.load.spritesheet("playerSheet", "/static/assets/player.png", {
-        //     frameWidth: 36,
-        //     frameHeight: 24,
-        // });
-
-        // 몬스터 PNG 로드
-        // arrow_skeleton
-        // this.load.spritesheet("arrow_skeleton", "/static/assets/monsters/arrow_skeleton.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // bat
-        // this.load.spritesheet("bat", "/static/assets/monsters/bat.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // bird
-        // this.load.spritesheet("bird", "/static/assets/monsters/bird.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // butterfly
-        // this.load.spritesheet("butterfly", "/static/assets/monsters/butterfly.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // // coffin
-        // });
-        // this.load.spritesheet("coffin", "/static/assets/monsters/coffin.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // colossus
-        // this.load.spritesheet("colossus", "/static/assets/monsters/colossus.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // dwarf
-        // this.load.spritesheet("dwarf", "/static/assets/monsters/dwarf.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // eyeball
-        // this.load.spritesheet("eyeball", "/static/assets/monsters/eyeball.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // eyebat
-        // this.load.spritesheet("eyebat", "/static/assets/monsters/eyebat.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // fire_skull1
-        // this.load.spritesheet("fire_skull1", "/static/assets/monsters/fire_skull1.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // fire_skull2
-        // this.load.spritesheet("fire_skull2", "/static/assets/monsters/fire_skull2.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // ghost
-        // this.load.spritesheet("ghost", "/static/assets/monsters/ghost.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // lich
-        // this.load.spritesheet("lich", "/static/assets/monsters/lich.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // mask
-        // this.load.spritesheet("mask", "/static/assets/monsters/mask.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // mimic
-        // this.load.spritesheet("mimic", "/static/assets/monsters/mimic.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // moai-b
-        // this.load.spritesheet("moai-b", "/static/assets/monsters/moai-b.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // moai-s
-        // this.load.spritesheet("moai-s", "/static/assets/monsters/moai-s.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // moai-g
-        // this.load.spritesheet("moai-g", "/static/assets/monsters/moai-g.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // mummy
-        // this.load.spritesheet("mummy", "/static/assets/monsters/mummy.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // mushroom
-        // this.load.spritesheet("mushroom", "/static/assets/monsters/mushroom.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // rabbit
-        // this.load.spritesheet("rabbit", "/static/assets/monsters/rabbit.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // reaper
-        // this.load.spritesheet("reaper", "/static/assets/monsters/reaper.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // //scorpion
-        // this.load.spritesheet("scorpion", "/static/assets/monsters/scorpion.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // skeleton
-        // this.load.spritesheet("skeleton", "/static/assets/monsters/skeleton.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // skull_b
-        // this.load.spritesheet("skull_b", "/static/assets/monsters/skull_b.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // skull_w
-        // this.load.spritesheet("skull_w", "/static/assets/monsters/skull_w.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });   
-        // // slime
-        // this.load.spritesheet("slime", "/static/assets/monsters/slime.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // snail
-        // this.load.spritesheet("snail", "/static/assets/monsters/snail.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });       
-        // // snake
-        // this.load.spritesheet("snake", "/static/assets/monsters/snake.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });   
-        // // squirrel
-        // this.load.spritesheet("squirrel", "/static/assets/monsters/squirrel.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // stingsnake
-        // this.load.spritesheet("stingsnake", "/static/assets/monsters/stingsnake.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });       
-        // // vampire
-        // this.load.spritesheet("vampire", "/static/assets/monsters/vampire.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // weapon
-        // this.load.spritesheet("weapon", "/static/assets/monsters/weapon.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-        // // wolf
-        // this.load.spritesheet("wolf", "/static/assets/monsters/wolf.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });   
 
         // ==================== 사운드 ========================
         // BGM
         this.load.audio("bgm_castle_wall", "/static/assets/sound/background/bgm_castle_wall.wav");
-
-        // // 몬스터/플레이어 관련
-        // this.load.audio("monster_hit", "/static/assets/sound/effects/monster_hit.wav");
-        // this.load.audio("monster_attack", "/static/assets/sound/effects/monster_attack.wav");
-        // this.load.audio("footstep", "/static/assets/sound/effects/footstep.wav");
-        // this.load.audio("monsterDeath", "/static/assets/sound/effects/monsterDeath.wav");
-        // this.load.audio("dash", "/static/assets/sound/effects/dash.wav");
-        // this.load.audio("portal", "/static/assets/sound/effects/portal.wav");
-        // this.load.audio("player_death", "/static/assets/sound/effects/player_death.wav")
-
-        // // 아이템 관련
-        // this.load.audio("item_drop", "/static/assets/sound/effects/item_drop.wav");
-        // this.load.audio("item_pickup", "/static/assets/sound/effects/item_pickup.wav");
-        // this.load.audio("item_use", "/static/assets/sound/effects/item_use.wav");
-
-        // // 레벨/스킬
-        // this.load.audio("level_up", "/static/assets/sound/effects/level_up.wav");
-        // this.load.audio("stat_increase", "/static/assets/sound/effects/stat_increase.wav");
-
-        // // UI
-        // this.load.audio("ui_open", "/static/assets/sound/effects/ui_open.wav");
-        // this.load.audio("ui_close", "/static/assets/sound/effects/ui_close.wav");
-        // this.load.audio("ui_click", "/static/assets/sound/effects/ui_click.wav");
-
-        // // 스킬별
-        // this.load.audio("skill_fireball", "/static/assets/sound/effects/skill_fireball.wav");
-        // this.load.audio("skill_buff", "/static/assets/sound/effects/skill_buff.wav");
-        // this.load.audio("skill_flameA", "/static/assets/sound/effects/skill_flameA.wav");
-        // this.load.audio("skill_flameB", "/static/assets/sound/effects/skill_flameB.wav");
-        // this.load.audio("skill_flameC", "/static/assets/sound/effects/skill_flameC.wav");
-        // this.load.audio("skill_firebomb", "/static/assets/sound/effects/skill_firebomb.wav");
-        // this.load.audio("skill_incendiary", "/static/assets/sound/effects/skill_incendiary.wav");
-        // this.load.audio("skill_meteor_S", "/static/assets/sound/effects/skill_meteor_S.wav");
-        // this.load.audio("skill_meteor_M", "/static/assets/sound/effects/skill_meteor_M.wav");
-        // this.load.audio("skill_meteor_L", "/static/assets/sound/effects/skill_meteor_L.wav");
-        // this.load.audio("skill_napalm", "/static/assets/sound/effects/skill_napalm.wav");
-        // this.load.audio("skill_deathhand", "/static/assets/sound/effects/skill_deathhand.wav");
-        // ... 나머지 스킬들도 필요에 따라 등록
-        // ====================================================
-
-        // 사망 시 나오는 gameover 이미지
-        // this.load.image("gameover", "/static/assets/gameover.png");
-
-        // item png load 하기
-        // for (const key of this.itemList) {
-        //     this.load.image(key, `static/assets/${key}.png`)
-        // }
 
         preloadFireSkillAssets(this);
         preloadMonsterAnims(this);
@@ -390,13 +157,14 @@ export default class CastleWall extends Phaser.Scene {
         preloadSound(this);
     }
 
-    // !!) 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
+    // 매 scenc마다 player 객체가 새롭게 정의 (모든 스탯 초기화)
     // create() : 유니티의 Start()와 같이 preload() 동작 이후 오브젝트 초기화
     create() {
         setCurrentScene(this);
         if (this.game.vue?.setMapTitle) {
             this.game.vue.setMapTitle(this.mapName);
         }
+
         // 사운드 ===========================================
         this.SoundManager = SoundManager.getInstance();
         this.footstepCooldown = 0;
@@ -408,75 +176,8 @@ export default class CastleWall extends Phaser.Scene {
         this.SoundManager.playBgm("bgm_castle_wall")
 
         createPotalAnims(this);
-        // ================== 씬 포탈 sprite ======================
-        // 2. 포탈
-        // this.anims.create({
-        //     key: "portal-anim",
-        //     frames: this.anims.generateFrameNumbers("portal", { start: 0, end: 6 }),
-        //     frameRate: 12,
-        //     repeat: -1
-        // });
-        // ========================================================
-
+      
         createPlayerAnims(this);
-        // // =================== 플레이어 sprite =====================
-        // // 3. 플레이어 이동 모션
-        // this.anims.create({
-        //     key: "player_walk",
-        //     frames: this.anims.generateFrameNumbers("playerSheet", {
-        //         start: 0,
-        //         end: 5,
-        //     }),
-        //     frameRate: 10,
-        //     repeat: -1,
-        // });
-
-        // // 4. 플레이어 피격 모션
-        // this.anims.create({
-        //     key: "player_hit",
-        //     frames: this.anims.generateFrameNumbers("playerSheet", {
-        //         start: 30,
-        //         end: 32,
-        //     }),
-        //     frameRate: 12,
-        //     repeat: 0
-        // });
-
-        // // 5. 플레이어 사망 모션
-        // this.anims.create({
-        //     key: "player_death",
-        //     frames: this.anims.generateFrameNumbers("playerSheet", {
-        //         start: 36,
-        //         end: 40,
-        //     }),
-        //     frameRate: 8,
-        //     repeat: 0
-        // });
-
-        // // 6. 플레이어 스킬 모션 sprite
-        // // 1) fireball / firebomb / incendiary / napalm
-        // this.anims.create({
-        //     key: "player_cast_small",
-        //     frames: this.anims.generateFrameNumbers("playerSheet", { start: 18, end: 21 }),
-        //     frameRate: 12,
-        //     repeat: 0
-        // });
-
-        // // 2) buff skill
-        // this.anims.create({
-        //     key: "player_buff",
-        //     frames: this.anims.generateFrameNumbers("playerSheet", { start: 24, end: 27 }),
-        //     frameRate: 10,
-        //     repeat: 0
-        // });
-
-        // // 3) meteor S, M, L / deathhand / flameA,B,C
-        // this.anims.create({
-        //     key: "player_cast_big",
-        //     frames: this.anims.generateFrameNumbers("playerSheet", { start: 42, end: 47 }),
-        //     frameRate: 10,
-        //     repeat: 0
-        // });
 
         // 스킬 애니메이션 매핑
         this.skillMotionType = {
@@ -495,250 +196,8 @@ export default class CastleWall extends Phaser.Scene {
             flameB: "big",
             flameC: "big",
         };
-        // ========================================================
 
         createMonsterAnims(this);
-        // ============== 몬스터 sprite ===================
-        // arrow_skeleton
-        // this.anims.create({
-        //     key: "arrow_skeleton_walk",
-        //     frames: this.anims.generateFrameNumbers("arrow_skeleton", { start: 0, end: 5 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // bat
-        // this.anims.create({
-        //     key: "bat_walk",
-        //     frames: this.anims.generateFrameNumbers("bat", { start: 0, end: 2 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // bird
-        // this.anims.create({
-        //     key: "bird_walk",
-        //     frames: this.anims.generateFrameNumbers("bird", { start: 0, end: 7 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });      
-        // // butterfly
-        // this.anims.create({
-        //     key: "butterfly_walk",
-        //     frames: this.anims.generateFrameNumbers("butterfly", { start: 0, end: 2 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // }); 
-        // // coffin
-        // this.anims.create({
-        //     key: "coffin_walk",
-        //     frames: this.anims.generateFrameNumbers("coffin", { start: 0, end: 10 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // colossus
-        // this.anims.create({
-        //     key: "colossus_walk",
-        //     frames: this.anims.generateFrameNumbers("colossus", { start: 0, end: 6 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // dwarf
-        // this.anims.create({
-        //     key: "dwarf_walk",
-        //     frames: this.anims.generateFrameNumbers("dwarf", { start: 0, end: 7 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });  
-        // // eyeball
-        // this.anims.create({
-        //     key: "eyeball_walk",
-        //     frames: this.anims.generateFrameNumbers("eyeball", { start: 0, end: 14 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // eyebat
-        // this.anims.create({
-        //     key: "eyebat_walk",
-        //     frames: this.anims.generateFrameNumbers("eyebat", { start: 0, end: 5 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // fire_skull1
-        // this.anims.create({
-        //     key: "fire_skull1_walk",
-        //     frames: this.anims.generateFrameNumbers("fire_skull1", { start: 0, end: 3 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });       
-        // // fire_skull2
-        // this.anims.create({
-        //     key: "fire_skull2_walk",
-        //     frames: this.anims.generateFrameNumbers("fire_skull2", { start: 0, end: 3 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // ghost
-        // this.anims.create({
-        //     key: "ghost_walk",
-        //     frames: this.anims.generateFrameNumbers("ghost", { start: 0, end: 7 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // lich
-        // this.anims.create({
-        //     key: "lich_walk",
-        //     frames: this.anims.generateFrameNumbers("lich", { start: 0, end: 7 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // }); 
-        // // mask
-        // this.anims.create({
-        //     key: "mask_walk",
-        //     frames: this.anims.generateFrameNumbers("mask", { start: 0, end: 3 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // }); 
-        // // mimic
-        // this.anims.create({
-        //     key: "mimic_walk",
-        //     frames: this.anims.generateFrameNumbers("mimic", { start: 0, end: 9 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // moai-b
-        // this.anims.create({
-        //     key: "moai-b_walk",
-        //     frames: this.anims.generateFrameNumbers("moai-b", { start: 0, end: 4 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // }); 
-        // // moai-s
-        // this.anims.create({
-        //     key: "moai-s_walk",
-        //     frames: this.anims.generateFrameNumbers("moai-s", { start: 0, end: 4 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // }); 
-        // // moai-g
-        // this.anims.create({
-        //     key: "moai-g_walk",
-        //     frames: this.anims.generateFrameNumbers("moai-g", { start: 0, end: 4 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // }); 
-        // // mummy
-        // this.anims.create({
-        //     key: "mummy_walk",
-        //     frames: this.anims.generateFrameNumbers("mummy", { start: 0, end: 9 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // mushroom
-        // this.anims.create({
-        //     key: "mushroom_walk",
-        //     frames: this.anims.generateFrameNumbers("mushroom", { start: 0, end: 3 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // rabbit
-        // this.anims.create({
-        //     key: "rabbit_walk",
-        //     frames: this.anims.generateFrameNumbers("rabbit", { start: 0, end: 6 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // reaper
-        // this.anims.create({
-        //     key: "reaper_walk",
-        //     frames: this.anims.generateFrameNumbers("reaper", { start: 0, end: 5 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // scorpion
-        // this.anims.create({
-        //     key: "scorpion_walk",
-        //     frames: this.anims.generateFrameNumbers("scorpion", { start: 0, end: 5 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // skeleton
-        // this.anims.create({
-        //     key: "skeleton_walk",
-        //     frames: this.anims.generateFrameNumbers("skeleton", { start: 0, end: 8 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });  
-        // // skull_b
-        // this.anims.create({
-        //     key: "skull_b_walk",
-        //     frames: this.anims.generateFrameNumbers("skull_b", { start: 0, end: 12 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });  
-        // // skull_w
-        // this.anims.create({
-        //     key: "skull_w_walk",
-        //     frames: this.anims.generateFrameNumbers("skull_w", { start: 0, end: 12 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // slime
-        // this.anims.create({
-        //     key: "slime_walk",
-        //     frames: this.anims.generateFrameNumbers("slime", { start: 0, end: 15 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // snail
-        // this.anims.create({
-        //     key: "snail_walk",
-        //     frames: this.anims.generateFrameNumbers("snail", { start: 0, end: 11 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // snake
-        // this.anims.create({
-        //     key: "snake_walk",
-        //     frames: this.anims.generateFrameNumbers("snake", { start: 0, end: 4 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // squirrel
-        // this.anims.create({
-        //     key: "squirrel_walk",
-        //     frames: this.anims.generateFrameNumbers("squirrel", { start: 0, end: 5 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // stingsnake
-        // this.anims.create({
-        //     key: "stingsnake_walk",
-        //     frames: this.anims.generateFrameNumbers("stingsnake", { start: 0, end: 4 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // vampire
-        // this.anims.create({
-        //     key: "vampire_walk",
-        //     frames: this.anims.generateFrameNumbers("vampire", { start: 0, end: 11 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // });
-        // // weapon
-        // this.anims.create({
-        //     key: "weapon_walk",
-        //     frames: this.anims.generateFrameNumbers("weapon", { start: 0, end: 5 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // }); 
-        // // wolf
-        // this.anims.create({
-        //     key: "wolf_walk",
-        //     frames: this.anims.generateFrameNumbers("wolf", { start: 0, end: 3 }),
-        //     frameRate: 8,
-        //     repeat: -1,
-        // }); 
-        // ========================================================
-
 
 
         // ======================= UI =============================
@@ -768,7 +227,6 @@ export default class CastleWall extends Phaser.Scene {
         // 맵 이미지를 맵 크기에 맞춰 변경
         map.displayWidth = CFG.world.width;
         map.displayHeight = CFG.world.height;
-        // ===================== 맵 및 카메라 =======================
 
 
 
@@ -928,13 +386,7 @@ export default class CastleWall extends Phaser.Scene {
         this.input.keyboard.on("keydown", (e) => this.handleArrowDoubleTap(e));
 
         this.skills = createDefaultSkills(this);
-        // ==========================================================
-
-
-
-
-        // ================ 시스템 메세지 창 (로그창) ==================
-        this.textBar = "게임 시작!";
+       
 
         // 이펙트 출력 함수 바인딩
         this.spawnShockwave = (x, y, radius, dmg) =>
@@ -948,7 +400,6 @@ export default class CastleWall extends Phaser.Scene {
         this.count = 0;
 
         // === 포탈 생성(애니메이션) ===
-
         // 포탈 4개 생성
         this.portals = {
             east: this.physics.add.sprite(1530, 490, "portal"),
@@ -1056,7 +507,7 @@ export default class CastleWall extends Phaser.Scene {
 
             { cmd: "wait", time: 300 },
 
-            // 🔥 복선
+            // 복선
             { cmd: "say", text: "프라가라흐: 후후… 그래. 나를 완전히 해방시켜준다면…." },
             { cmd: "say", text: "프라가라흐: 너도…." },
             { cmd: "say", text: "프라가라흐: 이 세계도…." },
@@ -1146,6 +597,7 @@ export default class CastleWall extends Phaser.Scene {
         const prevActive = skill.active;
 
         //  실제 스킬 시전 시도 (쿨타임/마나/조건은 스킬 안에서 판단)
+        console.log(this.skillLevel[this.skillState[name]]);
         skill.tryCast(this, this.player, this.skillLevel[this.skillState[name]]);
         // --- 진짜로 "시전이 된 건지" 판별 ---
         let castSuccess = false;
@@ -1163,10 +615,10 @@ export default class CastleWall extends Phaser.Scene {
             castSuccess = true;
         }
 
-        // ❌ 쿨타임, 마나부족, 기타 조건 실패 → 아무 모션도 내보내지 말고 종료
+        // 쿨타임, 마나부족, 기타 조건 실패 → 아무 모션도 내보내지 말고 종료
         if (!castSuccess) return;
 
-        // 스킬 캐스팅 사운드 (스킬에 성공했을 경우에만 시전) -> (윗 줄(1080줄)에서 넘어왔다면 확실히 casting된 것으로 판단)
+        // 스킬 캐스팅 사운드 (스킬에 성공했을 경우에만 시전)
         this.SoundManager.playSkillCast(name);
 
         // 여기까지 왔으면 "실제로 스킬이 발동된 것"만 남음
@@ -1234,13 +686,6 @@ export default class CastleWall extends Phaser.Scene {
         if (!this.autosave) {
             this.autosave = true;
             saveGame(this.userId, this.skillLevel);
-        }
-
-        if (!this.autosave) {
-            this.autosave = true;
-            console.log(this.userId);
-            saveGame(this.userId, this.skillLevel);
-            console.log('game saved');
         }
 
         const now = this.time.now;
@@ -1445,7 +890,7 @@ export default class CastleWall extends Phaser.Scene {
 
     /** 대쉬 구현 */
     doDash(dir) {
-        // 🔥 대쉬 사운드
+        // 대쉬 사운드
         this.SoundManager.playDash();
 
         const D = CFG.dash.distance;
@@ -1461,7 +906,6 @@ export default class CastleWall extends Phaser.Scene {
         // 대쉬 이펙트
         const c = CFG.dash.cameraFlash;
         this.cameras.main.flash(c.duration, c.r, c.g, c.b);
-        this.textBar = "대쉬!";
     }
 
     /** 대쉬 지속 */
@@ -1562,7 +1006,7 @@ export default class CastleWall extends Phaser.Scene {
     onPlayerHitByMonster = (player, monster) => {
         if (!player || !monster) return;
 
-        // 🔥 키다운 스킬(incendiary) 사용 중이면 즉시 끊기
+        // 키다운 스킬(incendiary) 사용 중이면 즉시 끊기
         if (this.activeHoldSkill) {
             const s = this.skills[this.activeHoldSkill];
             if (s && s.stop) s.stop();
@@ -1609,8 +1053,6 @@ export default class CastleWall extends Phaser.Scene {
         this.time.delayedCall(CFG.playerKB.invulMs, () => {
             if (player) player.clearTint();
         });
-
-        this.textBar = "적에게 피격!";
 
         // 사망 체크
         if (this.playerStats.hp <= 0) {
@@ -1663,7 +1105,7 @@ export default class CastleWall extends Phaser.Scene {
             this.player.body.enable = false;
         }
 
-        // 🔊 사운드 매니저
+        // 사운드 매니저
         const sm = this.SoundManager || SoundManager.getInstance();
 
         /* ------------------------------
@@ -1693,7 +1135,7 @@ export default class CastleWall extends Phaser.Scene {
             this.gameOverImage.setVisible(true);
         }
 
-        // 🔥 화면 전체를 덮도록 크기 강제 설정
+        // 화면 전체를 덮도록 크기 강제 설정
         this.gameOverImage.setDisplaySize(cam.width, cam.height);
 
         // 처음엔 투명
@@ -1709,7 +1151,7 @@ export default class CastleWall extends Phaser.Scene {
 
 
         /* ------------------------------
-            3) 슬로우 모션 사망 애니메이션
+        3) 슬로우 모션 사망 애니메이션
         ------------------------------ */
         const deathAnim = this.player.play("player_death");
         if (deathAnim) {
@@ -1717,7 +1159,7 @@ export default class CastleWall extends Phaser.Scene {
         }
 
         /* ------------------------------
-        🧊 몬스터 어그로 초기화
+        몬스터 어그로 초기화
         ------------------------------ */
         if (this.monsters) {
             this.monsters.children.iterate(mon => {
@@ -1744,7 +1186,7 @@ export default class CastleWall extends Phaser.Scene {
 
             // GAME OVER 화면이 켜진 상태로 0.4초 유지
             this.time.delayedCall(4000, () => {
-                // 🔥 마지막 저장 지점에서 부활 처리
+                // 마지막 저장 지점에서 부활 처리
                 this.respawnFromLastSave();
             });
         });
@@ -1757,7 +1199,6 @@ export default class CastleWall extends Phaser.Scene {
         try {
             // 1) 백엔드에서 저장 데이터 가져오기
             const saveData = await loadGame(userId);
-            console.log("[respawnFromLastSave] loaded:", saveData);
 
             if (!saveData || !saveData.stats) {
                 throw new Error("저장 데이터가 없습니다.");
@@ -1767,7 +1208,7 @@ export default class CastleWall extends Phaser.Scene {
 
             /* ------------------------------
                 A. 씬이 다른 경우 → 그 씬으로 전환
-            (예: 저장한 장소가 TestScene3 이면 그쪽으로 이동)
+            (예: 저장한 장소가 CastleWall 이면 그쪽으로 이동)
             ------------------------------ */
             if (scene && scene !== this.scene.key) {
                 // 다른 씬이 saveData를 처리하도록 넘겨줌
@@ -1825,7 +1266,7 @@ export default class CastleWall extends Phaser.Scene {
                 this.player.x = stats.x;
                 this.player.y = stats.y;
             } else {
-                // TestScene2에서 이미 쓰고 있는 기본 스폰 좌표
+                // Scene에서 이미 쓰고 있는 기본 스폰 좌표
                 this.player.x = this.spawnX;
                 this.player.y = this.spawnY;
             }
@@ -1843,7 +1284,7 @@ export default class CastleWall extends Phaser.Scene {
             this.textBar = "마지막 저장 지점에서 부활했습니다!";
         } catch (e) {
             console.error("[respawnFromLastSave] 로드 실패:", e);
-            // ⚠️ 실패 시에는 최소한 현재 씬에서라도 안전하게 부활
+            // 실패 시에는 최소한 현재 씬에서라도 안전하게 부활
             if (this.playerStats) {
                 this.playerStats.hp = Math.max(
                     1,
@@ -1922,7 +1363,7 @@ export default class CastleWall extends Phaser.Scene {
             if (m.isAggro) {
                 this.physics.moveToObject(m, this.player, 95);
 
-                // 🔥 추격 방향에 따라 좌우 반전
+                // 추격 방향에 따라 좌우 반전
                 const vx = m.body?.velocity?.x ?? 0;
                 if (vx < 0) m.flipX = false;
                 else if (vx > 0) m.flipX = true;
@@ -1960,7 +1401,7 @@ export default class CastleWall extends Phaser.Scene {
     updateMonsterWander(monster, now) {
         if (!monster) return;
 
-        // 🔥 몬스터별 walk 애니메이션 선택
+        // 몬스터별 walk 애니메이션 선택
         const animKey = this.monsterWalkAnim[monster.name];
         if (animKey) {
             if (!monster.anims.isPlaying || monster.anims.currentAnim.key !== animKey) {
@@ -2105,12 +1546,12 @@ export default class CastleWall extends Phaser.Scene {
 
         if (!animKey) return;
 
-        // 🔥 캐스팅 상태 ON
+        // 캐스팅 상태 ON
         this.player.isCasting = true;
 
         const anim = this.player.play(animKey, true);
 
-        // 🔥 hold 스킬(incendiary 등) 말고, 일반 스킬은 애니 끝나면 캐스팅 해제
+        // hold 스킬(incendiary 등) 말고, 일반 스킬은 애니 끝나면 캐스팅 해제
         if (!isHold && type !== "incendiary-hold") {
             this.player.once(`animationcomplete-${animKey}`, () => {
                 this.player.isCasting = false;
@@ -2198,60 +1639,9 @@ export default class CastleWall extends Phaser.Scene {
         });
     }
 
-    /**
-     * 라인 형태의 지속 장판 DoT (Napalm 등에 사용)
-     * origin(x, y)에서 dir 방향으로 length 만큼 뻗은 띠 모양 영역
-     */
-    applyPersistentDot({
-        x,
-        y,
-        dir,
-        length,
-        radius,
-        tickDmg,
-        duration,
-        interval,
-    }) {
-        if (!this.monsters) return;
-
-        const nx = dir?.x ?? 1;
-        const ny = dir?.y ?? 0;
-        const totalTicks = Math.max(1, Math.floor(duration / interval));
-
-        for (let i = 0; i < totalTicks; i++) {
-            this.time.delayedCall(interval * i, () => {
-                this.monsters.children.iterate((monster) => {
-                    if (!monster || !monster.active) return;
-
-                    const vx = monster.x - x;
-                    const vy = monster.y - y;
-
-                    // 라인상의 투영 길이 t
-                    const t = vx * nx + vy * ny;
-                    if (t < 0 || t > length) return;
-
-                    // 라인으로부터의 수직 거리 체크
-                    const px = nx * t;
-                    const py = ny * t;
-                    const lx = vx - px;
-                    const ly = vy - py;
-                    if (lx * lx + ly * ly > radius * radius) return;
-
-                    monster.hp -= tickDmg;
-                    this.showDamageText(monster, tickDmg, "#ffff66");
-                    if (this.spawnHitFlash) {
-                        this.spawnHitFlash(monster.x, monster.y);
-                    }
-                    if (typeof this.onMonsterAggro === "function") {
-                        this.onMonsterAggro(monster);
-                    }
-                });
-            });
-        }
-    }
 
     /**
-     * 🔥 방향 직사각형 데미지 (Incendiary 전용)
+     * 방향 직사각형 데미지 (Incendiary 전용)
      * originX, originY = 시작점
      * dir = 방향벡터
      * width = 스프라이트 폭(px)
@@ -2284,7 +1674,7 @@ export default class CastleWall extends Phaser.Scene {
             if ((lx * lx + ly * ly) > (halfW * halfW)) return;
 
             this.showDamageText(monster, dmg, "#ffff66");
-            // 🔥 데미지 적용
+            // 데미지 적용
             monster.hp -= dmg;
             if (this.spawnHitFlash) this.spawnHitFlash(monster.x, monster.y);
             this.onMonsterAggro(monster);
@@ -2292,7 +1682,7 @@ export default class CastleWall extends Phaser.Scene {
             hitSomething = true;
         });
 
-        // 🔥 명중했으면 onHit() 실행 (카메라 흔들림, 스킬 중단 등)
+        // 명중했으면 onHit() 실행 (카메라 흔들림, 스킬 중단 등)
         if (hitSomething && typeof onHit === "function") {
             onHit();
         }
@@ -2303,7 +1693,7 @@ export default class CastleWall extends Phaser.Scene {
     moveToNextScene(portalId) {
         this.SoundManager.playPortal();
 
-        // ⭐ 포탈 → 목적지 씬 매핑 테이블
+        // 포탈 → 목적지 씬 매핑 테이블
         const portalToScene = {
             east: "Road1",
         };
@@ -2317,7 +1707,7 @@ export default class CastleWall extends Phaser.Scene {
         // 필요 시 해당 씬을 미리 add() (존재하지 않을 경우)
         if (!this.scene.get(nextScene)) {
             this.scene.add(nextScene, window[nextScene]);
-            // 🔥 주의: TestScene2, TestScene3 같은 씬들은 전역에 등록되어 있어야 함
+            // 주의: TestScene2, TestScene3 같은 씬들은 전역에 등록되어 있어야 함
         }
 
         const p = this.currentPortal;
@@ -2361,7 +1751,6 @@ export default class CastleWall extends Phaser.Scene {
             })
             .catch(err => console.error(err));
     }
-
 }
 
 

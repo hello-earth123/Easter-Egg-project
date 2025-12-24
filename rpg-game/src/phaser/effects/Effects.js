@@ -1,4 +1,3 @@
-// TODO: Effect 코드와 피격 부분 분할 or 일반 공격(Bullet)에 대한 이펙트 및 피격을 이관 (일관성 유지)
 import Phaser from "phaser"; // 피격을 위한 import
 
 // 이펙트: shockwave / lightning / hit flash
@@ -27,7 +26,7 @@ export function spawnShockwave(scene, x, y, radius, dmg) {
     });
   }
 
-  // 🔒 안전 판정: Phaser.Math.Distance.Between 사용
+  // 안전 판정: Phaser.Math.Distance.Between 사용
   const mons = scene.monsters.getChildren().slice(); // 방어적 복사
   for (const m of mons) {
     if (!m || !m.active) continue;
@@ -46,26 +45,15 @@ export function spawnShockwave(scene, x, y, radius, dmg) {
 /** Lightning */
 export function spawnLightning(scene, x, y, radius, dmg) {
   if (scene.textures.exists("lightning")) {
-    // const img = scene.add.image(x, y, "lightning").setScale(1.1).setAlpha(0.95);
-    // scene.tweens.add({
-    //   targets: img,
-    //   alpha: 0.0,
-    //   duration: 260,
-    //   onComplete: () => img.destroy(),
-
-
-    // });
-
     const img = scene.add.sprite(x, y, "lightning").setScale(1.1);
 
     img.play("lightning-burst");
 
     img.on("animationcomplete", () => img.destroy());
     img.setAlpha(1);
-
-
-
-  } else {
+  } 
+  
+  else {
     // 대체 그래픽
     const line = scene.add.rectangle(x, y - 160, 4, 160, 0xeeeeff, 0.9);
     const boom = scene.add.circle(x, y, 8, 0xffffaa, 0.9);
@@ -84,7 +72,7 @@ export function spawnLightning(scene, x, y, radius, dmg) {
     });
   }
 
-  // 🔒 안전 판정: Phaser.Math.Distance.Between 사용
+  // 안전 판정: Phaser.Math.Distance.Between 사용
   const mons = scene.monsters.getChildren().slice(); // 방어적 복사
   for (const m of mons) {
     if (!m || !m.active) continue;

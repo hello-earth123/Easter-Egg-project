@@ -4,6 +4,7 @@ import { applyVFX } from "../utils/SkillVFX.js";
 
 export class Napalm extends FireSkillBase {
   cast(scene, caster, level) {
+    console.log(level);
     const dir = this.getDir(caster);
 
     const dist = this.base.distance ?? 150;
@@ -15,7 +16,7 @@ export class Napalm extends FireSkillBase {
     const duration = this.base.duration;
     const interval = this.base.interval ?? 450;
 
-    // ================ 🔥 1) 초기 폭발 =====================
+    // ================ 1) 초기 폭발 =====================
     const boom = scene.add.sprite(ox, oy, "napalm");
     boom.setOrigin(0.5);
 
@@ -31,10 +32,11 @@ export class Napalm extends FireSkillBase {
       y: oy,
       radius: this.getScaledRadius(radius),
       dmg: this.getDamage(level),
+      collectTargets: true,
       onHit: () => this.shakeCameraOnHit(scene)
     });
 
-    // ================ 🔥 2) 장판 생성 =====================
+    // ================ 2) 장판 생성 =====================
     boom.once("animationcomplete", () => {
       boom.destroy();
 
@@ -61,7 +63,7 @@ export class Napalm extends FireSkillBase {
       });
     });
 
-    // ================ 🔥 3) 지속 데미지 =====================
+    // ================ 3) 지속 데미지 =====================
     const ticks = Math.floor(duration / interval);
 
     for (let i = 1; i <= ticks; i++) {
@@ -71,11 +73,10 @@ export class Napalm extends FireSkillBase {
           y: oy,
           radius: this.getScaledRadius(radius),
           dmg: tickDmg,
+          collectTargets: true,
           onHit: () => this.shakeCameraOnHit(scene)
         });
       });
     }
-
-    scene.textBar = `Napalm (Lv${this.level})`;
   }
 }

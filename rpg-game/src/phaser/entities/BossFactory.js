@@ -18,13 +18,13 @@ let BossInstance;
 export function spawnBoss(scene, boss) {
     const names = boss;
 
-    // 🔥 몬스터 이름별 크기 매핑 테이블
+    // 보스 이름별 크기 매핑 테이블
     const MONSTER_SCALE = {
         coffin: 5.0,
         vampire: 5.0,
     };
 
-    // 몬스터 종류별 이동 애니메이션 key 매핑
+    // 보스 종류별 이동 애니메이션 key 매핑
     scene.monsterWalkAnim = {
         coffin: "coffin_walk",
         vampire: "vampire_walk",
@@ -93,10 +93,10 @@ export function spawnBoss(scene, boss) {
                         fill: "#fff",
                     }),
 
-                    // 🔥 추가: 배회(wander)용 상태값들
+                    // 배회(wander)용 상태값들
                     wanderOriginX: BossInstance.x,
                     wanderOriginY: BossInstance.y,
-                    // “한 칸에서 세 칸” 정도 – 타일 32px 기준으로 대략 32~96
+                    // “한 칸에서 세 칸” 정도 배회 – 타일 32px 기준으로 대략 32~96
                     wanderRange: Phaser.Math.Between(32, 96),
                     wanderSpeed: Phaser.Math.Between(25, 45),  // 배회 속도
                     wanderTargetX: null,
@@ -207,11 +207,6 @@ export function ChooseNextSkill(scene) {
     if (!BossInstance.nextPattern || BossInstance.nextPattern.size() === 0) return;
 
     BossInstance.isAttack = true;
-
-    // 각 스킬에서 switch (스킬 사용 주기 증가)
-    // scene.time.delayedCall(1400, () => {
-    //     BossInstance.isAttack = false;
-    // });
 
     const pattern = BossInstance.nextPattern.pop();
     CastSkill(pattern, scene);

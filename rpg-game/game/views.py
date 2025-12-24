@@ -50,8 +50,6 @@ def playerConnect(request, userId):
 
     serializer = PlayerSerializer(account)
 
-    print(serializer.data)
-
     return Response(serializer.data)
 
 
@@ -73,8 +71,6 @@ def slotConnect(request, userId):
     slot = Slot.objects.get(user=user)
 
     serializer = SlotSerializer(slot)
-
-    print(serializer.data)
 
     return Response(serializer.data)
 
@@ -142,7 +138,6 @@ def save(request, userId):
 
     slot = Slot.objects.get(user=user)
     slot.skillSlots = data.get("slots", {}).get("skillSlots", slot.skillSlots)
-    print(slot.skillSlots)
     slot.itemSlots = data.get("slots", {}).get("itemSlots", slot.itemSlots)
     slot.save()
 

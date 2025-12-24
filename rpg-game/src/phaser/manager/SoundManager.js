@@ -15,7 +15,7 @@ export default class SoundManager {
   }
 
   /**
-   * 어디서든 가져다 쓸 수 있는 싱글톤
+   * 싱글톤
    */
   static getInstance() {
     return SoundManager._instance;
@@ -123,7 +123,7 @@ export default class SoundManager {
     }
   }
 
-  /** 🔥 BGM 페이드아웃 후 정지 */
+  /** BGM 페이드아웃 후 정지 */
   fadeOutBgm(onComplete) {
     if (!this.currentBgm) {
       if (onComplete) onComplete();
@@ -157,7 +157,7 @@ export default class SoundManager {
     }, stepMs);
   }
 
-  /** 🔥 페이드인 BGM */
+  /** 페이드인 BGM */
   fadeInBgm(key, config = {}) {
     this._clearFadeInterval();
 
@@ -249,7 +249,6 @@ export default class SoundManager {
   /* =========================
    *  SFX 공통 (효과음)
    * ========================= */
-
   playSfx(key, config = {}) {
     if (!this.sound) return;
     this.sound.play(key, {
@@ -287,7 +286,7 @@ export default class SoundManager {
     this.playSfx("item_pickup");
   }
 
-  // 6. 걷는 사운드 (한 걸음마다 호출)
+  // 6. 걷는 사운드 (한 걸음마다 sprite 발걸음 맞춰서 호출)
   playFootstep() {
     this.playSfx("footstep");
   }

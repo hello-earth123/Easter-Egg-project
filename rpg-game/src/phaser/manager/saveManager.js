@@ -22,7 +22,6 @@ export function saveGame(userId, skillState) {
     })
         .then(res => res.json())
         .then(() => {
-            console.log("게임 저장 완료!");
             scene.textBar = "게임이 저장되었습니다!";
         })
         .catch(err => console.error(err));

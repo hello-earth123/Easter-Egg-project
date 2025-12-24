@@ -19,11 +19,10 @@ function relocateMonster(scene, monster) {
   monster.body.updateFromGameObject();
 }
 
-/** 몬스터 객체 생성 및 scene에 추가 - TODO */
 export function spawnMonsters(scene) {
   const names = Object.keys(scene.monsterData)
 
-  // 🔥 몬스터 이름별 크기 매핑 테이블
+  // 몬스터 이름별 크기 매핑 테이블
   const MONSTER_SCALE = {
     arrow_skeleton: 2.3,
     bat: 2.0,
@@ -60,7 +59,6 @@ export function spawnMonsters(scene) {
     vampire: 10.0,
     weapon: 3.5,
     wolf: 3.4,
-    // 필요한 만큼 계속 추가 가능
   };
 
   // 몬스터 종류별 이동 애니메이션 key 매핑
@@ -251,8 +249,6 @@ export function spawnMonsters(scene) {
               );
             }
 
-            // m.setDisplaySize(64, 64);
-
             const stats = makeMonsterStats(def, scene);
             Object.assign(m, {
               name: def.name,
@@ -271,7 +267,7 @@ export function spawnMonsters(scene) {
                 fontSize: "12px",
                 fill: "#fff",
               }),
-              // 🔥 추가: 배회(wander)용 상태값들
+              // 배회(wander)용 상태값들
               wanderOriginX: m.x,
               wanderOriginY: m.y,
               // “한 칸에서 세 칸” 정도 – 타일 32px 기준으로 대략 32~96
@@ -284,8 +280,7 @@ export function spawnMonsters(scene) {
 
             // 움직일 수 있는 최대 범위 설정
             m.setCollideWorldBounds(true);
-            // collider box type > circle
-            // m.body.setCircle(Math.max(m.width, m.height) / 2);
+
             if (scene.physics.overlap(m, scene.wallGroup)) {
               relocateMonster(scene, m);
             }

@@ -16,13 +16,13 @@ export class FlameC extends FireSkillBase {
     const scale = this.base.scale ?? 1.3;
 
     // ======================================================
-    // 🔥 1) 중심 폭발 위치 (플레이어 앞 distance)
+    // 1) 중심 폭발 위치 (플레이어 앞 distance)
     // ======================================================
     const centerX = caster.x + dir.x * dist;
     const centerY = caster.y + dir.y * dist;
 
     // ======================================================
-    // 🔥 2) 중심 폭발 + 십자 주변 지점
+    // 2) 중심 폭발 + 십자 주변 지점
     // ======================================================
     const positions = [
       { x: centerX, y: centerY }, // 중심 폭발
@@ -33,7 +33,7 @@ export class FlameC extends FireSkillBase {
     ];
 
     // ======================================================
-    // 🔥 FX 생성
+    // FX 생성
     // ======================================================
     const flames = [];
 
@@ -49,7 +49,7 @@ export class FlameC extends FireSkillBase {
     }
 
     // ======================================================
-    // 🔥 즉발 데미지
+    // 즉발 데미지
     // ======================================================
     for (const f of flames) {
       scene.damageArea({
@@ -57,12 +57,13 @@ export class FlameC extends FireSkillBase {
         y: f.y,
         radius,
         dmg: this.getDamage(level),
+        collectTargets: true,
         onHit: () => this.shakeCameraOnHit(scene),
       });
     }
 
     // ======================================================
-    // 🔥 지속 도트 (7틱)
+    // 지속 도트 (7틱)
     // ======================================================
     const interval = duration / 7;
     for (const f of flames) {
@@ -78,7 +79,7 @@ export class FlameC extends FireSkillBase {
 
 
     // ======================================================
-    // 🔥 안전 destroy
+    // 안전 destroy
     // ======================================================
     for (const f of flames) {
       f.fx.once("animationcomplete", () => {
@@ -86,7 +87,5 @@ export class FlameC extends FireSkillBase {
         scene.time.delayedCall(0, () => f.fx.destroy?.());
       });
     }
-
-    scene.textBar = `Flame C (Lv${this.level})`;
   }
 }
