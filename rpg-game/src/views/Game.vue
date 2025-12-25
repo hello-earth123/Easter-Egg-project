@@ -590,7 +590,6 @@ import { saveGame } from "../phaser/manager/saveManager.js";
 import SoundManager from "../phaser/manager/SoundManager.js";
 import DialogueUI from "../phaser/ui/DialogueUI.vue";
 import IntroCutscene from "./IntroCutscene.vue";
-import BossScene from "../phaser/scenes/BossScene.js";
 
 /* Chart.js Radar import */
 import {

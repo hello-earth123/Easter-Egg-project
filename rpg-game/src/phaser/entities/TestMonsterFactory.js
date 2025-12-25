@@ -148,7 +148,7 @@ export function spawnMonsters(scene) {
     fire_skull1: "불타는 두개골",
     fire_skull2: "불타는 두개골",
     ghost: "원혼",
-    hidden: "테스트",
+    hidden: "이스터에그",
     lich: "리치",
     mask: "저주받은 가면",
     mimic: "미믹",
