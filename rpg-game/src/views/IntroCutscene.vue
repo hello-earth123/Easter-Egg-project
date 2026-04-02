@@ -28,13 +28,7 @@ export default {
   data() {
     return {
       userId: Number(this.$route.query.userId),
-      images: [
-        img01,
-        img02,
-        img03,
-        img04,
-        img05,
-      ],
+      images: [img01, img02, img03, img04, img05],
       currentIndex: 0,
       visible: true,
     };
@@ -54,12 +48,15 @@ export default {
         this.currentIndex += 1;
       } else {
         this.visible = false;
-        await fetch(`http://121.162.159.56:8000/api/accounts/first-scene/${this.userId}/`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({}), // body 없어도 됨
-        });
-        this.$router.push('/game');
+        await fetch(
+          `http://IPADDRESS/api/accounts/first-scene/${this.userId}/`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}), // body 없어도 됨
+          },
+        );
+        this.$router.push("/game");
       }
     },
   },
@@ -88,7 +85,7 @@ export default {
   bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
-  color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.75);
   font-size: 12px;
 }
 

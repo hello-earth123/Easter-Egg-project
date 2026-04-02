@@ -40,7 +40,7 @@ export function spawnBoss(scene, boss) {
         vampire: "블라드 체페슈 드 제패르", // 보스 ㅋ
     }
 
-    fetch("http://121.162.159.56:8000/api/monsters/", {
+    fetch("http://IPADDRESS/api/monsters/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ names: names })

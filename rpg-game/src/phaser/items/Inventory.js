@@ -26,7 +26,7 @@ const items = {
 
 
 export function resolveDropItem(drop) {
-  return fetch(`http://121.162.159.56:8000/api/item/${drop.itemName}/`)
+  return fetch(`http://IPADDRESS/api/item/${drop.itemName}/`)
     .then(res => { return res.json(); })
     .then(data => {
       const { name, effect } = data;
@@ -115,7 +115,7 @@ class InventoryData {
 }
 
 async function fetchInvenData(userId) {
-  const res = await fetch(`http://121.162.159.56:8000/api/inventory/${userId}/`);
+  const res = await fetch(`http://IPADDRESS/api/inventory/${userId}/`);
   if (!res.ok) throw new Error("Failed to fetch inventory data");
   return await res.json();
 }

@@ -172,7 +172,7 @@ export function spawnMonsters(scene) {
     wolf: "산 늑대",
   }
 
-  fetch("http://121.162.159.56:8000/api/monsters/", {
+  fetch("http://IPADDRESS/api/monsters/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ names: names })

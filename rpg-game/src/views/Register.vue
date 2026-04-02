@@ -58,27 +58,48 @@
           />
         </label>
 
-        <button class="btn primary" type="submit" @click="playUiClick" :disabled="isLoading || !canSubmit">
+        <button
+          class="btn primary"
+          type="submit"
+          @click="playUiClick"
+          :disabled="isLoading || !canSubmit"
+        >
           <span class="btn-glow" aria-hidden="true"></span>
-          {{ isLoading ? '등록 중...' : '회원가입' }}
+          {{ isLoading ? "등록 중..." : "회원가입" }}
         </button>
 
         <div class="row">
-          <button class="btn ghost" type="button" @click="onGoLogin" :disabled="isLoading">
+          <button
+            class="btn ghost"
+            type="button"
+            @click="onGoLogin"
+            :disabled="isLoading"
+          >
             이미 계정이 있어요(로그인)
           </button>
-          <button class="btn ghost subtle" type="button" @click="onClearForm" :disabled="isLoading">
+          <button
+            class="btn ghost subtle"
+            type="button"
+            @click="onClearForm"
+            :disabled="isLoading"
+          >
             초기화
           </button>
         </div>
 
-        <p v-if="statusMessage" class="message" :class="{ ok: isOk, err: !isOk }">
+        <p
+          v-if="statusMessage"
+          class="message"
+          :class="{ ok: isOk, err: !isOk }"
+        >
           {{ statusMessage }}
         </p>
 
         <div class="hint">
           <span class="hint-key">INFO</span>
-          <span class="hint-text">회원가입 성공 시 로그인 페이지로 이동합니다.</span>
+          <span class="hint-text"
+            >회원가입 성공 시 로그인 페이지로 이동합니다.</span
+          >
         </div>
       </form>
 
@@ -86,18 +107,23 @@
         <span class="footer-text">© Pragarach — Create your legend</span>
       </footer>
 
-    <!-- 이메일 인증 안내 모달 -->
-    <div v-if="showVerifyModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="이메일 인증 안내">
-      <div class="modal">
-        <h3 class="modal-title">이메일 인증 필요</h3>
-        <p class="modal-text">이메일을 통해서 인증해주세요.</p>
-        <button class="btn primary" type="button" @click="onConfirmVerify">
-          <span class="btn-glow" aria-hidden="true"></span>
-          확인
-        </button>
+      <!-- 이메일 인증 안내 모달 -->
+      <div
+        v-if="showVerifyModal"
+        class="modal-backdrop"
+        role="dialog"
+        aria-modal="true"
+        aria-label="이메일 인증 안내"
+      >
+        <div class="modal">
+          <h3 class="modal-title">이메일 인증 필요</h3>
+          <p class="modal-text">이메일을 통해서 인증해주세요.</p>
+          <button class="btn primary" type="button" @click="onConfirmVerify">
+            <span class="btn-glow" aria-hidden="true"></span>
+            확인
+          </button>
+        </div>
       </div>
-    </div>
-
     </main>
   </div>
 </template>
@@ -134,18 +160,22 @@ export default {
       form: {
         username: "",
         email: "",
-        password: ""
+        password: "",
       },
       statusMessage: "",
       isLoading: false,
       isOk: true,
-      showVerifyModal: false
+      showVerifyModal: false,
     };
   },
   computed: {
     canSubmit() {
-      return Boolean(this.form.username) && Boolean(this.form.email) && Boolean(this.form.password);
-    }
+      return (
+        Boolean(this.form.username) &&
+        Boolean(this.form.email) &&
+        Boolean(this.form.password)
+      );
+    },
   },
   mounted() {
     this.startAuthBgm();
@@ -157,7 +187,6 @@ export default {
     next();
   },
   methods: {
-    
     startAuthBgm() {
       const bgm = getAuthBgm();
       if (bgm.paused) {
@@ -173,7 +202,9 @@ export default {
       const bgm = window.__AUTH_BGM__;
       if (!bgm) return;
       bgm.pause();
-      try { bgm.currentTime = 0; } catch (_) {}
+      try {
+        bgm.currentTime = 0;
+      } catch (_) {}
     },
     playUiClick() {
       playClickSfx();
@@ -195,7 +226,7 @@ export default {
       this.showVerifyModal = false;
       this.$router.push("/login");
     },
-clearForm() {
+    clearForm() {
       this.form.username = "";
       this.form.email = "";
       this.form.password = "";
@@ -224,24 +255,28 @@ clearForm() {
       this.isLoading = true;
 
       try {
-        const response = await fetch("http://121.162.159.56:8000/api/accounts/register/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: this.form.username,
-            email: this.form.email,
-            password: this.form.password
-          })
-        });
+        const response = await fetch(
+          "http://IPADDRESS/api/accounts/register/",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username: this.form.username,
+              email: this.form.email,
+              password: this.form.password,
+            }),
+          },
+        );
 
         const data = await response.json();
 
         if (response.ok) {
           // 회원가입 성공 → 로그인 화면으로 이동
-          this.statusMessage = "새로운 불꽃의 서약이 등록되었습니다. 로그인으로 이동합니다…";
+          this.statusMessage =
+            "새로운 불꽃의 서약이 등록되었습니다. 로그인으로 이동합니다…";
           this.isOk = true;
           this.showVerifyModal = true;
-} else {
+        } else {
           this.statusMessage = this.normalizeError(data);
           this.isOk = false;
         }
@@ -251,8 +286,8 @@ clearForm() {
       } finally {
         this.isLoading = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -267,7 +302,6 @@ clearForm() {
   box-sizing: border-box;
 }
 
-
 .auth-screen {
   min-height: 100vh;
   display: grid;
@@ -277,8 +311,16 @@ clearForm() {
   overflow: hidden;
 
   background:
-    radial-gradient(1200px 600px at 50% 30%, rgba(255, 94, 0, 0.20), transparent 60%),
-    radial-gradient(900px 420px at 20% 90%, rgba(255, 196, 0, 0.14), transparent 55%),
+    radial-gradient(
+      1200px 600px at 50% 30%,
+      rgba(255, 94, 0, 0.2),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 420px at 20% 90%,
+      rgba(255, 196, 0, 0.14),
+      transparent 55%
+    ),
     linear-gradient(180deg, #140a12 0%, #0b0712 55%, #07050d 100%);
 }
 
@@ -301,7 +343,9 @@ clearForm() {
   width: min(560px, 94vw);
   position: relative;
   z-index: 2;
-  font-family: "Press Start 2P", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family:
+    "Press Start 2P", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   color: #ffe9d7;
 }
 
@@ -322,7 +366,6 @@ clearForm() {
 }
 
 .title {
-
   margin: 14px 0 10px;
   display: flex;
   align-items: center;
@@ -372,7 +415,7 @@ clearForm() {
   border: 3px solid rgba(0, 0, 0, 0.78);
   box-shadow:
     0 6px 0 rgba(0, 0, 0, 0.55),
-    0 0 14px rgba(255, 112, 0, 0.10);
+    0 0 14px rgba(255, 112, 0, 0.1);
 }
 
 .title-orn {
@@ -386,17 +429,32 @@ clearForm() {
   animation: titlePulse 2.2s ease-in-out infinite;
 }
 
-.title-orn.left { transform: translateY(1px); }
-.title-orn.right { transform: translateY(1px) scaleX(-1); }
+.title-orn.left {
+  transform: translateY(1px);
+}
+.title-orn.right {
+  transform: translateY(1px) scaleX(-1);
+}
 
 @keyframes titleShimmer {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes titlePulse {
-  0%, 100% { transform: translateY(1px) scale(1); opacity: 0.92; }
-  50% { transform: translateY(1px) scale(1.08); opacity: 1; }
+  0%,
+  100% {
+    transform: translateY(1px) scale(1);
+    opacity: 0.92;
+  }
+  50% {
+    transform: translateY(1px) scale(1.08);
+    opacity: 1;
+  }
 }
 
 .subtitle {
@@ -407,9 +465,15 @@ clearForm() {
 }
 
 .card {
-  background: linear-gradient(180deg, rgba(22, 10, 20, 0.88), rgba(10, 6, 16, 0.92));
+  background: linear-gradient(
+    180deg,
+    rgba(22, 10, 20, 0.88),
+    rgba(10, 6, 16, 0.92)
+  );
   border: 4px solid rgba(0, 0, 0, 0.75);
-  box-shadow: 0 16px 0 rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(255, 106, 0, 0.25) inset;
+  box-shadow:
+    0 16px 0 rgba(0, 0, 0, 0.35),
+    0 0 0 2px rgba(255, 106, 0, 0.25) inset;
   border-radius: 14px;
   padding: 18px 16px 16px;
   overflow: hidden;
@@ -469,7 +533,9 @@ clearForm() {
   position: relative;
   overflow: hidden;
   box-shadow: 0 12px 0 rgba(0, 0, 0, 0.35);
-  transition: transform 90ms ease, filter 120ms ease;
+  transition:
+    transform 90ms ease,
+    filter 120ms ease;
 }
 
 .btn:active {
@@ -491,7 +557,11 @@ clearForm() {
 .btn-glow {
   position: absolute;
   inset: -60px;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.35), transparent 55%);
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(255, 255, 255, 0.35),
+    transparent 55%
+  );
   opacity: 0.55;
   transform: rotate(10deg);
   pointer-events: none;
@@ -524,11 +594,11 @@ clearForm() {
 
 .message.ok {
   background: rgba(0, 255, 170, 0.08);
-  box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.10) inset;
+  box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.1) inset;
 }
 
 .message.err {
-  background: rgba(255, 60, 60, 0.10);
+  background: rgba(255, 60, 60, 0.1);
   box-shadow: 0 0 0 2px rgba(255, 60, 60, 0.12) inset;
 }
 
@@ -577,14 +647,37 @@ clearForm() {
   pointer-events: none;
 }
 
-.ember-1 { left: 22%; bottom: -20px; animation-duration: 3.6s; transform: rotate(8deg); }
-.ember-2 { left: 58%; bottom: -30px; animation-duration: 4.2s; transform: rotate(-10deg); }
-.ember-3 { left: 80%; bottom: -24px; animation-duration: 3.9s; transform: rotate(14deg); }
+.ember-1 {
+  left: 22%;
+  bottom: -20px;
+  animation-duration: 3.6s;
+  transform: rotate(8deg);
+}
+.ember-2 {
+  left: 58%;
+  bottom: -30px;
+  animation-duration: 4.2s;
+  transform: rotate(-10deg);
+}
+.ember-3 {
+  left: 80%;
+  bottom: -24px;
+  animation-duration: 3.9s;
+  transform: rotate(14deg);
+}
 
 @keyframes floatUp {
-  0% { transform: translateY(0) scale(1); opacity: 0.0; }
-  12% { opacity: 0.7; }
-  100% { transform: translateY(-120vh) scale(0.8); opacity: 0; }
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-120vh) scale(0.8);
+    opacity: 0;
+  }
 }
 
 @media (max-width: 420px) {
@@ -606,9 +699,15 @@ clearForm() {
 
 .modal {
   width: min(520px, 92vw);
-  background: linear-gradient(180deg, rgba(22, 10, 20, 0.95), rgba(10, 6, 16, 0.97));
+  background: linear-gradient(
+    180deg,
+    rgba(22, 10, 20, 0.95),
+    rgba(10, 6, 16, 0.97)
+  );
   border: 4px solid rgba(0, 0, 0, 0.82);
-  box-shadow: 0 16px 0 rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(255, 106, 0, 0.22) inset;
+  box-shadow:
+    0 16px 0 rgba(0, 0, 0, 0.35),
+    0 0 0 2px rgba(255, 106, 0, 0.22) inset;
   border-radius: 14px;
   padding: 18px 16px 16px;
 }
@@ -625,5 +724,4 @@ clearForm() {
   line-height: 1.7;
   opacity: 0.92;
 }
-
 </style>

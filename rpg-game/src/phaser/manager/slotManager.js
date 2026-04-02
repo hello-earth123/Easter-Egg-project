@@ -14,7 +14,7 @@ class EverySlot {
 }
 
 async function fetchSlotData(userId) {
-    const res = await fetch(`http://121.162.159.56:8000/api/slot/${userId}/`);
+    const res = await fetch(`http://IPADDRESS/api/slot/${userId}/`);
     if (!res.ok) throw new Error('Failed to fetch');
     return await res.json();
 }

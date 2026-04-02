@@ -46,27 +46,49 @@
           />
         </label>
 
-        <button class="btn primary" type="button" @click="onLoginClick" :disabled="isLoading || !canSubmit">
+        <button
+          class="btn primary"
+          type="button"
+          @click="onLoginClick"
+          :disabled="isLoading || !canSubmit"
+        >
           <span class="btn-glow" aria-hidden="true"></span>
-          {{ isLoading ? '로그인 중...' : '로그인' }}
+          {{ isLoading ? "로그인 중..." : "로그인" }}
         </button>
 
         <div class="row">
-          <button class="btn ghost" type="button" @click="onGoRegister" :disabled="isLoading">
+          <button
+            class="btn ghost"
+            type="button"
+            @click="onGoRegister"
+            :disabled="isLoading"
+          >
             새 캐릭터 생성(회원가입)
           </button>
-          <button class="btn ghost subtle" type="button" @click="onFillDemo" :disabled="isLoading" title="개발/테스트용">
+          <button
+            class="btn ghost subtle"
+            type="button"
+            @click="onFillDemo"
+            :disabled="isLoading"
+            title="개발/테스트용"
+          >
             데모 입력
           </button>
         </div>
 
-        <p v-if="statusMessage" class="message" :class="{ ok: isOk, err: !isOk }">
+        <p
+          v-if="statusMessage"
+          class="message"
+          :class="{ ok: isOk, err: !isOk }"
+        >
           {{ statusMessage }}
         </p>
 
         <div class="hint">
           <span class="hint-key">TIP</span>
-          <span class="hint-text">로그인 성공 시 아이디가 저장되고 모험이 시작됩니다.</span>
+          <span class="hint-text"
+            >로그인 성공 시 아이디가 저장되고 모험이 시작됩니다.</span
+          >
         </div>
       </section>
 
@@ -108,17 +130,17 @@ export default {
     return {
       form: {
         email: "",
-        password: ""
+        password: "",
       },
       statusMessage: "",
       isLoading: false,
-      isOk: true
+      isOk: true,
     };
   },
   computed: {
     canSubmit() {
       return Boolean(this.form.email) && Boolean(this.form.password);
-    }
+    },
   },
   mounted() {
     this.startAuthBgm();
@@ -130,7 +152,6 @@ export default {
     next();
   },
   methods: {
-    
     startAuthBgm() {
       const bgm = getAuthBgm();
       // 같은 BGM을 Login/Register에서 공유: 이미 재생중이면 이어서 유지
@@ -138,7 +159,7 @@ export default {
         bgm.play().catch(() => {});
       }
     },
-    
+
     bindAuthBgmUnlock() {
       // 브라우저 자동재생 정책 때문에 최초 진입 시 재생이 막힐 수 있음
       if (window.__AUTH_BGM_UNLOCK_BOUND__) return;
@@ -153,12 +174,14 @@ export default {
       window.addEventListener("keydown", unlock, { once: true });
     },
 
-stopAuthBgm() {
+    stopAuthBgm() {
       const bgm = window.__AUTH_BGM__;
       if (!bgm) return;
       bgm.pause();
       // 다음에 다시 시작할 때 처음부터 재생
-      try { bgm.currentTime = 0; } catch (_) {}
+      try {
+        bgm.currentTime = 0;
+      } catch (_) {}
     },
     playUiClick() {
       playClickSfx();
@@ -176,7 +199,7 @@ stopAuthBgm() {
       this.playUiClick();
       this.fillDemo();
     },
-fillDemo() {
+    fillDemo() {
       // 기능 누락 방지용: 자동입력은 기존 로직에 영향 없이 개발 편의만 제공합니다.
       this.form.email = this.form.email || "demo@pragarach.com";
       this.form.password = this.form.password || "demo1234";
@@ -202,13 +225,13 @@ fillDemo() {
       this.isLoading = true;
 
       try {
-        const response = await fetch("http://121.162.159.56:8000/api/accounts/login/", {
+        const response = await fetch("http://IPADDRESS/api/accounts/login/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: this.form.email,
-            password: this.form.password
-          })
+            password: this.form.password,
+          }),
         });
 
         const data = await response.json();
@@ -216,7 +239,8 @@ fillDemo() {
         if (response.ok) {
           // 로그인 성공 → user_id를 localStorage에 저장 후 Game.vue로 이동 (기존 기능 유지)
           localStorage.setItem("user_id", data.user_id);
-          this.statusMessage = "불꽃의 계약이 체결되었습니다. 게임으로 이동합니다…";
+          this.statusMessage =
+            "불꽃의 계약이 체결되었습니다. 게임으로 이동합니다…";
           this.isOk = true;
           this.$router.push("/game");
         } else {
@@ -229,8 +253,8 @@ fillDemo() {
       } finally {
         this.isLoading = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -246,7 +270,6 @@ fillDemo() {
   box-sizing: border-box;
 }
 
-
 .auth-screen {
   min-height: 100vh;
   display: grid;
@@ -256,8 +279,16 @@ fillDemo() {
   overflow: hidden;
 
   background:
-    radial-gradient(1200px 600px at 50% 30%, rgba(255, 94, 0, 0.20), transparent 60%),
-    radial-gradient(900px 420px at 20% 90%, rgba(255, 196, 0, 0.14), transparent 55%),
+    radial-gradient(
+      1200px 600px at 50% 30%,
+      rgba(255, 94, 0, 0.2),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 420px at 20% 90%,
+      rgba(255, 196, 0, 0.14),
+      transparent 55%
+    ),
     linear-gradient(180deg, #140a12 0%, #0b0712 55%, #07050d 100%);
 }
 
@@ -280,7 +311,9 @@ fillDemo() {
   width: min(560px, 94vw);
   position: relative;
   z-index: 2;
-  font-family: "Press Start 2P", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family:
+    "Press Start 2P", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   color: #ffe9d7;
 }
 
@@ -301,7 +334,6 @@ fillDemo() {
 }
 
 .title {
-
   margin: 14px 0 10px;
   display: flex;
   align-items: center;
@@ -351,7 +383,7 @@ fillDemo() {
   border: 3px solid rgba(0, 0, 0, 0.78);
   box-shadow:
     0 6px 0 rgba(0, 0, 0, 0.55),
-    0 0 14px rgba(255, 112, 0, 0.10);
+    0 0 14px rgba(255, 112, 0, 0.1);
 }
 
 .title-orn {
@@ -365,17 +397,32 @@ fillDemo() {
   animation: titlePulse 2.2s ease-in-out infinite;
 }
 
-.title-orn.left { transform: translateY(1px); }
-.title-orn.right { transform: translateY(1px) scaleX(-1); }
+.title-orn.left {
+  transform: translateY(1px);
+}
+.title-orn.right {
+  transform: translateY(1px) scaleX(-1);
+}
 
 @keyframes titleShimmer {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes titlePulse {
-  0%, 100% { transform: translateY(1px) scale(1); opacity: 0.92; }
-  50% { transform: translateY(1px) scale(1.08); opacity: 1; }
+  0%,
+  100% {
+    transform: translateY(1px) scale(1);
+    opacity: 0.92;
+  }
+  50% {
+    transform: translateY(1px) scale(1.08);
+    opacity: 1;
+  }
 }
 
 .subtitle {
@@ -386,9 +433,15 @@ fillDemo() {
 }
 
 .card {
-  background: linear-gradient(180deg, rgba(22, 10, 20, 0.88), rgba(10, 6, 16, 0.92));
+  background: linear-gradient(
+    180deg,
+    rgba(22, 10, 20, 0.88),
+    rgba(10, 6, 16, 0.92)
+  );
   border: 4px solid rgba(0, 0, 0, 0.75);
-  box-shadow: 0 16px 0 rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(255, 106, 0, 0.25) inset;
+  box-shadow:
+    0 16px 0 rgba(0, 0, 0, 0.35),
+    0 0 0 2px rgba(255, 106, 0, 0.25) inset;
   border-radius: 14px;
   padding: 18px 16px 16px;
   overflow: hidden;
@@ -448,7 +501,9 @@ fillDemo() {
   position: relative;
   overflow: hidden;
   box-shadow: 0 12px 0 rgba(0, 0, 0, 0.35);
-  transition: transform 90ms ease, filter 120ms ease;
+  transition:
+    transform 90ms ease,
+    filter 120ms ease;
 }
 
 .btn:active {
@@ -470,7 +525,11 @@ fillDemo() {
 .btn-glow {
   position: absolute;
   inset: -60px;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.35), transparent 55%);
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(255, 255, 255, 0.35),
+    transparent 55%
+  );
   opacity: 0.55;
   transform: rotate(10deg);
   pointer-events: none;
@@ -503,11 +562,11 @@ fillDemo() {
 
 .message.ok {
   background: rgba(0, 255, 170, 0.08);
-  box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.10) inset;
+  box-shadow: 0 0 0 2px rgba(0, 255, 170, 0.1) inset;
 }
 
 .message.err {
-  background: rgba(255, 60, 60, 0.10);
+  background: rgba(255, 60, 60, 0.1);
   box-shadow: 0 0 0 2px rgba(255, 60, 60, 0.12) inset;
 }
 
@@ -563,14 +622,37 @@ code {
   pointer-events: none;
 }
 
-.ember-1 { left: 18%; bottom: -20px; animation-duration: 3.6s; transform: rotate(8deg); }
-.ember-2 { left: 62%; bottom: -30px; animation-duration: 4.2s; transform: rotate(-10deg); }
-.ember-3 { left: 84%; bottom: -24px; animation-duration: 3.9s; transform: rotate(14deg); }
+.ember-1 {
+  left: 18%;
+  bottom: -20px;
+  animation-duration: 3.6s;
+  transform: rotate(8deg);
+}
+.ember-2 {
+  left: 62%;
+  bottom: -30px;
+  animation-duration: 4.2s;
+  transform: rotate(-10deg);
+}
+.ember-3 {
+  left: 84%;
+  bottom: -24px;
+  animation-duration: 3.9s;
+  transform: rotate(14deg);
+}
 
 @keyframes floatUp {
-  0% { transform: translateY(0) scale(1); opacity: 0.0; }
-  12% { opacity: 0.7; }
-  100% { transform: translateY(-120vh) scale(0.8); opacity: 0; }
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-120vh) scale(0.8);
+    opacity: 0;
+  }
 }
 
 /* 작은 화면에서 버튼 줄바꿈 */

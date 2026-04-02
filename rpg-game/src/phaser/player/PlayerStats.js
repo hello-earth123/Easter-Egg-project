@@ -160,7 +160,7 @@ export class PlayerStats {
 // 외부 함수
 // =============================================================
 async function fetchPlayerData(userId) {
-  const res = await fetch(`http://121.162.159.56:8000/api/player/${userId}/`);
+  const res = await fetch(`http://IPADDRESS/api/player/${userId}/`);
   if (!res.ok) throw new Error("Failed to fetch player data");
   return await res.json();
 }
