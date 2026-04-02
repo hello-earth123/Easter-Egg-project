@@ -20,11 +20,11 @@
               <div class="bar-wrap">
                 <div
                   class="bar-fill hp"
-                  :style="{ width: Math.max(0, (playerHP / playerMaxHP) * 100) + '%' }"
+                  :style="{
+                    width: Math.max(0, (playerHP / playerMaxHP) * 100) + '%',
+                  }"
                 ></div>
-                <div class="bar-text">
-                  {{ playerHP }} / {{ playerMaxHP }}
-                </div>
+                <div class="bar-text">{{ playerHP }} / {{ playerMaxHP }}</div>
               </div>
             </div>
 
@@ -34,11 +34,11 @@
               <div class="bar-wrap">
                 <div
                   class="bar-fill mp"
-                  :style="{ width: Math.max(0, (playerMP / playerMaxMP) * 100) + '%' }"
+                  :style="{
+                    width: Math.max(0, (playerMP / playerMaxMP) * 100) + '%',
+                  }"
                 ></div>
-                <div class="bar-text">
-                  {{ playerMP }} / {{ playerMaxMP }}
-                </div>
+                <div class="bar-text">{{ playerMP }} / {{ playerMaxMP }}</div>
               </div>
             </div>
 
@@ -48,7 +48,9 @@
               <div class="bar-wrap">
                 <div
                   class="bar-fill exp"
-                  :style="{ width: Math.max(0, (playerEXP / playerNextEXP) * 100) + '%' }"
+                  :style="{
+                    width: Math.max(0, (playerEXP / playerNextEXP) * 100) + '%',
+                  }"
                 ></div>
                 <div class="bar-text">
                   {{ playerEXP }} / {{ playerNextEXP }}
@@ -59,15 +61,14 @@
             <!-- Skill Points 표시 (작게) -->
             <div class="hud-skill-pts-row">
               <span>Skill Pts: {{ availableSkillPoints }}</span>
-              <span class="hud-skill-pts-sub">
-              </span>
+              <span class="hud-skill-pts-sub"> </span>
             </div>
           </div>
         </div>
 
         <!-- 하단 중앙: 스킬(QWER) / 아이템(PgUp/PgDn) 숏컷 바 -->
         <div class="hud-bottom-center-panel">
-                    <!-- 아이템 슬롯 -->
+          <!-- 아이템 슬롯 -->
           <div class="shortcut-row item-row">
             <div
               class="shortcut-slot item-slot"
@@ -80,9 +81,7 @@
             >
               <div v-if="i" class="slot-item">
                 <img :src="i.icon" />
-                <div class="slot-count" v-if="i.count > 1">
-                  x{{ i.count }}
-                </div>
+                <div class="slot-count" v-if="i.count > 1">x{{ i.count }}</div>
               </div>
               <div class="slot-key">
                 {{ ["PgUp", "PgDn"][idx] }}
@@ -92,14 +91,15 @@
 
           <!-- 스킬 슬롯 -->
           <div class="shortcut-row skill-row">
-            <div class="shortcut-slot"
-                v-for="(s, idx) in skillSlots"
-                :key="'skill-' + idx"
-                @drop.prevent="onDropSkillShortcut($event, idx)"
-                @dragover.prevent
-                @click="useSkillFromVue(idx)"
-                :class="{ empty: !s }">
-
+            <div
+              class="shortcut-slot"
+              v-for="(s, idx) in skillSlots"
+              :key="'skill-' + idx"
+              @drop.prevent="onDropSkillShortcut($event, idx)"
+              @dragover.prevent
+              @click="useSkillFromVue(idx)"
+              :class="{ empty: !s }"
+            >
               <div v-if="s" class="slot-item">
                 <img :src="s.icon" :alt="s.name" />
 
@@ -123,9 +123,8 @@
                 <div class="slot-lv">Lv {{ skillLevel(s.phaserKey) }}</div>
               </div>
 
-              <div class="slot-key">{{ ["Q","W","E","R"][idx] }}</div>
+              <div class="slot-key">{{ ["Q", "W", "E", "R"][idx] }}</div>
             </div>
-
           </div>
         </div>
 
@@ -137,26 +136,22 @@
           </div>
         </div>
       </div>
-      
+
       <!-- 미니맵 HUD -->
-      <MiniMap 
+      <MiniMap
         :mapName="currentMapTitle"
         :player="miniMapPlayer"
         :monsters="miniMapMonsters"
         :portals="miniMapPortals"
       />
-      
+
       <!-- 맵 이름 표시 -->
-      <div
-        v-if="showMapTitle"
-        class="map-title-banner"
-      >
+      <div v-if="showMapTitle" class="map-title-banner">
         {{ currentMapTitle }}
       </div>
 
       <!-- 컷씬 대화 UI -->
       <DialogueUI ref="dialogue" />
-
 
       <!-- =================== 스킬 창 (배틀메이지 스타일 트리) =================== -->
       <div
@@ -208,7 +203,6 @@
               <!-- 스킬 상세 내용 -->
               <div class="skill-detail-body">
                 <div v-if="selectedSkillDetail">
-
                   <!-- 설명 -->
                   <p class="skill-desc">
                     {{ selectedSkillDetail.description }}
@@ -216,13 +210,14 @@
 
                   <!-- 정보 그리드 -->
                   <div class="skill-info">
-                    <div class="label">소비 마나 : </div>
+                    <div class="label">소비 마나 :</div>
                     <div class="value">{{ selectedSkillDetail.manaCost }}</div>
 
-                    <div class="label">쿨타임 : </div>
-                    <div class="value">{{ selectedSkillDetail.cooldownSec }} 초</div>
+                    <div class="label">쿨타임 :</div>
+                    <div class="value">
+                      {{ selectedSkillDetail.cooldownSec }} 초
+                    </div>
                   </div>
-
                 </div>
 
                 <div v-else class="skill-desc">
@@ -274,9 +269,7 @@
                       {{ skillLevelOf(node.id) }} / {{ node.maxLevel }}
                     </div>
                   </div>
-                  <div class="skill-node-label">
-                    Lv {{ node.levelReq }}
-                  </div>
+                  <div class="skill-node-label">Lv {{ node.levelReq }}</div>
                 </div>
               </div>
             </div>
@@ -304,9 +297,7 @@
               <div class="inv-name" :title="items[it.name]">
                 {{ items[it.name] }}
               </div>
-              <div class="inv-count" v-if="it.count > 1">
-                x{{ it.count }}
-              </div>
+              <div class="inv-count" v-if="it.count > 1">x{{ it.count }}</div>
             </div>
           </div>
         </div>
@@ -329,7 +320,7 @@
                 position: 'relative',
                 overflow: 'hidden',
                 width: playerFrameWidth * playerFrameScale + 'px',
-                height: playerFrameHeight * playerFrameScale + 'px'
+                height: playerFrameHeight * playerFrameScale + 'px',
               }"
             >
               <img
@@ -341,7 +332,9 @@
                     'translate(' +
                     (-(playerFrameIndex * playerFrameWidth) - 30) +
                     'px, -15px) ' +
-                    'scale(' + playerFrameScale + ')'
+                    'scale(' +
+                    playerFrameScale +
+                    ')',
                 }"
               />
             </div>
@@ -357,7 +350,7 @@
                 position: 'relative',
                 overflow: 'hidden',
                 width: weaponFrameWidth * weaponFrameScale + 'px',
-                height: weaponFrameHeight * weaponFrameScale + 'px'
+                height: weaponFrameHeight * weaponFrameScale + 'px',
               }"
             >
               <img
@@ -369,9 +362,11 @@
                     'translate(' +
                     (-(weaponFrameIndex * weaponFrameWidth) - weaponOffsetX) +
                     'px, ' +
-                    (-weaponOffsetY) +
+                    -weaponOffsetY +
                     'px) ' +
-                    'scale(' + weaponFrameScale + ')'
+                    'scale(' +
+                    weaponFrameScale +
+                    ')',
                 }"
               />
             </div>
@@ -398,7 +393,9 @@
 
             <!-- Gem 그래프 영역 -->
             <div class="gem-usage-section">
-              <div class="gem-title">Gem Usage (Total {{ (totalGemUsed).toFixed(2) }}/20)</div>
+              <div class="gem-title">
+                Gem Usage (Total {{ totalGemUsed.toFixed(2) }}/20)
+              </div>
 
               <!-- Damage -->
               <div class="gem-row">
@@ -408,13 +405,15 @@
                     class="gem-bar-fill red"
                     :style="{
                       width:
-                        (Math.min(gemUsage.damage, maxGemUsage) / maxGemUsage) * 100 + '%'
+                        (Math.min(gemUsage.damage, maxGemUsage) / maxGemUsage) *
+                          100 +
+                        '%',
                     }"
                   ></div>
                 </div>
-                <div class="gem-value">{{ (gemUsage.damage).toFixed(2) }}</div>
+                <div class="gem-value">{{ gemUsage.damage.toFixed(2) }}</div>
               </div>
-              
+
               <!-- Cooldown -->
               <div class="gem-row">
                 <div class="gem-label white">쿨타임</div>
@@ -423,11 +422,14 @@
                     class="gem-bar-fill white"
                     :style="{
                       width:
-                        (Math.min(gemUsage.cooldown, maxGemUsage) / maxGemUsage) * 100 + '%'
+                        (Math.min(gemUsage.cooldown, maxGemUsage) /
+                          maxGemUsage) *
+                          100 +
+                        '%',
                     }"
                   ></div>
                 </div>
-                <div class="gem-value">{{ (gemUsage.cooldown).toFixed(2) }}</div>
+                <div class="gem-value">{{ gemUsage.cooldown.toFixed(2) }}</div>
               </div>
 
               <!-- ManaCost -->
@@ -438,11 +440,14 @@
                     class="gem-bar-fill sky"
                     :style="{
                       width:
-                        (Math.min(gemUsage.manaCost, maxGemUsage) / maxGemUsage) * 100 + '%'
+                        (Math.min(gemUsage.manaCost, maxGemUsage) /
+                          maxGemUsage) *
+                          100 +
+                        '%',
                     }"
                   ></div>
                 </div>
-                <div class="gem-value">{{ (gemUsage.manaCost).toFixed(2) }}</div>
+                <div class="gem-value">{{ gemUsage.manaCost.toFixed(2) }}</div>
               </div>
 
               <!-- Defense -->
@@ -453,11 +458,14 @@
                     class="gem-bar-fill yellow"
                     :style="{
                       width:
-                        (Math.min(gemUsage.defense, maxGemUsage) / maxGemUsage) * 100 + '%'
+                        (Math.min(gemUsage.defense, maxGemUsage) /
+                          maxGemUsage) *
+                          100 +
+                        '%',
                     }"
                   ></div>
                 </div>
-                <div class="gem-value">{{ (gemUsage.defense).toFixed(2) }}</div>
+                <div class="gem-value">{{ gemUsage.defense.toFixed(2) }}</div>
               </div>
 
               <!-- Luck -->
@@ -468,15 +476,16 @@
                     class="gem-bar-fill green"
                     :style="{
                       width:
-                        (Math.min(gemUsage.luck, maxGemUsage) / maxGemUsage) * 100 + '%'
+                        (Math.min(gemUsage.luck, maxGemUsage) / maxGemUsage) *
+                          100 +
+                        '%',
                     }"
                   ></div>
                 </div>
-                <div class="gem-value">{{ (gemUsage.luck).toFixed(2) }}</div>
+                <div class="gem-value">{{ gemUsage.luck.toFixed(2) }}</div>
               </div>
             </div>
           </div>
-
 
           <!-- 4사분면 : 무기 스탯 레이더 -->
           <div class="quad quad-radar">
@@ -620,11 +629,10 @@ Chart.register(
   LineElement,
   Filler,
   Tooltip,
-  Legend
+  Legend,
 );
 
 export default {
-
   // 컷씬 UI
   components: { DialogueUI, MiniMap, IntroCutscene },
 
@@ -639,7 +647,6 @@ export default {
       playerNextEXP: 100,
       playerLevel: 100,
       skillPoints: 0, // 씬에서 들어오긴 하지만, 실제 UI는 playerLevel 기반 계산 사용
-
 
       // 맵 이름, 미니맵 표시
       currentMapTitle: "",
@@ -658,7 +665,7 @@ export default {
       playerOffsetX: 2,
       statPoints: 0,
       maxStatPoints: 100,
-      
+
       // 스탯창 무기
       weaponSpriteSheet: "/static/assets/player_staff.png",
       weaponFrameIndex: 1, // 무기는 항상 1번 프레임 표시
@@ -682,28 +689,28 @@ export default {
       inventory: { items: [] },
 
       items: {
-        hpPotion: 'HP 포션',
-        mpPotion: 'MP 포션',
-        damageGemLow: '하급 보석\n(데미지)',
-        damageGemMid: '중급 보석\n(데미지)',
-        damageGemHigh: '상급 보석\n(데미지)',
-        damageGemSuper: '특급 보석\n(데미지)',
-        cooldownGemLow: '하급 보석\n(쿨타임)',
-        cooldownGemMid: '중급 보석\n(쿨타임)',
-        cooldownGemHigh: '상급 보석\n(쿨타임)',
-        cooldownGemSuper: '특급 보석\n(쿨타임)',
-        manaCostGemLow: '하급 보석\n(마나 소모)',
-        manaCostGemMid: '중급 보석\n(마나 소모)',
-        manaCostGemHigh: '상급 보석\n(마나 소모)',
-        manaCostGemSuper: '특급 보석\n(마나 소모)',
-        defenseGemLow: '하급 보석\n(방어력)',
-        defenseGemMid: '중급 보석\n(방어력)',
-        defenseGemHigh: '상급 보석\n(방어력)',
-        defenseGemSuper: '특급 보석\n(방어력)',
-        luckGemLow: '하급 보석\n(행운)',
-        luckGemMid: '중급 보석\n(행운)',
-        luckGemHigh: '상급 보석\n(행운)',
-        luckGemSuper: '특급 보석\n(행운)',
+        hpPotion: "HP 포션",
+        mpPotion: "MP 포션",
+        damageGemLow: "하급 보석\n(데미지)",
+        damageGemMid: "중급 보석\n(데미지)",
+        damageGemHigh: "상급 보석\n(데미지)",
+        damageGemSuper: "특급 보석\n(데미지)",
+        cooldownGemLow: "하급 보석\n(쿨타임)",
+        cooldownGemMid: "중급 보석\n(쿨타임)",
+        cooldownGemHigh: "상급 보석\n(쿨타임)",
+        cooldownGemSuper: "특급 보석\n(쿨타임)",
+        manaCostGemLow: "하급 보석\n(마나 소모)",
+        manaCostGemMid: "중급 보석\n(마나 소모)",
+        manaCostGemHigh: "상급 보석\n(마나 소모)",
+        manaCostGemSuper: "특급 보석\n(마나 소모)",
+        defenseGemLow: "하급 보석\n(방어력)",
+        defenseGemMid: "중급 보석\n(방어력)",
+        defenseGemHigh: "상급 보석\n(방어력)",
+        defenseGemSuper: "특급 보석\n(방어력)",
+        luckGemLow: "하급 보석\n(행운)",
+        luckGemMid: "중급 보석\n(행운)",
+        luckGemHigh: "상급 보석\n(행운)",
+        luckGemSuper: "특급 보석\n(행운)",
       },
 
       // 슬롯들
@@ -911,7 +918,6 @@ export default {
       showIntroCutscene: false,
       cutsceneImages: CUTSCENE_IMAGES,
       hasStartedGame: false,
-
     };
   },
 
@@ -990,29 +996,32 @@ export default {
   },
 
   async mounted() {
-    this.userId = localStorage.getItem('user_id')
+    this.userId = localStorage.getItem("user_id");
 
     // 여기서 firstScene 여부 먼저 확인
     // 예시: /accounts/first-scene/<userId>/ 같은 형태
-    const API_BASE = "http://121.162.159.56:8000";
+    const API_BASE = "http://IPADDRESS";
 
-    const firstRes = await fetch(`${API_BASE}/api/accounts/first-scene/${this.userId}/`);
+    const firstRes = await fetch(
+      `${API_BASE}/api/accounts/first-scene/${this.userId}/`,
+    );
 
     const firstData = await firstRes.json();
     this.showIntroCutscene = firstData.firstScene; // false면 컷씬 보여줌(첫 방문)
-    if (!this.showIntroCutscene){
+    if (!this.showIntroCutscene) {
       this.$router.push({
         path: "/introCutscene",
         query: {
           userId: this.userId,
         },
       });
-    }
-    else{
+    } else {
       // Phaser 게임 구동
       let lastScene = "CastleLobby";
 
-      const skillRes = await fetch(`http://121.162.159.56:8000/api/skill/${this.userId}/`);
+      const skillRes = await fetch(
+        `http://IPADDRESS/api/skill/${this.userId}/`,
+      );
       const skillData = await skillRes.json();
       this.skillState = skillData.skillLev;
       const count = this.skillNodes.length;
@@ -1029,7 +1038,9 @@ export default {
         }
       }
 
-      const res = await fetch(`http://121.162.159.56:8000/api/nowLocation/${this.userId}/`);
+      const res = await fetch(
+        `http://IPADDRESS/api/nowLocation/${this.userId}/`,
+      );
       const data = await res.json();
       lastScene = data.nowLocation;
 
@@ -1050,7 +1061,7 @@ export default {
       Object.entries(sceneMap).forEach(([key, scene]) => {
         game.scene.add(key, scene, false);
       });
-      game.scene.start(lastScene, {userId: this.userId});
+      game.scene.start(lastScene, { userId: this.userId });
 
       // Vue 인스턴스를 Phaser game에 연결
       this.$nextTick(() => {
@@ -1087,7 +1098,7 @@ export default {
 
         if (slotData.itemSlots) {
           this.itemSlots = slotData.itemSlots.map((i) =>
-            i ? { name: i.name, icon: i.icon } : null
+            i ? { name: i.name, icon: i.icon } : null,
           );
         }
       });
@@ -1098,7 +1109,7 @@ export default {
         const main = game.scene.getScenes(true)[0];
 
         this.scene = main;
-        
+
         // 맵 이름 띄우기
         if (main.mapName && this.currentMapTitle !== main.mapName) {
           this.currentMapTitle = main.mapName;
@@ -1118,17 +1129,15 @@ export default {
         this.statPoints = main.playerStats.point ?? 0;
         this.maxStatPoints = main.playerStats.maxPoint ?? 100;
 
-        // Gem 사용량 업데이트 
+        // Gem 사용량 업데이트
         // Gem 사용량 업데이트 PlayerStats 필드에 맞게
         const g = main.playerStats || {};
 
-        this.gemUsage.damage   = g.damageGem   ?? 0;     // damageGem
-        this.gemUsage.manaCost = g.manaCostGem ?? 0;     // manaCostGem
-        this.gemUsage.cooldown = g.cooldownGem ?? 0;     // cooldownGem
-        this.gemUsage.defense  = g.defenseGem  ?? 0;     // defenseGem
-        this.gemUsage.luck     = g.luckGem     ?? 0;     // luckGem
-
-
+        this.gemUsage.damage = g.damageGem ?? 0; // damageGem
+        this.gemUsage.manaCost = g.manaCostGem ?? 0; // manaCostGem
+        this.gemUsage.cooldown = g.cooldownGem ?? 0; // cooldownGem
+        this.gemUsage.defense = g.defenseGem ?? 0; // defenseGem
+        this.gemUsage.luck = g.luckGem ?? 0; // luckGem
 
         this.weaponStats.damage = main.playerStats.damage;
         this.weaponStats.cooldown = main.playerStats.cooldown;
@@ -1139,20 +1148,20 @@ export default {
         this.textBar = main.textBar || "";
 
         // 인벤토리
-        this.inventory.items = (main.inventoryData.inventory.items || []).map((i) => ({...i, showName: this.items[i.name]}));
+        this.inventory.items = (main.inventoryData.inventory.items || []).map(
+          (i) => ({ ...i, showName: this.items[i.name] }),
+        );
 
         // 아이템 슬롯
         if (main.inventoryData.itemSlots) {
           this.itemSlots = main.inventoryData.itemSlots.map((i) =>
-            i ? { name: i.name, icon: i.icon } : null
+            i ? { name: i.name, icon: i.icon } : null,
           );
         }
 
         main.skillLevel = this.skillState;
       }, 100);
     }
-
-    
   },
 
   beforeUnmount() {
@@ -1189,7 +1198,7 @@ export default {
       deep: true,
       handler() {
         this.updateGemChart();
-      }
+      },
     },
     // 무기 스탯이 바뀔 때마다 차트 자동 업데이트
     weaponStats: {
@@ -1232,7 +1241,7 @@ export default {
                 this.gemUsage.luck,
               ],
               backgroundColor: [
-                "rgba(255, 80, 80, 0.8)",   // 빨강
+                "rgba(255, 80, 80, 0.8)", // 빨강
                 "rgba(120, 200, 255, 0.8)", // 하늘
                 "rgba(255, 255, 255, 0.8)", // 흰색
                 "rgba(255, 230, 120, 0.8)", // 노랑
@@ -1291,7 +1300,7 @@ export default {
 
     setMapTitle(name) {
       this.currentMapTitle = name;
-      this.triggerMapTitle();   // 배너 표시
+      this.triggerMapTitle(); // 배너 표시
     },
 
     // 미니맵 띄우기
@@ -1305,7 +1314,6 @@ export default {
         this.currentMapTitle = payload.mapName;
       }
     },
-
 
     /* ===================
        무기 스탯 및 레이더 차트
@@ -1452,7 +1460,7 @@ export default {
       // 부모 중 하나라도 찍혀있으면 통과 (OR)
       if (node.parents && node.parents.length > 0) {
         const hasParentLearned = node.parents.some(
-          (pid) => this.skillLevelOf(pid) > 0
+          (pid) => this.skillLevelOf(pid) > 0,
         );
         if (!hasParentLearned) return false;
       }
@@ -1622,7 +1630,7 @@ export default {
         if (!node.parents || node.parents.length === 0) return;
 
         const childSlot = tree.querySelector(
-          `.skill-node[data-skill-id="${node.id}"] .skill-slot`
+          `.skill-node[data-skill-id="${node.id}"] .skill-slot`,
         );
         if (!childSlot) return;
 
@@ -1632,7 +1640,7 @@ export default {
 
         node.parents.forEach((pid) => {
           const parentSlot = tree.querySelector(
-            `.skill-node[data-skill-id="${pid}"] .skill-slot`
+            `.skill-node[data-skill-id="${pid}"] .skill-slot`,
           );
           if (!parentSlot) return;
 
@@ -1642,7 +1650,7 @@ export default {
 
           const line = document.createElementNS(
             "http://www.w3.org/2000/svg",
-            "line"
+            "line",
           );
           line.setAttribute("x1", px);
           line.setAttribute("y1", py);
@@ -1656,7 +1664,7 @@ export default {
           // 잠김 여부 계산
           const childLocked = this.isLockedByBranch(node);
           const parentLocked = this.isLockedByBranch(
-            this.skillNodes.find((n) => n.id === pid)
+            this.skillNodes.find((n) => n.id === pid),
           );
 
           // 1) 기본 회색
@@ -1753,7 +1761,7 @@ export default {
       const r = 27;
 
       // 시작 각도(위쪽에서 시작, 시계방향 진행)
-      const startAngle = -90;               // deg, 12시 방향
+      const startAngle = -90; // deg, 12시 방향
       const endAngle = startAngle + 360 * ratio;
 
       const toRad = (deg) => (Math.PI / 180) * deg;
@@ -1767,7 +1775,7 @@ export default {
       const y2 = cy + r * Math.sin(endRad);
 
       // 180도 초과하면 large-arc-flag = 1
-      const largeArcFlag = (endAngle - startAngle) > 180 ? 1 : 0;
+      const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
 
       // M: 중심 → L: 시작점 → A: 호 → Z: 다시 중심
       const d = [
@@ -1779,7 +1787,6 @@ export default {
 
       return d;
     },
-
 
     cooldownPathStyle(skillName) {
       if (!this.scene || !this.scene.skills) return {};
@@ -1795,10 +1802,9 @@ export default {
 
       return {
         strokeDasharray: `${100 * ratio}, 100`,
-        transition: "stroke-dasharray 0.1s linear"
+        transition: "stroke-dasharray 0.1s linear",
       };
     },
-
 
     toggleInventory() {
       this.showInventory = !this.showInventory;
@@ -1810,7 +1816,7 @@ export default {
           this.makeDraggable(el);
         });
       } else {
-        this.removeFromStack("inventory");   
+        this.removeFromStack("inventory");
         this.playUiClose(); // 창 닫기 사운드
       }
     },
@@ -1826,7 +1832,7 @@ export default {
           this.initWeaponRadar();
         });
       } else {
-        this.removeFromStack("stats");   
+        this.removeFromStack("stats");
         this.playUiClose(); // 창 닫기 사운드
       }
     },
@@ -1842,7 +1848,7 @@ export default {
           this.drawSkillLines();
         });
       } else {
-        this.removeFromStack("skills");   // ← 추가!
+        this.removeFromStack("skills"); // ← 추가!
         this.playUiClose(); // 창 닫기 사운드
       }
     },
@@ -1917,7 +1923,7 @@ export default {
 
       if (skillId) {
         const node = this.skillNodes.find(
-          (n) => n.id === skillId || n.name === skillId
+          (n) => n.id === skillId || n.name === skillId,
         );
         if (!node) return;
 
@@ -1964,7 +1970,7 @@ export default {
       // Phaser 전달
       if (this.scene?.setSkillSlots) {
         const names = this.skillSlots.map((s) =>
-          s ? { name: s.phaserKey } : null
+          s ? { name: s.phaserKey } : null,
         );
         this.scene.setSkillSlots(names);
       }
@@ -1993,7 +1999,8 @@ export default {
     },
 
     useItem(idx) {
-      if (this.scene?.useItemFromInventory) this.scene.useItemFromInventory(idx);
+      if (this.scene?.useItemFromInventory)
+        this.scene.useItemFromInventory(idx);
     },
 
     cdLeftMs(skillName) {
@@ -2006,7 +2013,7 @@ export default {
     },
 
     skillLevel(skillName) {
-      const tmpId = this.skillNodes.filter(skill => skill.name === skillName);
+      const tmpId = this.skillNodes.filter((skill) => skill.name === skillName);
       if (!this.scene || !this.scene.skills) return 1;
       return this.skillState[tmpId[0].id] || 0;
     },
@@ -2062,7 +2069,6 @@ export default {
   height: 700px;
   background: #000;
   position: relative;
-
 }
 
 /* ===================== 오버레이 HUD 공통 ===================== */
@@ -2081,11 +2087,12 @@ export default {
   width: 230px;
   padding: 8px 10px;
   border-radius: 10px;
-  background: radial-gradient(circle at top left,
+  background: radial-gradient(
+    circle at top left,
     rgba(43, 52, 64, 0.2) 0%,
     rgba(21, 24, 32, 0.2) 55%,
     rgba(12, 13, 18, 0.2) 100%
-  );  
+  );
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: #fff;
@@ -2212,8 +2219,8 @@ export default {
   gap: 6px;
   padding: 4px 8px;
   border-radius: 10px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.0));
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.0);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0));
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0);
   border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
@@ -2284,7 +2291,7 @@ export default {
 /* ---------- 좌측 하단 로그 ---------- */
 .hud-bottom-left-log {
   position: absolute;
-  background: rgba(0,0,0,0.0);
+  background: rgba(0, 0, 0, 0);
   border: none;
   box-shadow: none;
   left: 12px;
@@ -2307,7 +2314,11 @@ export default {
   padding: 6px 8px;
   font-size: 12px;
   color: #e4e7ff;
-  background: radial-gradient(circle at top left, rgba(63, 74, 110, 0.2), rgba(12, 14, 24, 0.25));
+  background: radial-gradient(
+    circle at top left,
+    rgba(63, 74, 110, 0.2),
+    rgba(12, 14, 24, 0.25)
+  );
   border-radius: 8px;
   border: 1px solid rgba(124, 148, 255, 0.4);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.85);
@@ -2321,7 +2332,7 @@ export default {
   top: 40px;
   left: 50%;
   transform: translateX(-50%);
-  
+
   padding: 8px 22px;
   font-size: 26px;
   font-weight: bold;
@@ -2330,8 +2341,8 @@ export default {
   font-family: "Press Start 2P", monospace; /* 픽셀 느낌 폰트 */
   text-shadow: 3px 3px #000;
 
-  background: rgba(0,0,0,0.45);
-  border: 2px solid rgba(255,255,255,0.25);
+  background: rgba(0, 0, 0, 0.45);
+  border: 2px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
 
   animation: mapTitleFade 2.2s ease-out forwards;
@@ -2340,10 +2351,21 @@ export default {
 }
 
 @keyframes mapTitleFade {
-  0%   { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-  15%  { opacity: 1; transform: translateX(-50%) translateY(0); }
-  85%  { opacity: 1; }
-  100% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
 }
 
 /* ===================== 모달 공통 ===================== */
@@ -2352,7 +2374,12 @@ export default {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle at top, #24273a 0, #151624 55%, #090a10 100%);
+  background: radial-gradient(
+    circle at top,
+    #24273a 0,
+    #151624 55%,
+    #090a10 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 10px;
   color: #fff;
@@ -2465,7 +2492,7 @@ export default {
 .skill-detail-body {
   margin-top: 10px;
   padding-top: 8px;
-  border-top: 1px solid rgba(255,255,255,0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .skill-desc {
@@ -2577,7 +2604,11 @@ export default {
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s, filter 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.1s,
+    filter 0.15s;
 }
 
 .skill-icon {
@@ -2635,7 +2666,9 @@ export default {
 }
 
 .skill-node.is-selected .skill-slot {
-  box-shadow: 0 0 0 2px #ffd54f, 0 0 18px rgba(255, 213, 79, 0.7);
+  box-shadow:
+    0 0 0 2px #ffd54f,
+    0 0 18px rgba(255, 213, 79, 0.7);
   transform: translateY(-1px);
 }
 
@@ -2666,7 +2699,7 @@ export default {
   top: 3px;
   right: 4px;
   font-size: 11px;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0, 0, 0, 0.55);
   padding: 1px 4px;
   border-radius: 4px;
   color: #fff;
@@ -2681,7 +2714,12 @@ export default {
   width: 440px;
   max-height: 70vh;
   overflow: auto;
-  background: radial-gradient(circle at top, #263654 0, #151720 55%, #07080d 100%);
+  background: radial-gradient(
+    circle at top,
+    #263654 0,
+    #151720 55%,
+    #07080d 100%
+  );
   border: 1px solid rgba(111, 148, 255, 0.45);
   padding: 8px 10px 10px 10px;
   color: #fff;
@@ -2737,7 +2775,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; /* 긴 이름 말줄임 처리 */
-  white-space: pre-line;  /* 개행 문자 사용 */
+  white-space: pre-line; /* 개행 문자 사용 */
 }
 
 .inv-count {
@@ -2760,7 +2798,12 @@ export default {
   transform: translate(-50%, -50%);
   width: 540px;
   max-height: 680px;
-  background: radial-gradient(circle at top, #2a2351 0, #161725 55%, #080810 100%);
+  background: radial-gradient(
+    circle at top,
+    #2a2351 0,
+    #161725 55%,
+    #080810 100%
+  );
   border: 1px solid rgba(176, 140, 255, 0.55);
   padding: 8px 10px 10px 10px;
   overflow: visible;
@@ -2784,8 +2827,8 @@ export default {
   margin-top: 12px;
   padding: 8px;
   border-radius: 8px;
-  background: rgba(255,255,255,0.03);
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.45);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.45);
 }
 
 .gem-title {
@@ -2813,7 +2856,7 @@ export default {
 .gem-bar {
   flex: 1;
   height: 20px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 7px;
   overflow: hidden;
 }
@@ -2831,12 +2874,21 @@ export default {
 }
 
 /* Gem colors */
-.red { background: rgba(255, 80, 80, 0.85); }
-.sky { background: rgba(120, 200, 255, 0.85); }
-.white { background: rgba(255, 255, 255, 0.85); }
-.yellow { background: rgba(255, 230, 120, 0.85); }
-.green { background: rgba(150, 255, 150, 0.85); }
-
+.red {
+  background: rgba(255, 80, 80, 0.85);
+}
+.sky {
+  background: rgba(120, 200, 255, 0.85);
+}
+.white {
+  background: rgba(255, 255, 255, 0.85);
+}
+.yellow {
+  background: rgba(255, 230, 120, 0.85);
+}
+.green {
+  background: rgba(150, 255, 150, 0.85);
+}
 
 /* ===== 사분면 레이아웃 ===== */
 .stats-layout {
@@ -3003,7 +3055,10 @@ export default {
   cursor: pointer;
   font-size: 13px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
-  transition: transform 0.08s, box-shadow 0.08s, filter 0.08s;
+  transition:
+    transform 0.08s,
+    box-shadow 0.08s,
+    filter 0.08s;
 }
 
 .menu-btn:hover {
